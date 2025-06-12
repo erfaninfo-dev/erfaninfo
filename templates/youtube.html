@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}ویدیوهای یوتیوب{% endblock %}
+
+{% block content %}
+    <h1>کانال یوتیوب من</h1>
+    <p>در این بخش می‌توانید ویدیوهای آموزشی کانال را مشاهده کنید.</p>
+
+    <div class="video-gallery">
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/rokGy0huYEA" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <a href="/">بازگشت به صفحه اصلی</a> {# این لینک باید به home_new.html برود #}
+{% endblock %}

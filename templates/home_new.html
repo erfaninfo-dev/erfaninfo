@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}صفحه اصلی{% endblock %}
+
+{% block content %}
+    <header class="main-header">
+        <h1>به سایت آموزشی  عرفان اینفو خوش آمدید!</h1>
+        <p>مسیر خود را برای یادگیری زبان انگلیسی انتخاب کنید.</p>
+    </header>
+
+    <div class="main-card-container">
+        {# کارت ۱: تمرین گرامر #}
+        <a href="/tests" id="practice-card" class="e-card playing">
+            <div class="image"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="infotop">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 15l-3.5-3.5 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></path>
+                </svg><br>
+                <span class="infotop-text">تمرین گرامر</span>
+                <div class="name">دانش گرامر خود را بیازمایید.</div>
+            </div>
+        </a>
+
+        {# کارت ۲: آموزش گرامر #}
+        <div id="lessons-card" class="e-card playing">
+            <div class="image"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="infotop">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
+                    <path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"></path>
+                </svg><br>
+                <span class="infotop-text">آموزش گرامر</span>
+                <div class="name">مفاهیم را به زبان ساده یاد بگیرید.</div>
+            </div>
+        </div>
+
+        {# کارت ۳: ویدیوهای آموزشی #}
+        <div id="videos-card" class="e-card playing">
+            <div class="image"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="infotop">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
+                    <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
+                </svg><br>
+                <span class="infotop-text">ویدیوهای آموزشی</span>
+                <div class="name">مهارت‌های خود را ارتقا دهید.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- بخش ویدیوهای یوتیوب با اسلایدر -->
+    <section class="youtube-thumbnails-section">
+        <h2 class="youtube-section-title">ویدیوهای منتخب یوتیوب</h2>
+        <div class="youtube-slider-wrapper">
+            <button class="youtube-slider-arrow right" id="youtube-arrow-right" aria-label="بعدی">
+                <svg width="20" height="20" viewBox="0 0 20 20"><path d="M13 5l-6 5 6 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="youtube-thumbnails-row youtube-slider" id="youtube-slider">
+                <div class="thumbnails-inner">
+                    <div class="youtube-thumb-card">
+                        <a class="youtube-thumb-link" href="https://www.youtube.com/watch?v=sX194xPwT4k&t=50s" target="_blank" rel="noopener">
+                            <img src="https://img.youtube.com/vi/sX194xPwT4k/0.jpg" alt="YouTube Video 1" class="youtube-thumb-img" />
+                        </a>
+                    </div>
+                    <div class="youtube-thumb-card">
+                        <a class="youtube-thumb-link" href="https://www.youtube.com/watch?v=FTMC9FrH3EU" target="_blank" rel="noopener">
+                            <img src="https://img.youtube.com/vi/FTMC9FrH3EU/0.jpg" alt="YouTube Video 2" class="youtube-thumb-img" />
+                        </a>
+                    </div>
+                    <div class="youtube-thumb-card">
+                        <a class="youtube-thumb-link" href="https://www.youtube.com/watch?v=olLREwc7D08" target="_blank" rel="noopener">
+                            <img src="https://img.youtube.com/vi/olLREwc7D08/0.jpg" alt="YouTube Video 3" class="youtube-thumb-img" />
+                        </a>
+                    </div>
+                    <div class="youtube-thumb-card">
+                        <a class="youtube-thumb-link" href="https://www.youtube.com/watch?v=5BlDYpYZbes" target="_blank" rel="noopener">
+                            <img src="https://img.youtube.com/vi/5BlDYpYZbes/0.jpg" alt="YouTube Video 4" class="youtube-thumb-img" />
+                        </a>
+                    </div>
+                    <div class="youtube-thumb-card">
+                        <a class="youtube-thumb-link" href="https://www.youtube.com/watch?v=FNemaHZatus" target="_blank" rel="noopener">
+                            <img src="https://img.youtube.com/vi/FNemaHZatus/0.jpg" alt="YouTube Video 5" class="youtube-thumb-img" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <button class="youtube-slider-arrow left" id="youtube-arrow-left" aria-label="قبلی">
+                <svg width="20" height="20" viewBox="0 0 20 20"><path d="M7 5l6 5-6 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+        </div>
+    </section>
+{% endblock %}

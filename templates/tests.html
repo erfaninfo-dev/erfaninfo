@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}انتخاب تست گرامر{% endblock %}
+
+{% block content %}
+    <h1>تست‌های گرامر</h1>
+    <p>لطفاً یکی از آزمون‌های زیر را برای شروع انتخاب کنید.</p>
+
+    <div class="quiz-card-container">
+        {# کارت زبان آموز بدون تغییر #}
+        <div class="quiz-card student-quiz-card">
+            <div class="quiz-card-header">
+                <h3 class="quiz-card-title">زبان آموز</h3>
+            </div>
+            <div class="quiz-card-options">
+                <input type="text" id="quiz-code-input" placeholder="کد تمرین خود را وارد کنید..." class="quiz-code-input-style">
+                <p id="code-error-message"></p>
+                <button id="submit-code-btn" class="button card-button green-button">شروع آزمون</button>
+            </div>
+        </div>
+
+        {% for main_category, sub_topics in grouped_tenses.items() %}
+            <div class="quiz-card" data-category="{{ main_category }}" data-has-sub-options="{{ 'true' if sub_topics|length > 1 else 'false' }}">
+                <div class="quiz-card-header">
+                    <h3 class="quiz-card-title">{{ main_category }}</h3>
+                </div>
+
+                {% if sub_topics|length > 1 %}
+                    <button class="expand-card-btn button card-button">مشاهده</button>
+                {% else %}
+                    <a href="/test/{{ main_category }}" class="button start-quiz-btn card-button green-button">شروع آزمون</a>
+                {% endif %}
+
+                {% if sub_topics|length > 1 %}
+                    <div class="hidden-details">
+                        {# === تغییر: همه دکمه‌ها داخل این گرید هستند === #}
+                        <div class="sub-options-grid">
+                            {# === تغییر: دکمه آزمون کامل به اینجا منتقل و کلاس‌هایش حذف شد === #}
+                            <a href="/test/{{ main_category }}" class="button sub-button">آزمون کامل (ترکیبی)</a>
+                            
+                            {% for topic in sub_topics %}
+                                {% if topic != main_category %}
+                                     {% set button_text = topic.replace(main_category, '').replace('(', '').replace(')', '').strip() %}
+                                     <a href="/test/{{ topic }}" class="button sub-button">{{ button_text }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/student_quiz.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tests_animations.js') }}"></script>
+{% endblock %}

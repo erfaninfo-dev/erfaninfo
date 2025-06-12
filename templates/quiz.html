@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}آزمون: {{ title }}{% endblock %}
+
+{% block content %}
+    {# کلاس quiz-body دیگر به تگ body اعمال نمی شود، بلکه به div.quiz-container اعمال شده است #}
+    <div class="quiz-container">
+        <a href="#" id="close-quiz-btn" class="close-btn">×</a>
+
+        <div id="quiz-main-view">
+            <div class="quiz-header">
+                <h1>{{ title }}</h1> 
+                <div class="progress-bar">
+                    <div id="progress-bar-inner" class="progress-bar-inner"></div>
+                </div>
+                <div id="question-counter" class="question-counter"></div>
+            </div>
+            <div class="question-prompt">
+                <h2 id="question-text" class="question-text-style"></h2>
+            </div>
+            <div id="options-grid" class="options-grid"></div>
+            <div class="quiz-footer">
+                <button id="check-btn" class="check-btn" disabled>Next</button> {# تایتل دکمه همیشه Next است #}
+            </div>
+        </div>
+
+        <div id="quiz-results" class="quiz-results" style="display: none;">
+            <h2 id="results-greeting">آزمون تمام شد!</h2>
+            <p id="results-text"></p>
+            <div class="results-buttons">
+                <button id="restart-btn" class="check-btn">تلاش مجدد</button>
+                {# این لینک به صفحه اصلی جدید (home_new.html) هدایت می کند #}
+                <button id="return-to-list-btn" class="check-btn secondary-btn">بازگشت به لیست آزمون‌ها</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal-overlay" class="modal-overlay hidden">
+        <div class="confirm-modal">
+            <h2>خروج از آزمون</h2>
+            <p>آیا مطمئن هستید که می‌خواهید از آزمون خارج شوید؟ پیشرفت شما ذخیره نخواهد شد.</p>
+            <div class="confirm-buttons">
+                <button id="confirm-yes-btn" class="modal-button danger-btn">بله، خارج شو</button>
+                <button id="confirm-no-btn" class="modal-button secondary-btn">خیر، ادامه می‌دهم</button>
+            </div>
+        </div>
+    </div>
+    {# این اسکریپت، داده‌های سوالات را از Flask دریافت کرده و روی window.initialQuizQuestions قرار می‌دهد #}
+    <script>
+        window.initialQuizQuestions = {{ initial_quiz_questions_json | default('[]') | safe }};
+    </script>
+{% endblock %}
+
+{% block scripts %}
+    {# لینک به فایل JavaScript اصلی آزمون #}
+    <script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+{% endblock %}

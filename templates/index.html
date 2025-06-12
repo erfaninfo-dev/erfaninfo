@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سایت آموزشی گرامر زبان</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {# اضافه کردن فونت های فارسی و انگلیسی برای استفاده در صفحه اصلی #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Estedad:wght@400;700&family=Inter:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    {# مودال خوش آمدگویی (بدون تغییر) #}
+    <div id="welcome-overlay" class="modal-overlay">
+        <div id="welcome-modal" class="modal">
+            <h2>Welcome!</h2>
+            <p>لطفاً نام و نام خانوادگی خود را وارد کنید.</p>
+            <form id="welcome-form">
+                <input type="text" name="firstName" placeholder="نام" required>
+                <input type="text" name="lastName" placeholder="نام خانوادگی" required>
+                <button type="submit" class="modal-button">شروع</button>
+            </form>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <h1>به سایت آموزشی گرامر زبان خوش آمدید!</h1>
+        <p>مسیر خود را برای یادگیری زبان انگلیسی انتخاب کنید.</p>
+    </header>
+
+    <div class="main-card-container">
+        {# کارت ۱: تمرین گرامر (بدون آیکون) #}
+        <a href="/tests" class="main-card glow-on-hover">
+            {# div.card-icon و img حذف شد #}
+            <h2 class="card-title persian-font">تمرین گرامر</h2>
+            <p class="card-description persian-font">با آزمون‌های متنوع، گرامر خود را تقویت کنید.</p>
+        </a>
+
+        {# کارت ۲: آموزش گرامر (بدون آیکون) #}
+        <div id="grammar-lesson-card" class="main-card glow-on-hover">
+            {# div.card-icon و img حذف شد #}
+            <h2 class="card-title persian-font">آموزش گرامر</h2>
+            <p class="card-description persian-font">مفاهیم گرامری را به زبان ساده و کاربردی یاد بگیرید.</p>
+        </div>
+
+        {# کارت ۳: ویدیوهای آموزشی (بدون آیکون) #}
+        <div id="video-lessons-card" class="main-card glow-on-hover">
+            {# div.card-icon و img حذف شد #}
+            <h2 class="card-title persian-font">ویدیوهای آموزشی</h2>
+            <p class="card-description persian-font">با ویدیوهای جذاب، مهارت‌های زبانی خود را ارتقا دهید.</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
