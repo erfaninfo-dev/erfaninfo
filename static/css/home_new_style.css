@@ -188,60 +188,61 @@ body {
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.6);display:flex;justify-content:center;align-items:center;z-index:1000;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}.modal{background-color:#fff;padding:30px 40px;border-radius:16px;box-shadow:0 5px 20px rgba(0,0,0,.2);text-align:center;max-width:400px;width:90%}.modal h2{margin-top:0;font-size:2rem}.modal form{display:flex;flex-direction:column;gap:15px;margin-top:20px}.modal input[type=text]{padding:12px;border:1px solid #ccc;border-radius:8px;font-size:1rem}.modal-button{padding:12px;font-size:1.1rem;font-weight:700;color:#fff;background-color:#007bff;border:none;border-radius:8px;cursor:pointer;transition:background-color .2s}.modal-button:hover{background-color:#0056b3}.hidden{display:none}
 
 
-/* Media Queries برای واکنش‌گرایی */
-@media (max-width: 900px) {
-    .main-card-container {
-        gap: 30px;
-    }
-    .e-card {
-        width: 200px;
-        height: 280px;
-    }
-    .main-header h1 {
-        font-size: 2rem;
-    }
-    .main-header p {
-        font-size: 1.1rem;
-    }
-    .infotop {
-        font-size: 18px;
-    }
-    .name {
-        font-size: 12px;
-    }
-}
+/* Add IDs for language switching */
+#main-title { }
+#main-desc { }
 
-@media (max-width: 600px) { 
-    body { 
-        padding: 1rem; 
-    } 
+@media (max-width: 600px) {
+    body {
+        padding: 0.5rem;
+    }
+    .main-header {
+        padding: 0 0.5rem;
+        margin-bottom: 24px;
+    }
     .main-header h1 {
-        font-size: 1.8rem;
+        font-size: 1.1rem;
+        margin-bottom: 6px;
     }
     .main-header p {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
     .main-card-container {
         flex-direction: column;
         align-items: center;
-        gap: 20px;
+        gap: 14px;
+        padding: 0;
+        max-width: 100vw;
     }
     .e-card {
-        width: 220px;
-        height: 300px;
-        padding: 25px;
+        width: 90vw;
+        max-width: 340px;
+        aspect-ratio: 1/1;
+        height: auto;
+        min-width: 120px;
+        min-height: 120px;
+        padding: 12px;
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        margin-bottom: 18px;
     }
-    .infotop {
-        font-size: 16px;
-        padding: 0 15px; /* ایجاد حاشیه ۱۵ پیکسلی از چپ و راست */
-        
-
+    .e-card:last-child {
+        margin-bottom: 0;
+    }
+    .icon {
+        width: 2em;
+        padding-bottom: 0.5em;
+    }
+    .infotop, .infotop-text {
+        font-size: 1rem;
+        margin-top: 6px;
     }
     .name {
-        font-size: 11px;
+        font-size: 0.7rem;
+        top: 0.7em;
     }
 }
-
-/* Add IDs for language switching */
-#main-title { }
-#main-desc { }
