@@ -12,15 +12,32 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Estedad:wght@400;700&family=Inter:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     {% block head %}{% endblock %}
 </head>
-<body{% if request.endpoint == 'grammar_tests' %} class="tests-page"{% endif %}>
-    {% include 'navbar.html' %}
-    <div class="content">
-        {% block content %}{% endblock %}
+<body id="site-body">
+    <div id="language-modal-overlay" class="modal-overlay language-modal-overlay">
+        <div class="language-modal">
+            <h2>زبان دلخواه سایت را انتخاب کنید</h2>
+            <div class="language-buttons">
+                <button id="select-fa" class="modal-button">فارسی</button>
+                <button id="select-ku" class="modal-button">کوردی</button>
+            </div>
+        </div>
+    </div>
+    <div id="main-content-wrapper" style="filter: blur(8px); pointer-events: none;">
+        {% if request.endpoint not in ['run_test', 'run_personalized_quiz_page'] %}
+            {% include 'navbar.html' %}
+        {% endif %}
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
     </div>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

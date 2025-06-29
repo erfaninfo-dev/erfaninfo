@@ -4,8 +4,8 @@
 
 {% block content %}
     <header class="main-header">
-        <h1>به سایت آموزشی  عرفان اینفو خوش آمدید!</h1>
-        <p>مسیر خود را برای یادگیری زبان انگلیسی انتخاب کنید.</p>
+        <h1 data-key="main-header-title">به سایت آموزشی عرفان اینفو خوش آمدید!</h1>
+        <p data-key="main-header-desc">مسیر خود را برای یادگیری زبان انگلیسی انتخاب کنید.</p>
     </header>
 
     <div class="main-card-container">
@@ -19,8 +19,8 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
                     <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 15l-3.5-3.5 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></path>
                 </svg><br>
-                <span class="infotop-text">تمرین گرامر</span>
-                <div class="name">دانش گرامر خود را بیازمایید.</div>
+                <span class="infotop-text" data-key="card-grammar-title">تمرین گرامر</span>
+                <div class="name" data-key="card-grammar-desc">دانش گرامر خود را بیازمایید.</div>
             </div>
         </a>
 
@@ -34,8 +34,8 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
                     <path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"></path>
                 </svg><br>
-                <span class="infotop-text">آموزش گرامر</span>
-                <div class="name">مفاهیم را به زبان ساده یاد بگیرید.</div>
+                <span class="infotop-text" data-key="card-lessons-title">آموزش گرامر</span>
+                <div class="name" data-key="card-lessons-desc">مفاهیم را به زبان ساده یاد بگیرید.</div>
             </div>
         </div>
 
@@ -49,51 +49,126 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
                     <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
                 </svg><br>
-                <span class="infotop-text">ویدیوهای آموزشی</span>
-                <div class="name">مهارت‌های خود را ارتقا دهید.</div>
+                <span class="infotop-text" data-key="card-videos-title">ویدیوهای آموزشی</span>
+                <div class="name" data-key="card-videos-desc">مهارت‌های خود را ارتقا دهید.</div>
             </div>
         </div>
     </div>
 
-    <!-- بخش ویدیوهای یوتیوب با اسلایدر -->
-    <section class="youtube-thumbnails-section">
-        <h2 class="youtube-section-title">ویدیوهای منتخب یوتیوب</h2>
-        <div class="youtube-slider-wrapper">
-            <button class="youtube-slider-arrow right" id="youtube-arrow-right" aria-label="بعدی">
-                <svg width="20" height="20" viewBox="0 0 20 20"><path d="M13 5l-6 5 6 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <!-- Video Slider Section -->
+    <section class="video-slider-section">
+        <h2 class="section-title" data-key="section-title">ویدیوهای آموزشی</h2>
+        <!-- Custom next button outside the swiper -->
+        <button class="custom-slider-next" id="custom-slider-next" type="button">
+          <svg width="20" height="32" viewBox="0 0 20 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 6L16 16L6 26" stroke="#222" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
             </button>
-            <div class="youtube-thumbnails-row youtube-slider" id="youtube-slider">
-                <div class="thumbnails-inner">
-                    <div class="youtube-thumb-card">
-                        <a class="youtube-thumb-link" href="https://www.youtube.com/watch?v=sX194xPwT4k&t=50s" target="_blank" rel="noopener">
-                            <img src="https://img.youtube.com/vi/sX194xPwT4k/0.jpg" alt="YouTube Video 1" class="youtube-thumb-img" />
+        <div class="swiper video-swiper">
+            <div class="swiper-wrapper">
+                {% for video in videos %}
+                <div class="swiper-slide">
+                    <a href="{{ video.url }}" target="_blank" rel="noopener" class="video-card">
+                        <img src="{{ video.thumb }}" alt="Video thumbnail" class="video-thumbnail">
                         </a>
-                    </div>
-                    <div class="youtube-thumb-card">
-                        <a class="youtube-thumb-link" href="https://www.youtube.com/watch?v=FTMC9FrH3EU" target="_blank" rel="noopener">
-                            <img src="https://img.youtube.com/vi/FTMC9FrH3EU/0.jpg" alt="YouTube Video 2" class="youtube-thumb-img" />
-                        </a>
-                    </div>
-                    <div class="youtube-thumb-card">
-                        <a class="youtube-thumb-link" href="https://www.youtube.com/watch?v=olLREwc7D08" target="_blank" rel="noopener">
-                            <img src="https://img.youtube.com/vi/olLREwc7D08/0.jpg" alt="YouTube Video 3" class="youtube-thumb-img" />
-                        </a>
-                    </div>
-                    <div class="youtube-thumb-card">
-                        <a class="youtube-thumb-link" href="https://www.youtube.com/watch?v=5BlDYpYZbes" target="_blank" rel="noopener">
-                            <img src="https://img.youtube.com/vi/5BlDYpYZbes/0.jpg" alt="YouTube Video 4" class="youtube-thumb-img" />
-                        </a>
-                    </div>
-                    <div class="youtube-thumb-card">
-                        <a class="youtube-thumb-link" href="https://www.youtube.com/watch?v=FNemaHZatus" target="_blank" rel="noopener">
-                            <img src="https://img.youtube.com/vi/FNemaHZatus/0.jpg" alt="YouTube Video 5" class="youtube-thumb-img" />
-                        </a>
-                    </div>
                 </div>
+                {% endfor %}
             </div>
-            <button class="youtube-slider-arrow left" id="youtube-arrow-left" aria-label="قبلی">
-                <svg width="20" height="20" viewBox="0 0 20 20"><path d="M7 5l6 5-6 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
         </div>
     </section>
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-cols">
+          <!-- فقط لوگو و توضیحات سمت راست -->
+          <div class="footer-col footer-logo-col">
+            <img src="/static/images/logo.png" alt="لوگو" class="footer-logo" />
+            <p class="footer-desc" data-key="footer-desc">سایت آموزشی عرفان اینفو<br>یادگیری آسان و حرفه‌ای زبان انگلیسی</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// زبان‌ها و ترجمه‌ها
+const translations = {
+  fa: {
+    'main-title': 'به سایت آموزشی عرفان اینفو خوش آمدید!',
+    'main-desc': 'مسیر خود را برای یادگیری زبان انگلیسی انتخاب کنید.',
+    'section-title': 'ویدیوهای آموزشی',
+    // ... سایر کلیدها
+  },
+  ku: {
+    'main-title': 'بەخێربێیت بۆ ماڵپەڕی فێرکاریی عیرفان ئینفو!',
+    'main-desc': 'ڕێگای خۆت هەلبژێر بۆ فێربوونی زمانی ئینگلیزی.',
+    'section-title': 'ڤیدیۆ فێرکارییەکان',
+    // ... سایر کلیدها
+  }
+};
+
+function setLanguage(lang) {
+  localStorage.setItem('siteLang', lang);
+  document.getElementById('main-title').textContent = translations[lang]['main-title'];
+  document.getElementById('main-desc').textContent = translations[lang]['main-desc'];
+  document.querySelector('.section-title').textContent = translations[lang]['section-title'];
+  // ... سایر کلیدها را اینجا اضافه کنید
+}
+
+function showLanguageModal() {
+  document.getElementById('language-modal-overlay').style.display = 'flex';
+  document.body.classList.add('blurred-bg');
+}
+function hideLanguageModal() {
+  document.getElementById('language-modal-overlay').style.display = 'none';
+  document.body.classList.remove('blurred-bg');
+}
+
+// رویداد انتخاب زبان
+window.addEventListener('DOMContentLoaded', function() {
+  let lang = localStorage.getItem('siteLang');
+  if (!lang) {
+    showLanguageModal();
+  } else {
+    setLanguage(lang);
+  }
+  document.getElementById('btn-fa').onclick = function() {
+    setLanguage('fa');
+    hideLanguageModal();
+  };
+  document.getElementById('btn-ku').onclick = function() {
+    setLanguage('ku');
+    hideLanguageModal();
+  };
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    window.videoSwiper = new Swiper('.video-swiper', {
+        slidesPerView: 2,
+        spaceBetween: 20,
+        loop: true,
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        breakpoints: {
+            640: {
+                slidesPerView: 2,
+            },
+            768: {
+                slidesPerView: 3,
+            },
+            1024: {
+                slidesPerView: 4,
+            },
+        }
+    });
+    document.getElementById('custom-slider-next').addEventListener('click', function() {
+        if (window.videoSwiper) {
+            window.videoSwiper.slideNext();
+        }
+    });
+});
+</script>
 {% endblock %}

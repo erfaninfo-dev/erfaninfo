@@ -4,23 +4,85 @@ import os
 import json
 import random
 import re 
-from flask import Flask, render_template, request, jsonify
-from supabase import create_client, Client
-from collections import defaultdict
+from flask import Flask, render_template, request, jsonify, url_for
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
+from datetime import datetime
+from sqlalchemy import inspect
+
+load_dotenv()  # بارگذاری متغیرهای محیطی از .env
 
 app = Flask(__name__)
 
-# --- بخش اتصال به Supabase ---
-# توصیه: در محیط پروداکشن، این مقادیر را از متغیرهای محیطی (Environment Variables) بخوانید
-SUPABASE_URL = "https://yarewbyqmrsnrnwjrrkr.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhcmV3YnlxbXJzbnJud2pycmtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwMzE0NzQsImV4cCI6MjA2NDYwNzQ3NH0.wtOlRWHkwPFW5SVE0V6fp8wlhNEfTCvnFZLhlF1zSBU"
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# تنظیمات اتصال به MySQL
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"mysql+mysqlconnector://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}"
+    f"@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DB')}"
+)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+print(f"DEBUG: DATABASE_URL being used: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
+db = SQLAlchemy(app)
 
+class Question(db.Model):
+    __tablename__ = 'questions'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(255))
+    order_num = db.Column(db.Integer)
+    question_text = db.Column(db.Text)
+    option1 = db.Column(db.String(255))
+    option2 = db.Column(db.String(255))
+    option3 = db.Column(db.String(255))
+    option4 = db.Column(db.String(255))
+    correct_answer = db.Column(db.String(255))
+    # سایر ستون‌ها در صورت نیاز اضافه شود
+
+class StudentQuiz(db.Model):
+    __tablename__ = 'student_quiz'
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(255))
+    question_text = db.Column(db.Text)
+    option1 = db.Column(db.String(255))
+    option2 = db.Column(db.String(255))
+    option3 = db.Column(db.String(255))
+    option4 = db.Column(db.String(255))
+    correct_answer = db.Column(db.String(255))
+    # سایر ستون‌ها در صورت نیاز اضافه شود
+
+class Result(db.Model):
+    __tablename__ = 'results'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(255))
+    quiz_code = db.Column(db.String(255))
+    score = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime)
+    # سایر ستون‌ها در صورت نیاز اضافه شود
 
 @app.route('/')
 def home():
-    return render_template('home_new.html')
+    videos = [
+        {
+            'url': 'https://youtu.be/sX194xPwT4k?si=yZarvhuIIzIMksiy',
+            'thumb': url_for('static', filename='images/th1.jpg')
+        },
+        {
+            'url': 'https://www.youtube.com/watch?v=FTMC9FrH3EU&t=36s',
+            'thumb': url_for('static', filename='images/th2.jpg')
+        },
+        {
+            'url': 'https://www.youtube.com/watch?v=olLREwc7D08',
+            'thumb': url_for('static', filename='images/th3.jpg')
+        },
+        {
+            'url': 'https://www.youtube.com/watch?v=olLREwc7D08',
+            'thumb': url_for('static', filename='images/th4.jpg')
+        },
+        {
+            'url': 'https://www.youtube.com/watch?v=FNemaHZatus&pp=0gcJCd4JAYcqIYzv',
+            'thumb': url_for('static', filename='images/th5.jpg')
+        }
+    ]
+    return render_template('home_new.html', videos=videos)
 
 
 @app.route('/tests')
@@ -30,50 +92,40 @@ def grammar_tests():
     مباحث (content) از دیتابیس واکشی و به صورت کاملا پویا گروه بندی می شوند.
     """
     try:
-        # === تغییر: description و image_url از کوئری select حذف شدند ===
-        response = supabase.table('questions').select("content, order_num").order("order_num").execute()
-        
+        # واکشی content و order_num از questions
+        questions = Question.query.with_entities(Question.content, Question.order_num).order_by(Question.order_num).all()
         all_contents_raw = []
-        content_order_map = {} 
-        content_details_map = {} # این دیکشنری خالی می ماند یا حذف می شود، اما برای سازگاری موقت باقی می ماند
-
-        for item in response.data:
-            if item['content']:
-                content_name = item['content'].strip().title()
+        content_order_map = {}
+        content_details_map = {}
+        for item in questions:
+            if item.content:
+                content_name = item.content.strip().title()
                 all_contents_raw.append(content_name)
-                if item.get('order_num') is not None:
-                    content_order_map[content_name] = item['order_num']
-                
-                # نیازی به ذخیره description و image_url نیست
-        
+                if item.order_num is not None:
+                    content_order_map[content_name] = item.order_num
         unique_contents = sorted(list(set(all_contents_raw)))
-
+        from collections import defaultdict
         grouped_contents = defaultdict(list)
-        main_categories_found = set() 
-
+        main_categories_found = set()
         for content in unique_contents:
             if '(' not in content:
                 main_categories_found.add(content)
-                grouped_contents[content].append(content) 
+                grouped_contents[content].append(content)
             else:
                 match = re.match(r'^(.*?)\s*\(.*?\)$', content)
                 if match:
                     base_name = match.group(1).strip()
                     if base_name not in main_categories_found:
-                         main_categories_found.add(base_name)
-                         grouped_contents[base_name].append(base_name) 
-        
-        sorted_main_categories = sorted(list(main_categories_found), 
-                                        key=lambda x: content_order_map.get(x, float('inf')))
-
-
+                        main_categories_found.add(base_name)
+                        grouped_contents[base_name].append(base_name)
+        sorted_main_categories = sorted(list(main_categories_found), key=lambda x: content_order_map.get(x, float('inf')))
         for content in unique_contents:
             if '(' in content:
                 match = re.match(r'^(.*?)\s*\(.*?\)$', content)
                 if match:
                     base_name = match.group(1).strip()
                     if base_name in sorted_main_categories:
-                        if content not in grouped_contents[base_name]: 
+                        if content not in grouped_contents[base_name]:
                             grouped_contents[base_name].append(content)
                     else:
                         if content not in grouped_contents[content]:
@@ -82,41 +134,33 @@ def grammar_tests():
                     if content not in grouped_contents[content]:
                         grouped_contents[content].append(content)
             else:
-                pass 
-        
+                pass
         final_grouped_tenses = defaultdict(list)
         for cat in sorted_main_categories:
             if cat in grouped_contents:
                 final_grouped_tenses[cat].extend(grouped_contents[cat])
-        
         for content in unique_contents:
             is_grouped = False
             for main_cat in sorted_main_categories:
                 if content.startswith(main_cat):
                     is_grouped = True
                     break
-            if not is_grouped and '(' not in content: 
-                if content not in final_grouped_tenses: 
+            if not is_grouped and '(' not in content:
+                if content not in final_grouped_tenses:
                     final_grouped_tenses[content].append(content)
-            elif not is_grouped and '(' in content: 
-                 match = re.match(r'^(.*?)\s*\(.*?\)$', content)
-                 if match:
-                     base_name_for_sub = match.group(1).strip()
-                     if base_name_for_sub not in final_grouped_tenses:
-                         final_grouped_tenses[content].append(content)
-                     elif content not in final_grouped_tenses[base_name_for_sub]:
-                         final_grouped_tenses[base_name_for_sub].append(content)
-                 else: 
+            elif not is_grouped and '(' in content:
+                match = re.match(r'^(.*?)\s*\(.*?\)$', content)
+                if match:
+                    base_name_for_sub = match.group(1).strip()
+                    if base_name_for_sub not in final_grouped_tenses:
+                        final_grouped_tenses[content].append(content)
+                    elif content not in final_grouped_tenses[base_name_for_sub]:
+                        final_grouped_tenses[base_name_for_sub].append(content)
+                else:
                     final_grouped_tenses[content].append(content)
-
-
         for key in final_grouped_tenses:
             final_grouped_tenses[key] = sorted(list(set(final_grouped_tenses[key])))
-
-        # content_details دیگر استفاده نمی شود، اما برای سازگاری ارسال می شود
-        return render_template('tests.html', 
-                               grouped_tenses=final_grouped_tenses,
-                               content_details={}) # دیکشنری خالی ارسال می کنیم
+        return render_template('tests.html', grouped_tenses=final_grouped_tenses, content_details={})
     except Exception as e:
         print(f"Error in grammar_tests: {e}")
         return f"Error connecting to database: {e}", 500
@@ -126,36 +170,24 @@ def grammar_tests():
 def run_test(content_name):
     try:
         if '(' not in content_name:
-            response = supabase.table('questions').select("*").like("content", f"{content_name}%").execute()
+            all_questions = Question.query.filter(Question.content.like(f"{content_name}%")).all()
         else:
-            response = supabase.table('questions').select("*").eq("content", content_name).execute()
-
-        if not response.data:
+            all_questions = Question.query.filter_by(content=content_name).all()
+        if not all_questions:
             return "Quiz not found!", 404
-
-        all_questions = response.data
         if len(all_questions) > 20:
             selected_questions = random.sample(all_questions, 20)
         else:
             selected_questions = all_questions
-
         formatted_questions = []
         for q in selected_questions:
-            options = [
-                opt for opt in [
-                    q.get('option1'), q.get('option2'), q.get('option3'), q.get('option4')
-                ] if opt is not None
-            ]
+            options = [opt for opt in [q.option1, q.option2, q.option3, q.option4] if opt is not None]
             formatted_q = {
-                "id": q.get('id'), "text": q.get('question_text'),
-                "options": options, "answer": q.get('correct_answer')
+                "id": q.id, "text": q.question_text,
+                "options": options, "answer": q.correct_answer
             }
             formatted_questions.append(formatted_q)
-
-        return render_template('quiz.html',
-                               title=content_name,
-                               initial_quiz_questions_json=json.dumps(formatted_questions))
-
+        return render_template('quiz.html', title=content_name, initial_quiz_questions_json=json.dumps(formatted_questions))
     except Exception as e:
         print(f"Error in run_test: {e}")
         return f"Error fetching quiz data: {e}", 500
@@ -167,45 +199,27 @@ def get_personalized_quiz():
     code = data.get('code')
     if not code:
         return jsonify({"success": False, "message": "کد تمرین الزامی است."}), 400
-
     try:
-        response = supabase.table('student_quiz').select("*").eq("code", code).execute()
-
-        if response.data:
-            all_personalized_questions = response.data
-            
+        all_personalized_questions = StudentQuiz.query.filter_by(code=code).all()
+        if all_personalized_questions:
             if len(all_personalized_questions) > 20:
                 selected_personalized_questions = random.sample(all_personalized_questions, 20)
             else:
                 selected_personalized_questions = all_personalized_questions
-            
-            quiz_title = "آزمون شخصی شما"
-            if selected_personalized_questions and selected_personalized_questions[0].get('content'):
-                quiz_title = selected_personalized_questions[0]['content']
-
             formatted_questions = []
             for q in selected_personalized_questions:
-                options = [
-                    opt for opt in [
-                        q.get('option1'), q.get('option2'), q.get('option3'), q.get('option4')
-                    ] if opt is not None
-                ]
+                options = [opt for opt in [q.option1, q.option2, q.option3, q.option4] if opt is not None]
                 formatted_q = {
-                    "id": q.get('id'), "text": q.get('question_text'),
-                    "options": options, "answer": q.get('correct_answer')
+                    "id": q.id, "text": q.question_text,
+                    "options": options, "answer": q.correct_answer
                 }
                 formatted_questions.append(formatted_q)
-
-            return jsonify({
-                "success": True,
-                "title": quiz_title,
-                "questions": formatted_questions
-            })
+            return jsonify({"success": True, "questions": formatted_questions})
         else:
-            return jsonify({"success": False, "message": "کد تمرین نامعتبر است یا تمرینی با این کد یافت نشد."}), 404
+            return jsonify({"success": False, "message": "سوالی یافت نشد."}), 404
     except Exception as e:
-        print(f"Error fetching personalized quiz: {e}")
-        return jsonify({"success": False, "message": "خطا در واکشی اطلاعات آزمون شخصی. لطفا مجددا تلاش کنید."}), 500
+        print(f"Error in get_personalized_quiz: {e}")
+        return jsonify({"success": False, "message": f"خطا: {e}"}), 500
 
 
 @app.route('/run-personalized-quiz-from-js')
@@ -216,16 +230,16 @@ def run_personalized_quiz_page():
 @app.route('/api/save-result', methods=['POST'])
 def save_result():
     data = request.get_json()
+    user_id = data.get('user_id')
+    quiz_code = data.get('quiz_code')
+    score = data.get('score')
     try:
-        supabase.table('results').insert({
-            'user_name': data.get('userName'),
-            'quiz_name': data.get('quizName'),
-            'score': data.get('score'),
-            'total_questions': data.get('totalQuestions')
-        }).execute()
-        return jsonify({"success": True, "message": "Result saved successfully!"})
+        new_result = Result(user_id=user_id, quiz_code=quiz_code, score=score, created_at=datetime.now())
+        db.session.add(new_result)
+        db.session.commit()
+        return jsonify({"success": True})
     except Exception as e:
-        print(f"Error saving result: {e}")
+        print(f"Error in save_result: {e}")
         return jsonify({"success": False, "message": str(e)}), 500
 
 
@@ -237,6 +251,14 @@ def youtube_videos():
 @app.route('/page/<int:page_number>')
 def show_page(page_number):
     return render_template('page_detail.html', number=page_number)
+
+
+@app.route('/debug/columns')
+def debug_columns():
+    inspector = inspect(db.engine)
+    columns = inspector.get_columns('questions')
+    col_names = [column['name'] for column in columns]
+    return '<br>'.join(col_names)
 
 
 if __name__ == '__main__':

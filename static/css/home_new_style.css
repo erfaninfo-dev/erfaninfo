@@ -241,3 +241,7 @@ body {
         font-size: 11px;
     }
 }
+
+/* Add IDs for language switching */
+#main-title { }
+#main-desc { }
