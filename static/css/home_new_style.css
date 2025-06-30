@@ -17,12 +17,13 @@ body {
 .main-header {
     text-align: center;
     margin-bottom: 40px;
+    margin-top: 40px;
     padding: 0 1rem;
 }
 .main-header h1 {
     font-size: 2.5rem;
     font-family: 'Estedad', sans-serif;
-    color: #2c3e50;
+    color: #22a745;
     margin-bottom: 10px;
 }
 .main-header p {
@@ -82,7 +83,6 @@ body {
     top: 0;
     margin-left: -50%;
     margin-top: -70%;
-    /* === تغییر: رنگ پس‌زمینه از اینجا حذف و به بخش‌های مجزا منتقل شد === */
     z-index: 1;
 }
 
@@ -102,7 +102,6 @@ body {
 #videos-card .wave {
     background: linear-gradient(744deg, #00b09b, #96c93d);
 }
-
 
 .icon {
     width: 3em;
@@ -183,10 +182,8 @@ body {
     }
 }
 
-
 /* === استایل های مودال === */
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.6);display:flex;justify-content:center;align-items:center;z-index:1000;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}.modal{background-color:#fff;padding:30px 40px;border-radius:16px;box-shadow:0 5px 20px rgba(0,0,0,.2);text-align:center;max-width:400px;width:90%}.modal h2{margin-top:0;font-size:2rem}.modal form{display:flex;flex-direction:column;gap:15px;margin-top:20px}.modal input[type=text]{padding:12px;border:1px solid #ccc;border-radius:8px;font-size:1rem}.modal-button{padding:12px;font-size:1.1rem;font-weight:700;color:#fff;background-color:#007bff;border:none;border-radius:8px;cursor:pointer;transition:background-color .2s}.modal-button:hover{background-color:#0056b3}.hidden{display:none}
-
 
 /* Add IDs for language switching */
 #main-title { }
@@ -199,6 +196,7 @@ body {
     .main-header {
         padding: 0 0.5rem;
         margin-bottom: 24px;
+        margin-top: 160px;
     }
     .main-header h1 {
         font-size: 1.1rem;
@@ -245,4 +243,4 @@ body {
         font-size: 0.7rem;
         top: 0.7em;
     }
-}
+} 

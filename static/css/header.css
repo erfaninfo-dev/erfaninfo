@@ -1,0 +1,72 @@
+/* ================= استایل کادر لوگو و منو ================= */
+.top-header-container {
+    position: fixed;
+    top: 20px;
+    left: 50px;
+    right: 50px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 15px 0 15px 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ================= استایل لوگوی بالا سمت راست ================= */
+.top-logo {
+    position: static;
+    margin-right: 0;
+    padding-right: 150px;
+}
+
+.top-logo-img {
+    height: 120px;
+    width: auto;
+    display: block;
+}
+
+/* ================= استایل منوی بالا ================= */
+.top-nav {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    align-items: center;
+}
+
+.top-nav-link {
+    text-decoration: none;
+    color: #333;
+    font-family: 'Vazirmatn', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.top-nav-link:hover {
+    color: #1976d2;
+    transform: translateY(-2px);
+}
+
+/* ================= Responsive Design ================= */
+@media (max-width: 600px) {
+    .top-header-container {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+    }
+    .top-logo {
+        padding-right: 15px;
+    }
+    .top-logo-img {
+        height: 70px;
+    }
+    .top-nav-link {
+        font-size: 14px;
+    }
+} 

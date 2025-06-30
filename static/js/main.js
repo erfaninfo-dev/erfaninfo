@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'navbar-login': 'ورود یا عضویت',
             'main-header-title': 'به سایت آموزشی عرفان اینفو خوش آمدید!',
             'main-header-desc': 'مسیر خود را برای یادگیری زبان انگلیسی انتخاب کنید.',
-            'card-grammar-title': 'تمرین گرامر',
+            'card-grammar-title': 'آزمون گرامر',
             'card-grammar-desc': 'دانش گرامر خود را بیازمایید.',
             'card-lessons-title': 'آموزش گرامر',
             'card-lessons-desc': 'مفاهیم را به زبان ساده یاد بگیرید.',

@@ -1,29 +1,47 @@
-{% extends 'base.html' %}
+    {% extends 'base.html' %}
 
 {% block title %}آزمون: {{ title }}{% endblock %}
 
 {% block head %}
     <style>
-        .quiz-header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-            padding-left: 48px;
-            padding-right: 48px;
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
+        #main-content-wrapper {
+            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            background: #f8f8f8;
+            filter: none !important;
+            pointer-events: auto !important;
+        }
+        .quiz-container {
+            margin-top: 24px;
+            margin-bottom: auto;
+            position: relative;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        /* Hide header in quiz page */
+        #main-content-wrapper > div:first-child {
+            display: none;
+        }
+        
         .question-text-style {
             font-size: 1.5rem;
             margin: 1.2rem 0 1.5rem 0;
-        }
-        .quiz-container {
-            min-width: 340px;
         }
         .progress-bar {
             direction: ltr;
         }
         @media (max-width: 600px) {
-            .quiz-header h1 {
-                font-size: 1.3rem;
-            }
+         
             .question-text-style {
                 font-size: 1.05rem;
             }
@@ -46,10 +64,8 @@
 {% endblock %}
 
 {% block content %}
-    {# کلاس quiz-body دیگر به تگ body اعمال نمی شود، بلکه به div.quiz-container اعمال شده است #}
     <div class="quiz-container">
         <a href="#" id="close-quiz-btn" class="close-btn">×</a>
-
         <div id="quiz-main-view">
             <div class="quiz-header">
                 <h1>{{ title }}</h1> 
@@ -66,7 +82,6 @@
                 <button id="check-btn" class="check-btn" disabled>Next</button> {# تایتل دکمه همیشه Next است #}
             </div>
         </div>
-
         <div id="quiz-results" class="quiz-results" style="display: none;">
             <h2 id="results-greeting">آزمون تمام شد!</h2>
             <p id="results-text"></p>
@@ -76,8 +91,6 @@
                 <button id="return-to-list-btn" class="check-btn secondary-btn">بازگشت به لیست آزمون‌ها</button>
             </div>
         </div>
-    </div>
-
     <div id="confirm-modal-overlay" class="modal-overlay hidden">
         <div class="confirm-modal">
             <h2>خروج از آزمون</h2>
@@ -88,21 +101,20 @@
             </div>
         </div>
     </div>
-
     <!-- Modal for entering full name -->
     <div id="name-modal-overlay" class="modal-overlay hidden">
         <div class="confirm-modal">
             <h2>نام و نام خانوادگی خود را وارد کنید</h2>
-            <input type="text" id="fullname-input" placeholder="نام و نام خانوادگی" style="width: 90%; margin: 10px 0; padding: 8px; font-size: 1rem;" />
+            <input type="text" id="fullname-input" placeholder="نام و نام خانوادگی" />
             <p id="fullname-error" style="color: red; margin: 0; font-size: 0.9rem;"></p>
             <button id="start-quiz-btn" class="modal-button green-btn">شروع</button>
         </div>
     </div>
-
     {# این اسکریپت، داده‌های سوالات را از Flask دریافت کرده و روی window.initialQuizQuestions قرار می‌دهد #}
     <script>
         window.initialQuizQuestions = {{ initial_quiz_questions_json | default('[]') | safe }};
     </script>
+    </div>
 {% endblock %}
 
 {% block scripts %}

@@ -67,6 +67,13 @@ function hideNameModal() {
     nameModalOverlay.classList.add('hidden');
 }
 
+// Add click outside modal to close functionality
+nameModalOverlay.addEventListener('click', function(e) {
+    if (e.target === nameModalOverlay) {
+        hideNameModal();
+    }
+});
+
 function getFullName() {
     return localStorage.getItem('userFullName');
 }
@@ -250,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const exitYes = document.getElementById('confirm-yes-btn');
         const exitNo = document.getElementById('confirm-no-btn');
         if (exitTitle) exitTitle.textContent = 'دەرچوون لە تاقیکردنەوە';
-        if (exitMsg) exitMsg.textContent = 'دڵنیایت دەتەوێت لە تاقیکردنەوە بڕۆیتە دەرەوە؟';
+        if (exitMsg) exitMsg.textContent = 'دڵنیایت دەتەوێت لە تاقیکردنەوە بڕۆیتە دەرەوە؟   ';
         if (exitYes) exitYes.textContent = 'بەڵێ، دەڕۆمە دەرەوە';
         if (exitNo) exitNo.textContent = 'نەخێر، بەردەوام بم';
     }
