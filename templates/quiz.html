@@ -1,123 +1,133 @@
-    {% extends 'base.html' %}
+        {% extends 'base.html' %}
 
-{% block title %}آزمون: {{ title }}{% endblock %}
+    {% block title %}آزمون: {{ title }}{% endblock %}
 
-{% block head %}
-    <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        #main-content-wrapper {
-            min-height: 100vh;
-            height: 100vh;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            background: #f8f8f8;
-            filter: none !important;
-            pointer-events: auto !important;
-        }
-        .quiz-container {
-            margin-top: 24px;
-            margin-bottom: auto;
-            position: relative;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-        /* Hide header in quiz page */
-        #main-content-wrapper > div:first-child {
-            display: none;
-        }
-        
-        .question-text-style {
-            font-size: 1.5rem;
-            margin: 1.2rem 0 1.5rem 0;
-        }
-        .progress-bar {
-            direction: ltr;
-        }
-        @media (max-width: 600px) {
-         
-            .question-text-style {
-                font-size: 1.05rem;
+    {% block head %}
+        <style>
+            body, html {
+                height: 100%;
+                margin: 0;
+                padding: 0;
             }
-            .options-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-                padding: 0 18px 15px 18px;
-            }
-            .option-btn {
-                font-size: 0.95rem;
-                padding: 10px;
+            #main-content-wrapper {
+                min-height: 100vh;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f8f8f8;
+                filter: none !important;
+                pointer-events: auto !important;
+                padding-top: 0 !important;
+                margin-top: 0 !important;
             }
             .quiz-container {
-                min-width: unset;
-                width: 100%;
+                margin: 0;
+                padding: 0;
+                position: relative;
+                min-width: 400px;
             }
-        }
-    </style>
-{% endblock %}
+            /* Hide header in quiz page */
+            #main-content-wrapper > div:first-child {
+                display: none;
+            }
+            
+            .question-text-style {
+                font-size: 1.5rem;
+                margin: 1.2rem 0 1.5rem 0;
+                padding: 0 20px;
+            }
+            .quiz-header h1 {
+                font-size: 1.4rem;
+                padding: 0 20px;
+                margin: 0;
+            }
+            .progress-bar {
+                direction: ltr;
+            }
+            @media (max-width: 600px) {
+            
+                .question-text-style {
+                    font-size: 1.05rem;
+                }
+                .quiz-header h1 {
+                    font-size: 1.3rem;
+                    padding: 0 15px;
+                }
+                .options-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 12px;
+                    padding: 0 18px 15px 18px;
+                }
+                .option-btn {
+                    font-size: 0.95rem;
+                    padding: 10px;
+                }
+                .quiz-container {
+                    min-width: 320px;
+                    width: calc(100% - 40px);
+                    margin: 0 20px;
+                }
+            }
+        </style>
+    {% endblock %}
 
-{% block content %}
-    <div class="quiz-container">
-        <a href="#" id="close-quiz-btn" class="close-btn">×</a>
-        <div id="quiz-main-view">
-            <div class="quiz-header">
-                <h1>{{ title }}</h1> 
-                <div class="progress-bar">
-                    <div id="progress-bar-inner" class="progress-bar-inner"></div>
+    {% block content %}
+        <div class="quiz-container">
+            <a href="#" id="close-quiz-btn" class="close-btn">×</a>
+            <div id="quiz-main-view">
+                <div class="quiz-header">
+                    <h1>{{ title }}</h1> 
+                    <div class="progress-bar">
+                        <div id="progress-bar-inner" class="progress-bar-inner"></div>
+                    </div>
+                    <div id="question-counter" class="question-counter"></div>
                 </div>
-                <div id="question-counter" class="question-counter"></div>
+                <div class="question-prompt">
+                    <h2 id="question-text" class="question-text-style" dir="ltr"></h2>
+                </div>
+                <div id="options-grid" class="options-grid"></div>
+                <div class="quiz-footer">
+                    <button id="check-btn" class="check-btn" disabled>Next</button> {# تایتل دکمه همیشه Next است #}
+                </div>
             </div>
-            <div class="question-prompt">
-                <h2 id="question-text" class="question-text-style" dir="ltr"></h2>
+            <div id="quiz-results" class="quiz-results" style="display: none;">
+                <h2 id="results-greeting">آزمون تمام شد!</h2>
+                <p id="results-text"></p>
+                <div class="results-buttons">
+                    <button id="restart-btn" class="check-btn">تلاش مجدد</button>
+                    {# این لینک به صفحه اصلی جدید (home_new.html) هدایت می کند #}
+                    <button id="return-to-list-btn" class="check-btn secondary-btn">بازگشت به لیست آزمون‌ها</button>
+                </div>
             </div>
-            <div id="options-grid" class="options-grid"></div>
-            <div class="quiz-footer">
-                <button id="check-btn" class="check-btn" disabled>Next</button> {# تایتل دکمه همیشه Next است #}
+        <div id="confirm-modal-overlay" class="modal-overlay hidden">
+            <div class="confirm-modal">
+                <h2>خروج از آزمون</h2>
+                <p>آیا مطمئن هستید که می‌خواهید از آزمون خارج شوید؟ پیشرفت شما ذخیره نخواهد شد.</p>
+                <div class="confirm-buttons">
+                    <button id="confirm-yes-btn" class="modal-button danger-btn">بله، خارج شو</button>
+                    <button id="confirm-no-btn" class="modal-button secondary-btn">خیر، ادامه می‌دهم</button>
+                </div>
             </div>
         </div>
-        <div id="quiz-results" class="quiz-results" style="display: none;">
-            <h2 id="results-greeting">آزمون تمام شد!</h2>
-            <p id="results-text"></p>
-            <div class="results-buttons">
-                <button id="restart-btn" class="check-btn">تلاش مجدد</button>
-                {# این لینک به صفحه اصلی جدید (home_new.html) هدایت می کند #}
-                <button id="return-to-list-btn" class="check-btn secondary-btn">بازگشت به لیست آزمون‌ها</button>
+        <!-- Modal for entering full name -->
+        <div id="name-modal-overlay" class="modal-overlay hidden">
+            <div class="confirm-modal">
+                <h2>نام و نام خانوادگی خود را وارد کنید</h2>
+                <input type="text" id="fullname-input" placeholder="نام و نام خانوادگی" />
+                <p id="fullname-error" style="color: red; margin: 0; font-size: 0.9rem;"></p>
+                <button id="start-quiz-btn" class="modal-button green-btn">شروع</button>
             </div>
         </div>
-    <div id="confirm-modal-overlay" class="modal-overlay hidden">
-        <div class="confirm-modal">
-            <h2>خروج از آزمون</h2>
-            <p>آیا مطمئن هستید که می‌خواهید از آزمون خارج شوید؟ پیشرفت شما ذخیره نخواهد شد.</p>
-            <div class="confirm-buttons">
-                <button id="confirm-yes-btn" class="modal-button danger-btn">بله، خارج شو</button>
-                <button id="confirm-no-btn" class="modal-button secondary-btn">خیر، ادامه می‌دهم</button>
-            </div>
+        {# این اسکریپت، داده‌های سوالات را از Flask دریافت کرده و روی window.initialQuizQuestions قرار می‌دهد #}
+        <script>
+            window.initialQuizQuestions = {{ initial_quiz_questions_json | default('[]') | safe }};
+        </script>
         </div>
-    </div>
-    <!-- Modal for entering full name -->
-    <div id="name-modal-overlay" class="modal-overlay hidden">
-        <div class="confirm-modal">
-            <h2>نام و نام خانوادگی خود را وارد کنید</h2>
-            <input type="text" id="fullname-input" placeholder="نام و نام خانوادگی" />
-            <p id="fullname-error" style="color: red; margin: 0; font-size: 0.9rem;"></p>
-            <button id="start-quiz-btn" class="modal-button green-btn">شروع</button>
-        </div>
-    </div>
-    {# این اسکریپت، داده‌های سوالات را از Flask دریافت کرده و روی window.initialQuizQuestions قرار می‌دهد #}
-    <script>
-        window.initialQuizQuestions = {{ initial_quiz_questions_json | default('[]') | safe }};
-    </script>
-    </div>
-{% endblock %}
+    {% endblock %}
 
-{% block scripts %}
-    {# لینک به فایل JavaScript اصلی آزمون #}
-    <script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
-{% endblock %}
+    {% block scripts %}
+        {# لینک به فایل JavaScript اصلی آزمون #}
+        <script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+    {% endblock %}
