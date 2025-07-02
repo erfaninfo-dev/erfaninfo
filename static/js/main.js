@@ -189,4 +189,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    var btnFaHeader = document.getElementById('btn-fa-header');
+    var btnKuHeader = document.getElementById('btn-ku-header');
+    if (btnFaHeader) {
+        btnFaHeader.onclick = function() { setLanguage('fa'); };
+    }
+    if (btnKuHeader) {
+        btnKuHeader.onclick = function() { setLanguage('ku'); };
+    }
 });

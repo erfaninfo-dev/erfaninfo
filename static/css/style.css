@@ -817,8 +817,8 @@ a:hover {
 
 @media (max-width: 600px) {
     .home-header {
-        margin-right: 16px;
-        margin-left: 16px;
+        margin-right: auto;
+        margin-left: auto;
         margin-top: 20px;
     }
     .home-header h1 {
@@ -832,6 +832,8 @@ a:hover {
         gap: 0.63rem;
         padding: 0.63rem;
         margin-top: 30px;
+        margin-left: auto;
+        margin-right: auto;
     }
     .e-card.playing {
         width: 100%;
@@ -839,6 +841,8 @@ a:hover {
         height: 16.38rem;
         transform: scale(1.01);
         box-shadow: 0 0.38rem 1.25rem rgba(0, 0, 0, 0.12);
+        margin-left: auto;
+        margin-right: auto;
     }
     .quiz-card-container {
         display: grid;
@@ -921,7 +925,7 @@ a:hover {
 
 .video-card {
     display: block;
-        border-radius: 12px;
+    border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -1493,4 +1497,12 @@ body.blurred-bg > *:not(#language-modal-overlay) {
     right: -12px !important;
     left: auto !important;
   }
+}
+
+.video-card,
+.video-card img,
+.swiper-slide:last-child .video-card,
+.swiper-slide:last-child .video-card img {
+    border-radius: 12px !important;
+    overflow: hidden;
 }

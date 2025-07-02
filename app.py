@@ -47,6 +47,8 @@ class StudentQuiz(db.Model):
     option3 = db.Column(db.String(255))
     option4 = db.Column(db.String(255))
     correct_answer = db.Column(db.String(255))
+    unit = db.Column(db.String(255))
+    content = db.Column(db.String(255))  # موضوع گرامر
     # سایر ستون‌ها در صورت نیاز اضافه شود
 
 class Result(db.Model):
@@ -200,23 +202,50 @@ def get_personalized_quiz():
     if not code:
         return jsonify({"success": False, "message": "کد تمرین الزامی است."}), 400
     try:
+        # واکشی همه سوالات با کد داده شده
         all_personalized_questions = StudentQuiz.query.filter_by(code=code).all()
-        if all_personalized_questions:
-            if len(all_personalized_questions) > 20:
-                selected_personalized_questions = random.sample(all_personalized_questions, 20)
-            else:
-                selected_personalized_questions = all_personalized_questions
-            formatted_questions = []
-            for q in selected_personalized_questions:
-                options = [opt for opt in [q.option1, q.option2, q.option3, q.option4] if opt is not None]
-                formatted_q = {
-                    "id": q.id, "text": q.question_text,
-                    "options": options, "answer": q.correct_answer
-                }
-                formatted_questions.append(formatted_q)
-            return jsonify({"success": True, "questions": formatted_questions})
-        else:
+        if not all_personalized_questions:
             return jsonify({"success": False, "message": "سوالی یافت نشد."}), 404
+
+        # گروه‌بندی بر اساس unit
+        from collections import defaultdict
+        import random
+        unit_map = defaultdict(list)
+        for q in all_personalized_questions:
+            unit_map[q.unit].append(q)
+        # ترتیب یونیت‌ها از کم به زیاد
+        sorted_units = sorted(unit_map.keys(), key=lambda x: float(x))
+        final_questions = []
+        for unit in sorted_units:
+            questions_in_unit = unit_map[unit]
+            if len(questions_in_unit) > 15:
+                selected = random.sample(questions_in_unit, 15)
+            else:
+                selected = questions_in_unit
+            # ترتیب سوالات هر یونیت تصادفی اما یونیت‌ها به ترتیب
+            random.shuffle(selected)
+            final_questions.extend(selected)
+        # فرمت خروجی
+        formatted_questions = []
+        print([getattr(q, 'content', None) for q in final_questions])  # DEBUG: نمایش مقادیر content
+        for q in final_questions:
+            options = [opt for opt in [q.option1, q.option2, q.option3, q.option4] if opt is not None]
+            formatted_q = {
+                "id": q.id, "text": q.question_text,
+                "options": options, "answer": q.correct_answer,
+                "content": getattr(q, "content", None)
+            }
+            formatted_questions.append(formatted_q)
+        # تعیین عنوان آزمون بر اساس content
+        if final_questions:
+            unique_contents = list({q.content for q in final_questions if q.content})
+            if len(unique_contents) == 1:
+                quiz_title = unique_contents[0]
+            else:
+                quiz_title = '، '.join(unique_contents)
+        else:
+            quiz_title = "آزمون شخصی"
+        return jsonify({"success": True, "questions": formatted_questions, "title": quiz_title})
     except Exception as e:
         print(f"Error in get_personalized_quiz: {e}")
         return jsonify({"success": False, "message": f"خطا: {e}"}), 500

@@ -2,24 +2,26 @@
 .top-header-container {
     position: fixed;
     top: 20px;
-    left: 50px;
-    right: 50px;
+    left: 100px;
+    right: 100px;
     z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 30px;
+    gap: 40px;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    padding: 15px 0 15px 25px;
+    padding: 15px 25px;
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    min-height: 60px;
 }
 
 /* ================= استایل لوگوی بالا سمت راست ================= */
 .top-logo {
-    position: static;
+    display: flex;
+    align-items: center;
     margin-right: 0;
     padding-right: 150px;
 }
@@ -32,11 +34,11 @@
 
 /* ================= استایل منوی بالا ================= */
 .top-nav {
-    position: static;
     display: flex;
     flex-direction: row;
     gap: 30px;
     align-items: center;
+    justify-content: flex-start;
 }
 
 .top-nav-link {
@@ -45,6 +47,11 @@
     font-family: 'Vazirmatn', sans-serif;
     font-weight: 600;
     font-size: 18px;
+    line-height: 1;
+    padding: 8px 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
     transition: all 0.3s ease;
 }
 
@@ -53,12 +60,34 @@
     transform: translateY(-2px);
 }
 
+/* استایل دکمه‌های تغییر زبان */
+#btn-fa-header, #btn-ku-header {
+    font-size: 16px;
+    line-height: 1;
+    padding: 8px 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* ================= استایل انتخاب زبان ================= */
+.language-switcher {
+    margin-right: auto;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding-left: 150px;
+}
+
 /* ================= Responsive Design ================= */
 @media (max-width: 600px) {
     .top-header-container {
         top: 10px;
         left: 10px;
         right: 10px;
+        padding: 8px 5px;
+        min-height: 50px;
+        gap: 10px;
     }
     .top-logo {
         padding-right: 15px;
@@ -66,7 +95,25 @@
     .top-logo-img {
         height: 70px;
     }
+    .top-nav {
+        gap: 8px;
+    }
     .top-nav-link {
-        font-size: 14px;
+        font-size: 13px;
+        padding: 4px 0;
+    }
+    #btn-fa-header, #btn-ku-header {
+        font-size: 12px;
+        padding: 6px 0;
+    }
+    .language-switcher {
+        padding-left: 20px;
+    }
+}
+
+@media (max-width: 900px) {
+    .top-header-container {
+        left: 40px;
+        right: 40px;
     }
 } 

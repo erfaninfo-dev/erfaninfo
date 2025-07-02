@@ -148,6 +148,15 @@ function loadQuestion() {
             questionCounterEl.textContent = `سوال ${currentQuestionIndex + 1} از ${questions.length}`;
         }
     }
+
+    // --- نمایش عنوان گرامر فعلی در عنوان صفحه و هدر آزمون ---
+    if (currentQuestion.content) {
+        document.title = `آزمون: ${currentQuestion.content}`;
+        const quizHeader = document.querySelector('.quiz-header h1');
+        if (quizHeader) {
+            quizHeader.textContent = currentQuestion.content;
+        }
+    }
 }
 
 function selectOption(selectedButton, question) {

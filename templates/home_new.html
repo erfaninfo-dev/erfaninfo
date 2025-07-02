@@ -20,7 +20,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
                     <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 15l-3.5-3.5 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></path>
                 </svg><br>
-                <span class="infotop-text" data-key="card-grammar-title">آزمون گرامر</span>
+                <span class="infotop-text" data-key="card-grammar-title">تمرین گرامر</span>
                 <div class="name" data-key="card-grammar-desc">دانش گرامر خود را بیازمایید.</div>
             </div>
         </a>
@@ -105,22 +105,54 @@ const translations = {
     'main-title': 'به سایت آموزشی عرفان اینفو خوش آمدید!',
     'main-desc': 'مسیر خود را برای یادگیری زبان انگلیسی انتخاب کنید.',
     'section-title': 'ویدیوهای آموزشی',
+    'tests-title': 'تست‌های گرامر',
+    'tests-desc': 'لطفاً یکی از آزمون‌های زیر را برای شروع انتخاب کنید.',
+    'code-error': 'لطفا کد خود را وارد کنید',
+    'fullname-message': 'نام و نام خانوادگی خود را وارد کنید',
+    'fullname-placeholder': 'نام و نام خانوادگی',
+    'start-btn': 'شروع',
     // ... سایر کلیدها
   },
   ku: {
     'main-title': 'بەخێربێیت بۆ ماڵپەڕی فێرکاریی عیرفان ئینفو!',
     'main-desc': 'ڕێگای خۆت هەلبژێر بۆ فێربوونی زمانی ئینگلیزی.',
     'section-title': 'ڤیدیۆ فێرکارییەکان',
+    'tests-title': 'تاقیکردنەوەکانی گرامەر',
+    'tests-desc': 'تکایە یەکێک لە تاقیکردنەوەکان خوارەوە هەلبژێرە بۆ دەستپێکردن.',
+    'code-error': 'تکایە کۆدەکەت بنووسە',
+    'fullname-message': 'ناوی تەواوت بنووسە',
+    'fullname-placeholder': 'ناوی تەواو',
+    'start-btn': 'دەستپێکردن',
     // ... سایر کلیدها
   }
 };
 
 function setLanguage(lang) {
   localStorage.setItem('siteLang', lang);
-  document.getElementById('main-title').textContent = translations[lang]['main-title'];
-  document.getElementById('main-desc').textContent = translations[lang]['main-desc'];
-  document.querySelector('.section-title').textContent = translations[lang]['section-title'];
-  // ... سایر کلیدها را اینجا اضافه کنید
+  // صفحه اصلی
+  const h1 = document.querySelector('.home-header h1');
+  if (h1) h1.textContent = translations[lang]['main-title'];
+  const homeDesc = document.querySelector('.home-desc');
+  if (homeDesc) homeDesc.textContent = translations[lang]['main-desc'];
+  const sectionTitle = document.querySelector('.section-title');
+  if (sectionTitle) sectionTitle.textContent = translations[lang]['section-title'];
+  // صفحه تست‌ها
+  const testsTitle = document.querySelector('.tests-header h1');
+  if (testsTitle) testsTitle.textContent = translations[lang]['tests-title'];
+  const testsDesc = document.querySelector('.tests-desc');
+  if (testsDesc) testsDesc.textContent = translations[lang]['tests-desc'];
+  // پیام خطا کد
+  const codeError = document.getElementById('code-error-message');
+  if (codeError) codeError.textContent = translations[lang]['code-error'];
+  // پیام نام و نام خانوادگی
+  const fullnameMsg = document.getElementById('fullname-message');
+  if (fullnameMsg) fullnameMsg.textContent = translations[lang]['fullname-message'];
+  // placeholder تکست باکس نام و نام خانوادگی
+  const fullnameInput = document.getElementById('fullname-input');
+  if (fullnameInput) fullnameInput.placeholder = translations[lang]['fullname-placeholder'];
+  // دکمه شروع
+  const startBtn = document.getElementById('start-quiz-btn');
+  if (startBtn) startBtn.textContent = translations[lang]['start-btn'];
 }
 
 function showLanguageModal() {
