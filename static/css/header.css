@@ -80,11 +80,11 @@
 }
 
 /* ================= Responsive Design ================= */
-@media (max-width: 600px) {
+@media (max-width: 800px) {
     .top-header-container {
         top: 10px;
-        left: 10px;
-        right: 10px;
+        left: 5px;
+        right: 5px;
         padding: 8px 5px;
         min-height: 50px;
         gap: 10px;
@@ -115,5 +115,23 @@
     .top-header-container {
         left: 40px;
         right: 40px;
+    }
+}
+
+@media (max-width: 700px) {
+    .top-header-container {
+        min-height: 65px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        border-radius: 15px;
+    }
+    .top-logo-img {
+        height: 65px;
+    }
+    .top-nav-link {
+        font-size: 14px;
     }
 } 
