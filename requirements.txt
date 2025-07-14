@@ -37,9 +37,11 @@ idna==3.10
 iniconfig==2.1.0
 installer==0.7.0
 itsdangerous==2.2.0
+jalali_core==1.0.0
 jaraco.classes==3.4.0
 jaraco.context==6.0.1
 jaraco.functools==4.1.0
+jdatetime==5.2.0
 Jinja2==3.1.6
 keyring==25.6.0
 MarkupSafe==3.0.2
