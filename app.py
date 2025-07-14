@@ -16,6 +16,7 @@ import hashlib
 import os
 sys_random = random.SystemRandom()
 import jdatetime
+from sqlalchemy import Enum
 
 load_dotenv()  # بارگذاری متغیرهای محیطی از .env
 
@@ -110,7 +111,7 @@ class WrongQuestion(db.Model):
     question_type = db.Column(db.String(255), default='')  # نوع آزمون یا کد آزمون
     reported_reason = db.Column(db.String(255), default='سایر')  # دلیل گزارش (متن فارسی)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.Enum('pending', 'reviewed', 'fixed', 'rejected'), default='pending')
+    status = db.Column(db.Enum('pending', 'reviewed', 'fixed', 'rejected', name='wrongquestion_status'), default='pending')
     user_name = db.Column(db.String(255)) # Added user_name column
 
 @app.route('/')
