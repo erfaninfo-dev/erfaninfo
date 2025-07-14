@@ -27,6 +27,160 @@
                 position: relative;
                 min-width: 400px;
             }
+            
+
+            
+            .quiz-footer {
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .footer-buttons {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            .report-container {
+                position: absolute;
+                right: 40px;
+                top: 50%;
+                transform: translateY(-50%);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 10;
+            }
+            
+            .report-reason {
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 20px;
+                padding: 5px 10px;
+                font-size: 12px;
+                color: #666;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                opacity: 0.8;
+            }
+            
+            .report-reason:hover {
+                opacity: 1;
+                border-color: #ff6b6b;
+            }
+            
+            .report-btn {
+                background: none;
+                border: none;
+                font-size: 24px; /* سایز بزرگتر */
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 50%;
+                transition: all 0.3s ease;
+                opacity: 0.7;
+                z-index: 10;
+            }
+            
+            .report-btn:hover {
+                opacity: 1;
+                background: rgba(255, 107, 107, 0.15);
+                transform: scale(1.05);
+                box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+            }
+            
+            /* Modal گزارش سوال */
+            .report-modal {
+                background: white;
+                padding: 25px;
+                border-radius: 10px;
+                width: 90%;
+                max-width: 400px;
+                text-align: center;
+            }
+            
+            .report-modal h3 {
+                margin-bottom: 20px;
+                color: #333;
+                font-size: 18px;
+            }
+            
+            .report-form {
+                text-align: right;
+            }
+            
+            .report-form .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .report-form label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #555;
+                text-align: right;
+            }
+            
+            .report-reason-select {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                font-size: 14px;
+                background: white;
+                transition: border-color 0.3s ease;
+            }
+            
+            .report-reason-select:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+            
+            .report-modal .modal-buttons {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                margin-top: 25px;
+            }
+            
+            .btn-submit {
+                background: #28a745;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: background-color 0.3s ease;
+            }
+            
+            .btn-submit:hover {
+                background: #218838;
+            }
+            
+            .btn-submit:disabled {
+                background: #6c757d;
+                cursor: not-allowed;
+            }
+            
+            /* دکمه انصراف قرمز */
+            .btn-cancel {
+                background: #dc3545;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: background-color 0.3s ease;
+            }
+            .btn-cancel:hover {
+                background: #b52a37;
+            }
             /* Hide header in quiz page */
             #main-content-wrapper > div:first-child {
                 display: none;
@@ -59,6 +213,7 @@
                     grid-template-columns: 1fr 1fr;
                     gap: 12px;
                     padding: 0 18px 15px 18px;
+                    direction: rtl;
                 }
                 .option-btn {
                     font-size: 0.95rem;
@@ -89,7 +244,37 @@
                 </div>
                 <div id="options-grid" class="options-grid"></div>
                 <div class="quiz-footer">
-                    <button id="check-btn" class="check-btn" disabled>Next</button> {# تایتل دکمه همیشه Next است #}
+                    <div class="footer-buttons">
+                        <button id="check-btn" class="check-btn" disabled>Next</button>
+                    </div>
+                    <div class="report-container" style="display: none;">
+                        <button id="report-question-btn" class="report-btn" title="گزارش مشکل">
+                            ⚠️
+                        </button>
+                    </div>
+                    
+                    <!-- Modal گزارش سوال -->
+                    <div id="report-modal" class="modal-overlay hidden">
+                        <div class="report-modal">
+                            <h3>گزارش مشکل در سوال</h3>
+                            <div class="report-form">
+                                <div class="form-group">
+                                    <label for="report-reason">دلیل گزارش:</label>
+                                    <select id="report-reason" class="report-reason-select" required>
+                                        <option value="">انتخاب دلیل</option>
+                                        <option value="wrong_question">سوال اشتباهه!</option>
+                                        <option value="wrong_answer">پاسخ درست اشتباهه!</option>
+                                        <option value="multiple_correct">بیش از یک جواب درست!</option>
+                                        <option value="other">سایر</option>
+                                    </select>
+                                </div>
+                                <div class="modal-buttons">
+                                    <button id="submit-report-btn" class="btn-submit">ثبت گزارش</button>
+                                    <button onclick="closeReportModal()" class="btn-cancel">انصراف</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="quiz-results" class="quiz-results" style="display: none;">
@@ -114,10 +299,10 @@
         <!-- Modal for entering full name -->
         <div id="name-modal-overlay" class="modal-overlay hidden">
             <div class="confirm-modal">
-                <h2>نام و نام خانوادگی خود را وارد کنید</h2>
-                <input type="text" id="fullname-input" placeholder="نام و نام خانوادگی" />
+                <h2 data-key="name-modal-title">نام و نام خانوادگی خود را وارد کنید</h2>
+                <input type="text" id="fullname-input" class="name-input" placeholder="نام و نام خانوادگی" data-key="name-modal-placeholder" />
                 <p id="fullname-error" style="color: red; margin: 0; font-size: 0.9rem;"></p>
-                <button id="start-quiz-btn" class="modal-button green-btn">شروع</button>
+                <button id="start-quiz-btn" class="modal-button green-btn" data-key="start-btn">شروع</button>
             </div>
         </div>
         {# این اسکریپت، داده‌های سوالات را از Flask دریافت کرده و روی window.initialQuizQuestions قرار می‌دهد #}

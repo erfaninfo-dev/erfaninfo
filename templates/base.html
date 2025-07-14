@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Estedad:wght@400;700&family=Inter:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    {% block extra_css %}{% endblock %}
     {% block head %}{% endblock %}
 </head>
 <body id="site-body">
@@ -42,6 +42,7 @@
     {# <script src="{{ url_for('static', filename='js/navbar.js') }}"></script> #}
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
     {% block scripts %}{% endblock %}
 </body>
 </html>

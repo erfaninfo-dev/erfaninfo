@@ -5,11 +5,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitCodeBtn = document.getElementById('submit-code-btn');
     const codeErrorMessage = document.getElementById('code-error-message');
 
+    const translations = {
+        fa: {
+            'enter-code-warning': 'لطفاً کد تمرین را وارد کنید.',
+            'not-found': 'سوالی یافت نشد.'
+        },
+        ku: {
+            'enter-code-warning': 'تکایە کۆدی خۆت بنووسە!',
+            'not-found': 'هیچ پرسیارێک نەدۆزرایەوە.'
+        }
+    };
+    function t(key) {
+        return translations[localStorage.getItem('siteLang') || 'fa'][key];
+    }
+
     // منطق ارسال کد و دریافت کوییز
     submitCodeBtn.addEventListener('click', async () => {
         const code = quizCodeInput.value.trim();
         if (!code) {
-            codeErrorMessage.textContent = "لطفاً کد تمرین را وارد کنید.";
+            codeErrorMessage.textContent = t('enter-code-warning');
             return;
         }
         codeErrorMessage.textContent = ""; // پاک کردن پیام خطای قبلی
@@ -25,15 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (result.success) {
-                // ذخیره سوالات و عنوان در localStorage برای دسترسی quiz.js
+                // ذخیره سوالات و عنوان و کد در localStorage برای دسترسی quiz.js
                 localStorage.setItem('currentQuizQuestions', JSON.stringify(result.questions));
                 localStorage.setItem('currentQuizTitle', result.title);
+                localStorage.setItem('currentQuizCode', code); // ذخیره کد آزمون
 
                 // ریدایرکت به صفحه آزمون. quiz.js در آن صفحه، این دیتا را خواهد خواند.
                 window.location.href = "/run-personalized-quiz-from-js";
             } else {
                 // نمایش پیام خطا از سرور
-                codeErrorMessage.textContent = result.message;
+                if(result.message && result.message.includes('یافت نشد')) {
+                    codeErrorMessage.textContent = t('not-found');
+                } else {
+                    codeErrorMessage.textContent = result.message;
+                }
             }
         } catch (error) {
             console.error('Error fetching personalized quiz:', error);

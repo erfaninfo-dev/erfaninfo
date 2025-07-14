@@ -10,6 +10,8 @@ let isAnswered = false;
 // آن را به یک آرایه خالی مقداردهی می کنیم.
 let questions = window.initialQuizQuestions || [];
 
+let personalQuizCode = null;
+
 
 let currentQuizTitle = document.title.replace('آزمون: ', ''); // عنوان اولیه از Flask
 
@@ -17,9 +19,10 @@ let currentQuizTitle = document.title.replace('آزمون: ', ''); // عنوان
 // === بخش جدید: بارگذاری سوالات شخصی سازی شده از localStorage ===
 const storedQuestions = localStorage.getItem('currentQuizQuestions');
 const storedTitle = localStorage.getItem('currentQuizTitle');
+const storedCode = localStorage.getItem('currentQuizCode');
 
-if (storedQuestions && storedTitle) {
-    // اگر سوالات شخصی سازی شده در localStorage یافت شد:
+if (storedQuestions && storedTitle && storedCode) {
+    personalQuizCode = storedCode; // کد آزمون شخصی را نگه دار
     questions = JSON.parse(storedQuestions); // متغیر questions را با سوالات شخصی جایگزین می‌کند.
     currentQuizTitle = storedTitle; // عنوان را با عنوان شخصی جایگزین می‌کند.
     document.title = `آزمون: ${currentQuizTitle}`; // عنوان تب مرورگر را به‌روزرسانی می‌کند.
@@ -27,6 +30,7 @@ if (storedQuestions && storedTitle) {
     // بلافاصله پس از استفاده، اطلاعات را از localStorage پاک می‌کنیم.
     localStorage.removeItem('currentQuizQuestions');
     localStorage.removeItem('currentQuizTitle');
+    // کد آزمون را بعد از ثبت نتیجه پاک می‌کنیم
 }
 // =========================================================
 
@@ -50,6 +54,9 @@ const returnToListBtnEl = document.getElementById('return-to-list-btn');
 // اضافه شدن عنصر جدید برای شمارنده سوال
 const questionCounterEl = document.getElementById('question-counter');
 
+// اضافه شدن عنصر دکمه گزارش
+const reportQuestionBtnEl = document.getElementById('report-question-btn');
+
 // === Name Modal Logic ===
 const nameModalOverlay = document.getElementById('name-modal-overlay');
 const fullnameInput = document.getElementById('fullname-input');
@@ -67,12 +74,12 @@ function hideNameModal() {
     nameModalOverlay.classList.add('hidden');
 }
 
-// Add click outside modal to close functionality
-nameModalOverlay.addEventListener('click', function(e) {
-    if (e.target === nameModalOverlay) {
-        hideNameModal();
-    }
-});
+// Remove the overlay click handler for name modal to prevent closing by clicking outside
+// nameModalOverlay.addEventListener('click', function(e) {
+//     if (e.target === nameModalOverlay) {
+//         hideNameModal();
+//     }
+// });
 
 function getFullName() {
     return localStorage.getItem('userFullName');
@@ -157,6 +164,15 @@ function loadQuestion() {
             quizHeader.textContent = currentQuestion.content;
         }
     }
+    
+    // نمایش دکمه گزارش در footer (همیشه)
+    const reportContainer = document.querySelector('.report-container');
+    if (reportContainer) {
+        reportContainer.style.display = 'flex';
+        if (reportQuestionBtnEl) {
+            reportQuestionBtnEl.disabled = false;
+        }
+    }
 }
 
 function selectOption(selectedButton, question) {
@@ -182,6 +198,11 @@ function selectOption(selectedButton, question) {
     // === تغییر: عنوان دکمه را همچنان "Next" نگه می داریم ===
     checkBtnEl.textContent = 'Next';
     // ====================================================
+    
+    // دکمه گزارش همیشه فعال می‌ماند - حتی بعد از پاسخ دادن
+    // if (reportQuestionBtnEl) {
+    //     reportQuestionBtnEl.disabled = true;
+    // }
 }
 
 async function saveResultToServer(quizData) {
@@ -215,16 +236,21 @@ function showResults() {
     }
 
     // نمایش نام کاربر و نتیجه
-    resultsGreetingEl.innerHTML = `${emojiHtml}<span>آفرین ${userFullName}!</span>`;
+    resultsGreetingEl.innerHTML = `${emojiHtml}<span>آفرین ${userFullName}!`;
     resultsTextEl.textContent = `شما به ${score} از ${questions.length} سوال پاسخ صحیح دادید.`;
 
+    // استفاده از تابع کمکی
+    const quizName = getQuizName();
+
     const resultData = {
-        userName: userFullName,
-        quizName: currentQuizTitle, // استفاده از عنوان دینامیک (چه از Flask و چه از localStorage)
+        user_name: userFullName,
+        quiz_name: quizName,
         score: score,
-        totalQuestions: questions.length
+        total_questions: questions.length
     };
     saveResultToServer(resultData);
+    personalQuizCode = null;
+    localStorage.removeItem('currentQuizCode');
 }
 
 // --- Event Listeners ---
@@ -271,3 +297,130 @@ document.addEventListener('DOMContentLoaded', function() {
         if (exitNo) exitNo.textContent = 'نەخێر، بەردەوام بم';
     }
 });
+
+// === تابع گزارش سوال ===
+function showReportModal() {
+    // نمایش Modal گزارش
+    document.getElementById('report-modal').classList.remove('hidden');
+    // پاک کردن انتخاب قبلی
+    document.getElementById('report-reason').value = '';
+}
+
+function closeReportModal() {
+    // بستن Modal گزارش
+    document.getElementById('report-modal').classList.add('hidden');
+}
+
+async function submitReport() {
+    if (!questions || currentQuestionIndex >= questions.length) {
+        return;
+    }
+    
+    const currentQuestion = questions[currentQuestionIndex];
+    
+    // دریافت دلیل گزارش
+    const reportReasonSelect = document.getElementById('report-reason');
+    const reportReason = reportReasonSelect.value;
+    if (!reportReason) {
+        alert('لطفاً دلیل گزارش را انتخاب کنید');
+        return;
+    }
+    
+    // دریافت متن فارسی دلیل گزارش
+    const selectedOption = reportReasonSelect.options[reportReasonSelect.selectedIndex];
+    const persianReason = selectedOption.textContent;
+    
+    // غیرفعال کردن دکمه ثبت
+    const submitBtn = document.getElementById('submit-report-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'در حال ثبت...';
+    
+    try {
+        // استفاده از توابع کمکی
+        const quizType = getQuizType();
+        const quizName = getQuizName();
+        // دریافت نام کاربر از localStorage
+        const userFullName = localStorage.getItem('userFullName') || '';
+        
+        // مقدار content را برابر با quizName قرار بده
+        const contentValue = quizName;
+        // تعیین مقدار question_type طبق منطق جدید
+        let questionTypeValue = '';
+        if (currentQuestion.code && currentQuestion.code.trim() !== '') {
+            questionTypeValue = currentQuestion.code;
+        } else if (currentQuestion.content && currentQuestion.content.trim() !== '') {
+            questionTypeValue = currentQuestion.content;
+        } else {
+            questionTypeValue = '';
+        }
+        
+        const reportData = {
+            question_id: currentQuestion.id,
+            question_text: currentQuestion.text,
+            options: currentQuestion.options,
+            correct_answer: currentQuestion.answer,
+            quiz_name: quizName,
+            content: contentValue, // مقدار content برابر با quizName
+            question_type: questionTypeValue, // مقدار دقیق question_type طبق منطق جدید
+            quiz_type: quizType,
+            reported_reason: persianReason,  // ارسال متن فارسی به جای enum
+            user_name: userFullName // اضافه کردن نام کاربر
+        };
+        
+        const response = await fetch('/api/report-question', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(reportData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // نمایش پیام موفقیت
+            alert(result.message);
+            closeReportModal();
+        } else {
+            alert('خطا: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error reporting question:', error);
+        alert('خطا در ارتباط با سرور');
+    } finally {
+        // فعال کردن مجدد دکمه
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'ثبت گزارش';
+    }
+}
+
+// تابع کمکی برای تشخیص نوع آزمون
+function getQuizType() {
+    if (localStorage.getItem('currentQuizTitle')) {
+        return 'personal';
+    } else {
+        return 'general';
+    }
+}
+
+// تابع کمکی برای دریافت quiz_name
+function getQuizName() {
+    if (personalQuizCode) {
+        return personalQuizCode;
+    } else if (questions && questions.length > 0 && questions[0].content) {
+        return questions[0].content;
+    } else {
+        return currentQuizTitle;
+    }
+}
+
+// اضافه کردن Event Listener برای دکمه گزارش
+    if (reportQuestionBtnEl) {
+        reportQuestionBtnEl.addEventListener('click', showReportModal);
+    }
+    
+    // اضافه کردن event listener برای دکمه ثبت گزارش
+    const submitReportBtn = document.getElementById('submit-report-btn');
+    if (submitReportBtn) {
+        submitReportBtn.addEventListener('click', submitReport);
+    }

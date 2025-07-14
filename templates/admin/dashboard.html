@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}پنل مدیریت{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="dashboard-header">
+        <h1>پنل مدیریت</h1>
+        <div class="admin-info">
+            <span>خوش آمدید، {{ admin_username }}</span>
+            <a href="{{ url_for('admin_logout') }}" class="logout-btn">خروج</a>
+        </div>
+    </div>
+    
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <h3>{{ stats.total_reports }}</h3>
+                <p>کل گزارشات</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-content">
+                <h3>{{ stats.pending_reports }}</h3>
+                <p>در انتظار بررسی</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+                <h3>{{ stats.fixed_reports }}</h3>
+                <p>اصلاح شده</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+                <h3>{{ stats.today_reports }}</h3>
+                <p>امروز</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-actions">
+        <h2>عملیات مدیریتی</h2>
+        
+        <div class="action-grid">
+            <a href="{{ url_for('admin_wrong_questions_page') }}" class="action-card">
+                <div class="action-icon">📝</div>
+                <h3>مدیریت گزارشات سوالات</h3>
+                <p>مشاهده و مدیریت گزارشات سوالات مشکل‌دار</p>
+            </a>
+            
+            <a href="{{ url_for('admin_reports_by_status', status='pending') }}" class="action-card">
+                <div class="action-icon">⏳</div>
+                <h3>گزارشات در انتظار</h3>
+                <p>سوالات در انتظار بررسی</p>
+            </a>
+            
+            <a href="{{ url_for('admin_reports_by_status', status='fixed') }}" class="action-card">
+                <div class="action-icon">✅</div>
+                <h3>گزارشات اصلاح شده</h3>
+                <p>سوالات اصلاح شده</p>
+            </a>
+            
+            <a href="{{ url_for('admin_reports_by_status', status='rejected') }}" class="action-card">
+                <div class="action-icon">❌</div>
+                <h3>گزارشات رد شده</h3>
+                <p>سوالات رد شده</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

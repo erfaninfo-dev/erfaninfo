@@ -82,32 +82,65 @@
 /* ================= Responsive Design ================= */
 @media (max-width: 800px) {
     .top-header-container {
-        top: 10px;
-        left: 5px;
-        right: 5px;
-        padding: 8px 5px;
-        min-height: 50px;
-        gap: 10px;
+        top: 4px;
+        left: 2px;
+        right: 2px;
+        padding: 6px 2px;
+        min-height: 44px;
+        gap: 6px;
+        border-radius: 10px;
     }
     .top-logo {
-        padding-right: 15px;
+        padding-right: 6px;
     }
     .top-logo-img {
-        height: 70px;
+        height: 38px;
     }
     .top-nav {
-        gap: 8px;
+        gap: 6px;
     }
     .top-nav-link {
-        font-size: 13px;
-        padding: 4px 0;
+        font-size: 12px;
+        padding: 3px 0;
     }
     #btn-fa-header, #btn-ku-header {
-        font-size: 12px;
-        padding: 6px 0;
+        font-size: 11px;
+        padding: 4px 0;
     }
     .language-switcher {
-        padding-left: 20px;
+        padding-left: 8px;
+    }
+}
+
+@media (max-width: 600px) {
+    .top-header-container {
+        top: 2px;
+        left: 1px;
+        right: 1px;
+        padding: 3px 1px;
+        min-height: 36px;
+        gap: 3px;
+        border-radius: 7px;
+    }
+    .top-logo {
+        padding-right: 2px;
+    }
+    .top-logo-img {
+        height: 28px;
+    }
+    .top-nav {
+        gap: 3px;
+    }
+    .top-nav-link {
+        font-size: 10px;
+        padding: 2px 0;
+    }
+    #btn-fa-header, #btn-ku-header {
+        font-size: 9px;
+        padding: 2px 0;
+    }
+    .language-switcher {
+        padding-left: 2px;
     }
 }
 

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}آخرین نتایج آزمون‌ها{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <div class="results-header">
+        <h1><span class="header-icon">📋</span> آخرین نتایج آزمون‌ها</h1>
+        <p>نمایش آخرین نتایج ثبت شده توسط کاربران</p>
+    </div>
+
+    {% if results %}
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <h3>{{ results|length }}</h3>
+                    <p>کل نتایج</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <h3>{{ results|map(attribute='user_name')|unique|list|length }}</h3>
+                    <p>کاربران فعال</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-content">
+                    <h3>{{ results|map(attribute='quiz_name')|unique|list|length }}</h3>
+                    <p>انواع آزمون</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-content">
+                    <h3>{{ (results|selectattr('status', 'equalto', 'عالی')|list|length) }}</h3>
+                    <p>نتایج عالی</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-table-container">
+            <div class="table-header">
+                <h2>جدول نتایج</h2>
+                <div class="table-actions">
+                    <input type="text" id="search-input" placeholder="جستجو..." class="search-input">
+                    <select id="status-filter" class="filter-select">
+                        <option value="all">همه وضعیت‌ها</option>
+                        <option value="عالی">عالی</option>
+                        <option value="خوب">خوب</option>
+                        <option value="متوسط">متوسط</option>
+                        <option value="ضعیف">ضعیف</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>نام کاربر</th>
+                            <th>نام آزمون</th>
+                            <th>امتیاز</th>
+                            <th>درصد</th>
+                            <th>وضعیت</th>
+                            <th>تاریخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-tbody">
+                        {% for result in results %}
+                        <tr class="result-row" data-status="{{ result.status }}">
+                            <td class="user-name">
+                                <div class="user-info">
+                                    <span class="user-avatar">{{ result.user_name[0] if result.user_name else '?' }}</span>
+                                    <span class="user-text">{{ result.user_name }}</span>
+                                </div>
+                            </td>
+                            <td class="quiz-name">{{ result.quiz_name }}</td>
+                            <td class="score">
+                                <span class="total-number">{{ result.total_questions }}</span>
+                                <span class="score-separator">/</span>
+                                <span class="score-number">{{ result.score }}</span>
+                            </td>
+                            <td class="percentage">
+                                <div class="percentage-bar">
+                                    <div class="percentage-fill" style="width: {{ result.percentage }}%"></div>
+                                    <span class="percentage-text">{{ result.percentage }}%</span>
+                                </div>
+                            </td>
+                            <td class="status">
+                                <span class="status-badge status-{{ result.status.lower() }}" data-status="{{ result.status }}">{{ result.status }}</span>
+                            </td>
+                            <td class="date">{{ result.created_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="no-results">
+            <div class="no-results-icon">📊</div>
+            <h2>هنوز نتیجه‌ای ثبت نشده</h2>
+            <p>هیچ نتیجه‌ای برای نمایش وجود ندارد. اولین کسی باشید که آزمون می‌دهید!</p>
+            <a href="{{ url_for('tests') }}" class="btn-primary">شروع آزمون</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %} 
