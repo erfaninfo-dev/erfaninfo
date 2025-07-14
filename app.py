@@ -117,7 +117,7 @@ class WrongQuestion(db.Model):
 def home():
     videos = [
         {
-            'url': 'https://youtu.be/sX194xPwT4k?si=yZarvhuIIzIMksiy',
+            'url': 'ق https://youtu.be/sX194xPwT4k?si=yZarvhuIIzIMksiy',
             'thumb': url_for('static', filename='images/th1.jpg')
         },
         {
@@ -854,6 +854,12 @@ def show_results():
 def test_ui():
     """صفحه تست رابط کاربری"""
     return render_template('test_ui.html')
+
+@app.route('/init-db')
+def init_db():
+    from flask import Response
+    db.create_all()
+    return Response("All tables created successfully!", mimetype="text/plain")
 
 
 if __name__ == '__main__':
