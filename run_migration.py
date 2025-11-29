@@ -1,109 +1,102 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-اسکریپت اجرای migration برای تغییر ستون reported_reason
+اسکریپت اجرای migration برای آپدیت جدول users
 """
 
-import os
 import mysql.connector
+import os
 from dotenv import load_dotenv
 
+# بارگذاری متغیرهای محیطی
 load_dotenv()
 
 def run_migration():
-    """اجرای migration"""
-    
-    # اتصال به دیتابیس
-    connection = mysql.connector.connect(
-        host=os.getenv('MYSQL_HOST'),
-        user=os.getenv('MYSQL_USER'),
-        password=os.getenv('MYSQL_PASSWORD'),
-        database=os.getenv('MYSQL_DB')
-    )
-    
-    cursor = connection.cursor()
-    
     try:
-        print("شروع migration...")
+        # اتصال به دیتابیس
+        connection = mysql.connector.connect(
+            host=os.getenv('MYSQL_HOST', 'localhost'),
+            user=os.getenv('MYSQL_USER', 'root'),
+            password=os.getenv('MYSQL_PASSWORD', ''),
+            database=os.getenv('MYSQL_DB', 'erfaninfocom_example'),
+            charset='utf8mb4'
+        )
         
-        # بررسی ساختار فعلی جدول
-        cursor.execute("DESCRIBE wrong_questions")
+        cursor = connection.cursor()
+        
+        print("🔗 اتصال به دیتابیس برقرار شد")
+        
+        # اجرای دستورات migration
+        migration_commands = [
+            # اضافه کردن ستون‌های جدید
+            """
+            ALTER TABLE users 
+            ADD COLUMN is_email_verified BOOLEAN DEFAULT FALSE,
+            ADD COLUMN terms_accepted BOOLEAN DEFAULT FALSE,
+            ADD COLUMN terms_accepted_at DATETIME NULL,
+            ADD COLUMN last_login DATETIME NULL,
+            ADD COLUMN failed_login_attempts INT DEFAULT 0,
+            ADD COLUMN locked_until DATETIME NULL,
+            ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+            """,
+            
+            # تغییر ستون email به NOT NULL
+            "ALTER TABLE users MODIFY COLUMN email VARCHAR(255) NOT NULL;",
+            
+            # تغییر ستون password_hash به nullable
+            "ALTER TABLE users MODIFY COLUMN password_hash VARCHAR(255) NULL;",
+            
+            # اضافه کردن ایندکس‌ها
+            "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);",
+            "CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);",
+            
+            # آپدیت کاربران موجود
+            "UPDATE users SET terms_accepted = TRUE, terms_accepted_at = NOW() WHERE terms_accepted IS NULL;"
+        ]
+        
+        for i, command in enumerate(migration_commands, 1):
+            try:
+                print(f"⏳ اجرای دستور {i}/{len(migration_commands)}...")
+                cursor.execute(command)
+                connection.commit()
+                print(f"✅ دستور {i} با موفقیت اجرا شد")
+            except mysql.connector.Error as e:
+                if e.errno == 1060:  # Duplicate column name
+                    print(f"⚠️  ستون قبلاً وجود دارد - دستور {i} رد شد")
+                elif e.errno == 1061:  # Duplicate key name
+                    print(f"⚠️  ایندکس قبلاً وجود دارد - دستور {i} رد شد")
+                else:
+                    print(f"❌ خطا در دستور {i}: {e}")
+                    raise
+        
+        # نمایش ساختار نهایی جدول
+        print("\n📋 ساختار نهایی جدول users:")
+        cursor.execute("DESCRIBE users;")
         columns = cursor.fetchall()
-        print("ساختار فعلی جدول:")
+        
         for column in columns:
-            print(f"  {column[0]}: {column[1]}")
+            print(f"  - {column[0]}: {column[1]} {'NULL' if column[2] == 'YES' else 'NOT NULL'}")
         
-        # اضافه کردن ستون جدید
-        print("\nاضافه کردن ستون جدید...")
-        cursor.execute("""
-            ALTER TABLE wrong_questions 
-            ADD COLUMN reported_reason_new VARCHAR(255) DEFAULT 'سایر'
-        """)
+        print("\n🎉 Migration با موفقیت تکمیل شد!")
         
-        # به‌روزرسانی مقادیر موجود
-        print("به‌روزرسانی مقادیر موجود...")
-        cursor.execute("""
-            UPDATE wrong_questions 
-            SET reported_reason_new = 'سوال اشتباهه!' 
-            WHERE reported_reason = 'wrong_question'
-        """)
-        
-        cursor.execute("""
-            UPDATE wrong_questions 
-            SET reported_reason_new = 'پاسخ درست اشتباهه!' 
-            WHERE reported_reason = 'wrong_answer'
-        """)
-        
-        cursor.execute("""
-            UPDATE wrong_questions 
-            SET reported_reason_new = 'بیش از یک جواب درست!' 
-            WHERE reported_reason = 'multiple_correct'
-        """)
-        
-        cursor.execute("""
-            UPDATE wrong_questions 
-            SET reported_reason_new = 'سایر' 
-            WHERE reported_reason = 'other'
-        """)
-        
-        # به‌روزرسانی مقادیر قدیمی که هنوز enum هستند
-        cursor.execute("""
-            UPDATE wrong_questions 
-            SET reported_reason_new = 'سایر' 
-            WHERE reported_reason IN ('grammar_error', 'typo', 'unclear', 'duplicate')
-        """)
-        
-        # حذف ستون قدیمی
-        print("حذف ستون قدیمی...")
-        cursor.execute("ALTER TABLE wrong_questions DROP COLUMN reported_reason")
-        
-        # تغییر نام ستون جدید
-        print("تغییر نام ستون جدید...")
-        cursor.execute("""
-            ALTER TABLE wrong_questions 
-            CHANGE reported_reason_new reported_reason VARCHAR(255) DEFAULT 'سایر'
-        """)
-        
-        # نمایش نتیجه
-        print("\nنمایش نتیجه:")
-        cursor.execute("SELECT reported_reason, COUNT(*) as count FROM wrong_questions GROUP BY reported_reason")
-        results = cursor.fetchall()
-        
-        for reason, count in results:
-            print(f"  {reason}: {count}")
-        
-        connection.commit()
-        print("\n✅ Migration با موفقیت انجام شد!")
-        
+    except mysql.connector.Error as e:
+        print(f"❌ خطا در اتصال به دیتابیس: {e}")
+        return False
     except Exception as e:
-        connection.rollback()
-        print(f"❌ خطا در migration: {e}")
-        import traceback
-        traceback.print_exc()
-    
+        print(f"❌ خطای غیرمنتظره: {e}")
+        return False
     finally:
-        cursor.close()
-        connection.close()
+        if 'connection' in locals() and connection.is_connected():
+            cursor.close()
+            connection.close()
+            print("🔌 اتصال به دیتابیس بسته شد")
+    
+    return True
 
 if __name__ == "__main__":
-    run_migration() 
+    print("🚀 شروع Migration جدول users...")
+    success = run_migration()
+    
+    if success:
+        print("\n✅ Migration تکمیل شد! حالا می‌توانید سیستم ثبت نام امن را استفاده کنید.")
+    else:
+        print("\n❌ Migration ناموفق بود. لطفاً خطاها را بررسی کنید.")

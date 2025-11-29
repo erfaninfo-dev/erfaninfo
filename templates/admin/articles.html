@@ -1,0 +1,118 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}مدیریت مقالات - پنل ادمین{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">مدیریت مقالات</h1>
+        <a href="{{ url_for('admin_new_article') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus fa-sm"></i> مقاله جدید
+        </a>
+    </div>
+
+    {% if articles %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">لیست مقالات</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="articlesTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>عنوان فارسی</th>
+                            <th>دسته‌بندی</th>
+                            <th>زمان مطالعه</th>
+                            <th>وضعیت</th>
+                            <th>تاریخ ایجاد</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in articles %}
+                        <tr>
+                            <td>{{ article.id }}</td>
+                            <td>{{ article.title_fa }}</td>
+                            <td>{{ article.category }}</td>
+                            <td>{{ article.reading_time }} دقیقه</td>
+                            <td>
+                                {% if article.is_published %}
+                                <span class="badge badge-success">منتشر شده</span>
+                                {% else %}
+                                <span class="badge badge-warning">پیش‌نویس</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if article.created_at %}
+                                {{ article.created_at.strftime('%Y/%m/%d %H:%M') }}
+                                {% else %}
+                                نامشخص
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin_edit_article', article_id=article.id) }}" 
+                                   class="btn btn-info btn-sm">
+                                    <i class="fas fa-edit"></i> ویرایش
+                                </a>
+                                <button class="btn btn-danger btn-sm" 
+                                        onclick="deleteArticle({{ article.id }})">
+                                    <i class="fas fa-trash"></i> حذف
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card shadow mb-4">
+        <div class="card-body text-center">
+            <p class="text-muted">هنوز مقاله‌ای ایجاد نشده است.</p>
+            <a href="{{ url_for('admin_new_article') }}" class="btn btn-primary">
+                ایجاد اولین مقاله
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function deleteArticle(articleId) {
+    if (confirm('آیا از حذف این مقاله اطمینان دارید؟')) {
+        fetch(`/admin/articles/${articleId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('خطا: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('خطا در حذف مقاله');
+        });
+    }
+}
+
+// DataTable initialization
+$(document).ready(function() {
+    $('#articlesTable').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Persian.json"
+        },
+        "order": [[0, "desc"]]
+    });
+});
+</script>
+{% endblock %}

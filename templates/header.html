@@ -1,19 +1,212 @@
-<!-- هدر اصلی سایت -->
-<div class="top-header-container">
-    <!-- لوگو در بالا سمت راست -->
-    <div class="top-logo">
-        <img src="/static/images/logo.png" alt="لوگو عرفان اینفو" class="top-logo-img" />
+<!-- هدر جدید راست‌چین و زیبا با بوت‌استرپ -->
+<nav class="navbar navbar-light bg-white shadow-sm fixed-top p-0 rounded-4 mt-1" style="z-index:1040; font-family: 'Vazirmatn', sans-serif;" dir="rtl">
+  <div class="container-fluid d-flex justify-content-between align-items-center px-2">
+    <!-- لوگو و دکمه منو سمت راست -->
+    <div class="d-flex align-items-center flex-row-reverse">
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="/static/images/logo.png" alt="لوگو عرفان اینفو" style="height:100px; width:auto;" class="header-logo-responsive" />
+      </a>
+      
+
+      
+      <!-- دکمه همبرگری فقط در موبایل -->
+      <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu" aria-label="باز کردن منو"
+       style="font-size:0.8rem;">
+        <span class="navbar-toggler-icon"></span>
+      </button>
     </div>
-    
-    <!-- منوی بالا -->
-    <nav class="top-nav">
-        <a href="/" class="top-nav-link" data-key="navbar-home">صفحه اصلی</a>
-        <a href="/tests" class="top-nav-link" data-key="navbar-grammar">تمرین گرامر</a>
-    </nav>
-    <!-- language switcher -->
-    <div class="language-switcher" style="display:flex; gap:8px; align-items:center;">
-        <button id="btn-fa-header" class="top-nav-link" style="background:none; border:none; cursor:pointer;">فارسی</button>
-        <span style="color:#aaa;">|</span>
-        <button id="btn-ku-header" class="top-nav-link" style="background:none; border:none; cursor:pointer;">کوردی</button>
+    <!-- دسکتاپ -->
+    <div class="d-none d-lg-flex align-items-center">
+      <ul class="navbar-nav flex-row gap-3" style="font-weight: bold;">
+        <li class="nav-item">
+          <a class="nav-link" href="/" data-key="navbar-home">صفحه اصلی</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/grammar_tests" data-key="navbar-grammar">تمرین گرامر</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/books_vocab" data-key="navbar-books">تمرین واژگان</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/user_results" data-key="navbar-results">نتایج کاربران</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://www.youtube.com/@erfaninfo5812" data-key="navbar-youtube" target="_blank" rel="noopener">ویدیوهای آموزشی</a>
+        </li>
+      </ul>
+    </div>
+    <!-- سوییچ زبان + دکمه آدمک ورود/پروفایل -->
+    <div class="d-flex align-items-center gap-2 ms-auto ps-lg-5" style="margin-right:20px;">
+      <!-- Desktop Profile -->
+      <div class="d-none d-lg-block">
+        {% if session.get('uid') %}
+          {% set current_user = session.get('uname') %}
+          {% set user_avatar = session.get('user_avatar', '/static/images/default-avatar.svg') %}
+          <div class="profile-dropdown-container" style="position:relative;margin-inline-end:8px;">
+            <button class="profile-dashboard-btn" onclick="toggleProfileDropdown()" style="display:flex;align-items:center;justify-content:center;border-radius:50%;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.1);transition:all .3s ease;width:52px;height:52px;overflow:hidden;border:2px solid #fff;background:none;cursor:pointer;padding:0;">
+              <img src="{{ user_avatar }}" alt="پروفایل" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+            </button>
+            
+            <!-- Dropdown Menu -->
+            <div id="profile-dropdown" class="profile-dropdown" style="position:absolute;top:55px;right:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:200px;display:none;border:1px solid #e5e7eb;overflow:hidden;z-index:1050;">
+              <!-- Header -->
+              <div style="padding:16px;border-bottom:1px solid #f3f4f6;">
+                <div style="font-weight:600;color:#111827;margin-bottom:4px;">{{ current_user }}</div>
+                <div style="font-size:.85rem;color:#6b7280;">کاربر</div>
+              </div>
+              
+              <!-- Menu Items -->
+              <div style="padding:8px 0;">
+                <a href="/profile" style="display:flex;align-items:center;gap:12px;padding:12px 16px;text-decoration:none;color:#374151;transition:background .2s ease;font-size:.9rem;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='transparent'">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  پروفایل
+                </a>
+                <a href="/logout" style="display:flex;align-items:center;gap:12px;padding:12px 16px;text-decoration:none;color:#374151;transition:background .2s ease;font-size:.9rem;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='transparent'">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16,17 21,12 16,7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  خروج
+                </a>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <a href="/login" class="d-inline-flex align-items-center justify-content-center" style="width:52px;height:52px;border:1px solid #ddd;border-radius:50%;background:#fff;margin-inline-end:8px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.1);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </a>
+        {% endif %}
+      </div>
+      
+      <button id="btn-fa-header" class="btn btn-outline-dark btn-sm" style="font-family: inherit;margin-inline-start:12px;font-size:0.8rem;padding:4px 8px;">فارسی</button>
+      <span style="color:#aaa;">|</span>
+      <button id="btn-ku-header" class="btn btn-outline-dark btn-sm" style="font-family: inherit;font-size:0.8rem;padding:4px 8px;">کوردی</button>
+      
+      <!-- Mobile Profile -->
+      <div class="d-lg-none">
+        {% if session.get('uid') %}
+          {% set current_user = session.get('uname') %}
+          {% set user_avatar = session.get('user_avatar', '/static/images/default-avatar.svg') %}
+          <div class="profile-dropdown-container-mobile" style="position:relative;margin-inline-start:8px;">
+            <button class="profile-dashboard-btn-mobile" onclick="toggleProfileDropdownMobile()" style="display:flex;align-items:center;justify-content:center;border-radius:50%;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.1);transition:all .3s ease;width:40px;height:40px;overflow:hidden;border:2px solid #fff;background:none;cursor:pointer;padding:0;">
+              <img src="{{ user_avatar }}" alt="پروفایل" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+            </button>
+            
+            <!-- Mobile Dropdown Menu -->
+            <div id="profile-dropdown-mobile" class="profile-dropdown-mobile" style="position:absolute;top:50px;left:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:150px;max-width:200px;display:none;border:1px solid #e5e7eb;overflow:hidden;z-index:1050;">
+              <!-- Header -->
+              <div style="padding:12px;border-bottom:1px solid #f3f4f6;">
+                <div style="font-weight:600;color:#111827;margin-bottom:2px;font-size:0.9rem;">{{ current_user }}</div>
+                <div style="font-size:.75rem;color:#6b7280;">کاربر</div>
+              </div>
+              
+              <!-- Menu Items -->
+              <div style="padding:4px 0;">
+                <a href="/profile" style="display:flex;align-items:center;gap:8px;padding:8px 12px;text-decoration:none;color:#374151;transition:background .2s ease;font-size:.8rem;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='transparent'">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  پروفایل
+                </a>
+                <a href="/logout" style="display:flex;align-items:center;gap:8px;padding:8px 12px;text-decoration:none;color:#374151;transition:background .2s ease;font-size:.8rem;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='transparent'">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16,17 21,12 16,7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  خروج
+                </a>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <a href="/login" class="d-inline-flex align-items-center justify-content-center" style="width:40px;height:40px;border:1px solid #ddd;border-radius:50%;background:#fff;margin-inline-start:8px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.1);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </a>
+        {% endif %}
+      </div>
     </div>
 </div> 
+</nav>
+<!-- منوی کشویی موبایل (offcanvas) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel" dir="rtl" style="width: 270px;">
+  <div class="offcanvas-header">
+    <div class="offcanvas-logo">
+      <img src="/static/images/logo.png" alt="لوگو عرفان اینفو" style="height:80px; width:auto;" />
+    </div>
+    <button type="button" class="btn-close text-reset ms-0" data-bs-dismiss="offcanvas" aria-label="بستن"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <ul class="navbar-nav flex-column text-end w-100" style="font-weight: bold;">
+      <li class="nav-item d-flex flex-row align-items-center gap-2">
+        <i class="bi bi-house-door fs-6 flex-shrink-0"></i>
+        <a class="nav-link py-2 px-4 fs-6 flex-grow-1 text-end" href="/" data-key="navbar-home">صفحه اصلی</a>
+      </li>
+      <li><hr class="dropdown-divider my-0"></li>
+      <li class="nav-item d-flex flex-row align-items-center gap-2">
+        <i class="bi bi-journal-text fs-6 flex-shrink-0"></i>
+        <a class="nav-link py-2 px-4 fs-6 flex-grow-1 text-end" href="/grammar_tests" data-key="navbar-grammar">تمرین گرامر</a>
+      </li>
+      <li><hr class="dropdown-divider my-0"></li>
+      <li class="nav-item d-flex flex-row align-items-center gap-2">
+        <i class="bi bi-book fs-6 flex-shrink-0"></i>
+        <a class="nav-link py-2 px-4 fs-6 flex-grow-1 text-end" href="/books_vocab" data-key="navbar-books">تمرین واژگان</a>
+      </li>
+      <li><hr class="dropdown-divider my-0"></li>
+      <li class="nav-item d-flex flex-row align-items-center gap-2">
+        <i class="bi bi-bar-chart-line fs-6 flex-shrink-0"></i>
+        <a class="nav-link py-2 px-4 fs-6 flex-grow-1 text-end" href="/user_results" data-key="navbar-results">نتایج کاربران</a>
+      </li>
+      <li><hr class="dropdown-divider my-0"></li>
+      <li class="nav-item d-flex flex-row align-items-center gap-2">
+        <i class="bi bi-play-btn fs-6 flex-shrink-0"></i>
+        <a class="nav-link py-2 px-4 fs-6 flex-grow-1 text-end" href="https://www.youtube.com/@erfaninfo5812" data-key="navbar-youtube" target="_blank" rel="noopener">ویدیوهای آموزشی</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<script>
+// Profile dropdown toggle
+function toggleProfileDropdown() {
+  const dropdown = document.getElementById('profile-dropdown');
+  if (!dropdown) return;
+  
+  const isVisible = dropdown.style.display === 'block';
+  dropdown.style.display = isVisible ? 'none' : 'block';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const container = document.querySelector('.profile-dropdown-container');
+  const dropdown = document.getElementById('profile-dropdown');
+  
+  if (container && dropdown && !container.contains(e.target)) {
+    dropdown.style.display = 'none';
+  }
+  });
+  
+  // Mobile Profile dropdown toggle
+  function toggleProfileDropdownMobile() {
+    const dropdown = document.getElementById('profile-dropdown-mobile');
+    if (!dropdown) return;
+    
+    const isVisible = dropdown.style.display === 'block';
+    dropdown.style.display = isVisible ? 'none' : 'block';
+  }
+  
+  // Close mobile dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    const container = document.querySelector('.profile-dropdown-container-mobile');
+    const dropdown = document.getElementById('profile-dropdown-mobile');
+    
+    if (container && dropdown && !container.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
+  </script> 

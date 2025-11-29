@@ -1,0 +1,833 @@
+{% extends "base.html" %}
+
+{% block title %}نتایج کاربران{% endblock %}
+
+{% block content %}
+<!-- Header -->
+{% include 'header.html' %}
+    
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .content-area {
+            padding-top: 0 !important;
+            min-height: calc(100vh - 100px);
+        }
+        
+        .results-container {
+            max-width: 1400px;
+            margin: -3.5rem auto 0 auto !important;
+            padding: 0 10px 10px 10px !important;
+        }
+        
+        .page-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: -3.5rem !important;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+        
+        .results-table {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .table-header h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .search-input {
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 30px;
+            font-size: 1rem;
+            width: 400px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .sort-select {
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 30px;
+            font-size: 1rem;
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+            min-width: 180px;
+        }
+        
+        .sort-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .table {
+            margin: 0;
+        }
+        /* Numeric pagination styles */
+        .pagination{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #e9ecef;border-radius:10px;padding:8px 12px;width:fit-content}
+        .page-link{background:none;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;color:#222}
+        .page-link:hover{background:#f3f4f6}
+        .page-link.active{border:1px solid #111}
+        .page-link.disabled{opacity:.5;pointer-events:none}
+        
+        .table th {
+            background-color: #f8f9fa;
+            border: none;
+            color: #495057;
+            font-weight: 600;
+            text-align: center;
+            padding: 25px 15px;
+            min-height: 70px;
+        }
+        @media (max-width: 600px){
+            .pagination{gap:6px;padding:6px 8px;border-radius:8px}
+            .page-link{padding:4px 8px;font-size:.9rem}
+        }
+        
+        .table td {
+            border: none;
+            border-bottom: 1px solid #e9ecef;
+            padding: 25px 15px;
+            text-align: center;
+            vertical-align: middle;
+            min-height: 80px;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.3s ease;
+        }
+        
+        .percentage-badge {
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .percentage-excellent {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .percentage-very-good {
+            background-color: #cce7ff;
+            color: #004085;
+        }
+        
+        .percentage-good {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .percentage-acceptable {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .percentage-medium {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .percentage-weak {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .percentage-very-weak {
+            background-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .quiz-name {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        
+        .date-time {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        
+        .no-results i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .content-area {
+                padding-top: 0 !important;
+            }
+            
+            .results-container {
+                padding: 0 5px 5px 5px !important;
+                max-width: 100% !important;
+                margin-top: -6rem !important;
+            }
+            
+            .table th, .table td {
+                padding: 12px 6px;
+                font-size: 0.85rem;
+                min-height: 50px;
+            }
+            
+            .percentage-badge {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+            }
+            
+            .table-actions {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                width: 100% !important;
+                max-width: none !important;
+            }
+            
+            .sort-select {
+                width: 100% !important;
+                min-width: auto !important;
+            }
+            
+            .user-name {
+                font-size: 0.8rem;
+            }
+            
+            .quiz-name {
+                font-size: 0.75rem;
+            }
+            
+            .date-time {
+                font-size: 0.7rem;
+            }
+            
+            .page-title {
+                font-size: 1.3rem;
+                margin-top: -6rem !important;
+                margin-bottom: 0.5rem;
+            }
+            
+            .table-header h3 {
+                font-size: 1.1rem;
+            }
+            
+            .table-header {
+                padding: 20px 15px;
+            }
+            
+            .results-table {
+                border-radius: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .content-area {
+                padding-top: 0 !important;
+            }
+            
+            .results-container {
+                padding: 0 2px 2px 2px !important;
+                margin-top: -4.5rem !important;
+            }
+            
+            .table th, .table td {
+                padding: 8px 4px;
+                font-size: 0.75rem;
+            }
+            
+            .percentage-badge {
+                padding: 3px 6px;
+                font-size: 0.7rem;
+            }
+            
+            .page-title {
+                font-size: 1.1rem;
+                margin-top: -4.5rem !important;
+                margin-bottom: 0.3rem;
+            }
+            
+            .table-header h3 {
+                font-size: 1rem;
+            }
+        }
+    </style>
+    
+    <!-- Content Area -->
+    <div class="content-area">
+        <div class="results-container">
+            
+            
+            <div class="results-table">
+                <div class="table-header">
+                    <h3>
+                        <i class="bi bi-bar-chart me-2"></i>
+                        تمام نتایج آزمون‌ها
+                    </h3>
+                    <div class="table-actions">
+                        <select id="sort-filter" class="sort-select">
+                            <option value="date"> بر اساس تاریخ</option>
+                            <option value="top"> بر اساس برترین ها</option>
+                            <option value="most"> بر اساس بیشترین تمرین</option>
+                        </select>
+                        <input type="text" id="search-input" placeholder="جستجو در نام کاربر یا آزمون..." class="search-input">
+                    </div>
+                </div>
+                </div>
+
+                {# Pager moved below the purple header #}
+                {% if total_pages > 1 %}
+                <div class="pager-top pagination" style="margin:14px auto 8px auto;"></div>
+                {% endif %}
+                
+                {% if results %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>شماره</th>
+                                <th>نام کاربر</th>
+                                <th>آزمون</th>
+                                <th>نمره</th>
+                                <th>درصد</th>
+                                <th>تاریخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-tbody">
+                            {% for result in results %}
+                            <tr class="result-row" data-status="{{ result.status }}">
+                                <td>
+                                    {{ (start_index or 1) + loop.index0 }}
+                                </td>
+                                <td>
+                                    <div class="user-name user-text">{{ result.user_name }}</div>
+                                </td>
+                                <td>
+                                    <div class="quiz-name">{{ result.quiz_name }}</div>
+                                </td>
+                                <td>
+                                    <strong><span style="color: #28a745;">{{ result.score }}</span>/{{ result.total_questions }}</strong>
+                                </td>
+                                <td>
+                                    {% if result.percentage >= 95 %}
+                                        <span class="percentage-badge percentage-excellent">{{ result.percentage }}%</span>
+                                    {% elif result.percentage >= 90 %}
+                                        <span class="percentage-badge percentage-very-good">{{ result.percentage }}%</span>
+                                    {% elif result.percentage >= 85 %}
+                                        <span class="percentage-badge percentage-good">{{ result.percentage }}%</span>
+                                    {% elif result.percentage >= 80 %}
+                                        <span class="percentage-badge percentage-acceptable">{{ result.percentage }}%</span>
+                                    {% elif result.percentage >= 70 %}
+                                        <span class="percentage-badge percentage-medium">{{ result.percentage }}%</span>
+                                    {% elif result.percentage >= 60 %}
+                                        <span class="percentage-badge percentage-weak">{{ result.percentage }}%</span>
+                                    {% else %}
+                                        <span class="percentage-badge percentage-very-weak">{{ result.percentage }}%</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="date-time">{{ result.created_at }}</div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if total_pages > 1 %}
+                <div class="pager-bottom pagination" style="margin:8px auto 14px auto;"></div>
+                {% endif %}
+                {% else %}
+                <div class="no-results">
+                    <i class="bi bi-inbox"></i>
+                    <h4>هنوز نتیجه‌ای ثبت نشده است</h4>
+                    <p>نتایج برتر کاربران در اینجا نمایش داده خواهد شد</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // عملکردهای جستجو و فیلتر
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const sortFilter = document.getElementById('sort-filter');
+            const resultsTable = document.getElementById('results-tbody');
+            let resultRows = document.querySelectorAll('.result-row');
+            const tableHeadRow = document.querySelector('.table thead tr');
+            const contentArea = document.querySelector('.results-table');
+
+            // حفظ هدر و بدنه اصلی برای بازگشت از حالت "بیشترین تمرین"
+            const originalHeadHTML = tableHeadRow ? tableHeadRow.innerHTML : '';
+            const originalBodyHTML = resultsTable ? resultsTable.innerHTML : '';
+            let inMostMode = false;
+
+            // منبع پایدار داده‌ها برای حالت "بیشترین تمرین"
+            const baseUsers = Array.from(resultRows).map(r => (r.querySelector('.user-text')?.textContent || '').trim()).filter(Boolean);
+
+            // تابع جستجو و مرتب‌سازی
+            function filterResults() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const sortType = sortFilter.value;
+
+                // حالت جدید: بیشترین تمرین (تجمیع بر اساس نام کاربر)
+                if (sortType === 'most') {
+                    inMostMode = true;
+                    renderMostMode(searchTerm);
+                    return;
+                } else if (inMostMode) {
+                    // بازگرداندن جدول به حالت استاندارد
+                    if (resultsTable) resultsTable.innerHTML = originalBodyHTML;
+                    if (tableHeadRow) tableHeadRow.innerHTML = originalHeadHTML;
+                    inMostMode = false;
+                    // پس از بازگردانی، لیست ردیف‌ها را دوباره بگیریم
+                    resultRows = document.querySelectorAll('.result-row');
+                }
+
+                // اگر جستجو خالی است، همه نتایج را نمایش بده
+                if (!searchTerm.trim()) {
+                    resultRows.forEach(row => {
+                        row.style.display = '';
+                        row.style.opacity = '1';
+                    });
+                    sortResults(sortType);
+                    updateEmptyMessage();
+                    return;
+                }
+
+                // فیلتر کردن نتایج
+                const matchingRows = [];
+                const nonMatchingRows = [];
+
+                resultRows.forEach(row => {
+                    const userName = row.querySelector('.user-text').textContent.toLowerCase();
+                    const quizName = row.querySelector('.quiz-name').textContent.toLowerCase();
+                    const dateText = row.querySelector('.date-time').textContent;
+                    const percentageText = row.querySelector('.percentage-badge').textContent;
+                    const percentage = parseFloat(percentageText.replace('%', ''));
+
+                    const matchesSearch = userName.includes(searchTerm) || quizName.includes(searchTerm);
+
+                    if (matchesSearch) {
+                        matchingRows.push({ row, dateText, percentage });
+                        row.style.display = '';
+                        row.style.opacity = '1';
+                    } else {
+                        nonMatchingRows.push(row);
+                        row.style.display = 'none';
+                        row.style.opacity = '0';
+                    }
+                });
+
+                // مرتب‌سازی نتایج یافت شده
+                if (matchingRows.length > 0) {
+                    if (sortType === 'date') {
+                        matchingRows.sort((a, b) => {
+                            const dateA = parsePersianDate(a.dateText);
+                            const dateB = parsePersianDate(b.dateText);
+                            return dateB - dateA; // نزولی (جدیدترین اول)
+                        });
+                    } else if (sortType === 'top') {
+                        matchingRows.sort((a, b) => {
+                            return b.percentage - a.percentage; // نزولی (بالاترین درصد اول)
+                        });
+                    }
+
+                    // مرتب‌سازی مجدد ردیف‌ها در DOM
+                    const tbody = resultsTable;
+                    matchingRows.forEach(({ row }) => {
+                        tbody.appendChild(row);
+                    });
+                }
+
+                // به‌روزرسانی شماره ردیف‌ها
+                updateRowNumbers();
+                updateEmptyMessage();
+            }
+
+            // تابع مرتب‌سازی همه نتایج
+            function sortResults(sortType) {
+                const allRows = Array.from(resultRows);
+                
+                // اگر حالت بیشترین تمرین باشد، رندر تجمیعی انجام می‌دهیم
+                if (sortType === 'most') {
+                    renderMostMode((searchInput && searchInput.value || '').toLowerCase());
+                    return;
+                }
+
+                if (sortType === 'date') {
+                    allRows.sort((a, b) => {
+                        const dateA = parsePersianDate(a.querySelector('.date-time').textContent);
+                        const dateB = parsePersianDate(b.querySelector('.date-time').textContent);
+                        return dateB - dateA; // نزولی (جدیدترین اول)
+                    });
+                } else if (sortType === 'top') {
+                    allRows.sort((a, b) => {
+                        const percentageA = parseFloat(a.querySelector('.percentage-badge').textContent.replace('%', ''));
+                        const percentageB = parseFloat(b.querySelector('.percentage-badge').textContent.replace('%', ''));
+                        return percentageB - percentageA; // نزولی (بالاترین درصد اول)
+                    });
+                }
+
+                // مرتب‌سازی مجدد ردیف‌ها در DOM
+                const tbody = resultsTable;
+                allRows.forEach(row => {
+                    tbody.appendChild(row);
+                });
+
+                // به‌روزرسانی شماره ردیف‌ها
+                updateRowNumbers();
+            }
+
+            // رندر حالت "بیشترین تمرین"
+            function renderMostMode(filterTerm) {
+                // شمارش تمرین‌ها از روی منبع اولیه (بدون وابستگی به DOM فعلی)
+                const countsMap = new Map();
+                baseUsers.forEach(name => {
+                    const current = countsMap.get(name) || 0;
+                    countsMap.set(name, current + 1);
+                });
+
+                // تبدیل به آرایه، فیلتر بر اساس جستجو و مرتب‌سازی نزولی بر اساس تعداد
+                let items = Array.from(countsMap.entries());
+                if (filterTerm && filterTerm.trim()) {
+                    items = items.filter(([name]) => name.toLowerCase().includes(filterTerm));
+                }
+                items.sort((a, b) => b[1] - a[1]);
+
+                // محاسبه سه سطح برتر با در نظر گرفتن تساوی‌ها
+                const distinctCounts = [];
+                for (let i = 0; i < items.length && distinctCounts.length < 3; i++) {
+                    const c = items[i][1];
+                    if (!distinctCounts.includes(c)) distinctCounts.push(c);
+                }
+                function getMedal(count){
+                    if (distinctCounts.length && count === distinctCounts[0]) return '🥇 ';
+                    if (distinctCounts.length > 1 && count === distinctCounts[1]) return '🥈 ';
+                    if (distinctCounts.length > 2 && count === distinctCounts[2]) return '🥉 ';
+                    return '';
+                }
+
+                // تغییر هدر جدول برای نمایش ستون تعداد تمرین
+                if (tableHeadRow) {
+                    tableHeadRow.innerHTML = '<th>شماره</th><th>نام کاربر</th><th>تعداد تمرین</th>';
+                }
+
+                // ساخت بدنه‌ی جدید تجمیعی
+                let html = '';
+                items.forEach(([name, count], idx) => {
+                    const medal = getMedal(count);
+                    html += '<tr class="most-row">'
+                         +   '<td>' + (idx + 1) + '</td>'
+                         +   '<td><div class="user-name">' + medal + name + '</div></td>'
+                         +   '<td><strong>' + count + '</strong></td>'
+                         + '</tr>';
+                });
+                if (resultsTable) resultsTable.innerHTML = html || '<tr><td colspan="3" style="text-align:center;padding:30px;color:#666;">موردی یافت نشد</td></tr>';
+                
+                // با هر رندر در این حالت، updateEmptyMessage لازم نیست؛ شماره‌گذاری هم داخل HTML اعمال شده
+            }
+
+            // تابع به‌روزرسانی شماره ردیف‌ها
+            function updateRowNumbers() {
+                const visibleRows = Array.from(resultsTable.children).filter(row => row.classList.contains('result-row') && row.style.display !== 'none');
+                visibleRows.forEach((row, index) => {
+                    const numberCell = row.querySelector('td:first-child');
+                    if (numberCell) {
+                        const number = index + 1;
+                        numberCell.innerHTML = number;
+                    }
+                });
+            }
+
+            // تابع تبدیل تاریخ فارسی به timestamp
+            function parsePersianDate(dateText) {
+                try {
+                    // فرمت تاریخ: YYYY/MM/DD HH:MM
+                    const parts = dateText.split(' ');
+                    if (parts.length >= 2) {
+                        const datePart = parts[0]; // YYYY/MM/DD
+                        const timePart = parts[1]; // HH:MM
+                        
+                        const dateParts = datePart.split('/');
+                        const timeParts = timePart.split(':');
+                        
+                        if (dateParts.length === 3 && timeParts.length === 2) {
+                            const year = parseInt(dateParts[0]);
+                            const month = parseInt(dateParts[1]) - 1; // ماه از 0 شروع می‌شود
+                            const day = parseInt(dateParts[2]);
+                            const hour = parseInt(timeParts[0]);
+                            const minute = parseInt(timeParts[1]);
+                            
+                            // تبدیل تاریخ شمسی به میلادی (تقریبی)
+                            const gregorianDate = new Date(year + 621, month, day, hour, minute);
+                            return gregorianDate.getTime();
+                        }
+                    }
+                } catch (e) {
+                    console.log('Error parsing date:', dateText);
+                }
+                
+                // در صورت خطا، تاریخ قدیمی برگردان
+                return 0;
+            }
+
+            // تابع نمایش پیام خالی
+            function updateEmptyMessage() {
+                const visibleRows = Array.from(resultRows).filter(row => row.style.display !== 'none');
+                
+                // اگر پیام خالی قبلی وجود دارد، حذف کن
+                const existingMessage = document.querySelector('.no-filtered-results');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+
+                // اگر هیچ نتیجه‌ای نمایش داده نمی‌شود، پیام نمایش بده
+                if (visibleRows.length === 0 && searchInput.value) {
+                    const message = document.createElement('tr');
+                    message.className = 'no-filtered-results';
+                    message.innerHTML = `
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
+                            <div style="font-size: 1.2rem; margin-bottom: 10px;">🔍</div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">نتیجه‌ای یافت نشد</div>
+                            <div style="font-size: 0.9rem;">لطفاً عبارت جستجو را تغییر دهید</div>
+                        </td>
+                    `;
+                    resultsTable.appendChild(message);
+                }
+            }
+
+            // Event listeners
+            // جستجو سراسری (سرور-ساید) با دیباونس و بازگشت به صفحه 1
+            function debounce(fn, delay){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); }; }
+            const triggerServerSearch = debounce(()=>{ fetchPageJson(1); }, 350);
+            if (searchInput) { searchInput.addEventListener('input', ()=>{ triggerServerSearch(); }); }
+            // تغییر مرتب‌سازی نیز از صفحه 1 درخواست کند
+            if (sortFilter) { sortFilter.addEventListener('change', ()=>{ fetchPageJson(1); }); }
+
+            // انیمیشن بارگذاری نتایج
+            function animateResults() {
+                // حذف انیمیشن پلکانی؛ نمایش فوری/یکنواخت
+                const rows = document.querySelectorAll('.result-row, .most-row');
+                rows.forEach((row) => {
+                    row.style.transition = 'opacity 120ms ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'none';
+                });
+            }
+
+            // اجرای انیمیشن پس از بارگذاری صفحه
+            setTimeout(animateResults, 300);
+
+            // ========== Ajax pagination (only refresh table) ==========
+            async function fetchPage(pageNum){
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    const limit = params.get('limit') || '{{ per_page }}';
+                    const url = `/user_results?page=${pageNum}&limit=${limit}`;
+                    const res = await fetch(url, { headers: { 'X-Requested-With': 'fetch' } });
+                    const html = await res.text();
+                    // استخراج tbody و هدر شمارنده صفحه از HTML برگردانده‌شده
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newTbody = doc.querySelector('#results-tbody');
+                    const newHeader = doc.querySelector('.table thead tr');
+                    const newTopPager = doc.querySelector('.pager-top');
+                    const newBottomPager = doc.querySelector('.pager-bottom');
+                    if (newTbody && resultsTable) resultsTable.innerHTML = newTbody.innerHTML;
+                    if (newHeader && tableHeadRow) tableHeadRow.innerHTML = newHeader.innerHTML;
+                    if (newTopPager && contentArea){
+                        const currTop = contentArea.querySelector('.pager-top');
+                        if (currTop) currTop.outerHTML = newTopPager.outerHTML; else contentArea.insertAdjacentElement('beforeend', newTopPager);
+                    }
+                    if (newBottomPager && contentArea){
+                        const currBot = contentArea.querySelector('.pager-bottom');
+                        if (currBot) currBot.outerHTML = newBottomPager.outerHTML; else contentArea.insertAdjacentElement('beforeend', newBottomPager);
+                    }
+                    // بعد از جایگزینی DOM، نیازه رویدادها و ردیف‌ها را بازتنظیم کنیم
+                    resultRows = document.querySelectorAll('.result-row');
+                    attachPagerHandlers();
+                    animateResults();
+                    // بهبود UX: اسکرول نرم به بالای جدول
+                    document.querySelector('.results-container')?.scrollIntoView({behavior:'smooth', block:'start'});
+                    // به‌روزرسانی URL بدون رفرش کامل
+                    const newUrl = new URL(window.location.href);
+                    newUrl.searchParams.set('page', String(pageNum));
+                    newUrl.searchParams.set('limit', limit);
+                    window.history.pushState({}, '', newUrl.toString());
+                } catch(err) { console.error(err); }
+            }
+
+            function attachPagerHandlers(){
+                document.querySelectorAll('.pg-btn').forEach(btn => {
+                    btn.addEventListener('click', (e)=>{
+                        e.preventDefault();
+                        const p = parseInt(btn.getAttribute('data-page'));
+                        if (!isNaN(p)) fetchPageJson(p);
+                    });
+                });
+            }
+            attachPagerHandlers();
+
+            // ====== استفاده از API JSON برای صفحه‌بندی بدون رفرش کامل ======
+            // سازنده صفحه‌بندی عددی (قابل استفاده در لود اولیه و بعد از درخواست‌ها)
+            function renderPager(selector, page, total){
+                const cont = document.querySelector(selector);
+                if (!cont) return;
+                const prev = page > 1 ? page - 1 : 1;
+                const next = page < total ? page + 1 : total;
+                const siteLang = localStorage.getItem('siteLang') || 'fa';
+                const prevText = (siteLang === 'ku') ? '‹ پێشوو' : '‹ قبلی';
+                const nextText = (siteLang === 'ku') ? 'دواتر ›' : 'بعدی ›';
+                const btn = (p, text, disabled=false, active=false)=>`<button data-page="${p}" class="page-link pg-btn${active? ' active':''}${disabled? ' disabled':''}">${text}</button>`;
+                let html = '';
+                html += btn(prev, prevText, page===1, false);
+                if (total <= 7) {
+                    for (let p = 1; p <= total; p++) html += btn(p, p, false, p===page);
+                } else {
+                    // 1 2 3 … N
+                    html += btn(1, 1, false, page===1);
+                    html += btn(2, 2, false, page===2);
+                    html += btn(3, 3, false, page===3);
+                    html += '<span style="padding:0 8px;">…</span>';
+                    html += btn(total, total, false, page===total);
+                }
+                html += btn(next, nextText, page===total, false);
+                cont.innerHTML = html;
+            }
+
+            async function fetchPageJson(pageNum){
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    const limit = params.get('limit') || '{{ per_page }}';
+                    const sortVal = document.getElementById('sort-filter')?.value || 'date';
+                    const searchTerm = (document.getElementById('search-input')?.value || '').trim();
+                    const url = `/api/user_results?page=${pageNum}&limit=${limit}&sort=${encodeURIComponent(sortVal)}&search=${encodeURIComponent(searchTerm)}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (!data.success) return;
+
+                    // بازسازی صفحه‌بندی با داده جدید
+
+                    if (data.mode === 'most') {
+                        // هدر
+                        if (tableHeadRow) tableHeadRow.innerHTML = '<th>شماره</th><th>نام کاربر</th><th>تعداد تمرین</th>';
+                        // محاسبه مدال‌ها بر اساس top_counts
+                        const top = Array.isArray(data.top_counts) ? data.top_counts : [];
+                        function medal(c){
+                            if (top.length && c === top[0]) return '🥇 ';
+                            if (top.length > 1 && c === top[1]) return '🥈 ';
+                            if (top.length > 2 && c === top[2]) return '🥉 ';
+                            return '';
+                        }
+                        let html = '';
+                        data.items.forEach((it, idx) => {
+                            const absoluteIndex = ((data.page - 1) * (data.per_page || data.items.length)) + idx + 1;
+                            html += '<tr class="most-row">'
+                                 +   '<td>' + absoluteIndex + '</td>'
+                                 +   '<td><div class="user-name">' + medal(it.count) + (it.user_name || 'کاربر ناشناس') + '</div></td>'
+                                 +   '<td><strong>' + it.count + '</strong></td>'
+                                 + '</tr>';
+                        });
+                        resultsTable.innerHTML = html || '<tr><td colspan="3" style="text-align:center;padding:30px;color:#666;">موردی یافت نشد</td></tr>';
+                    } else {
+                        // هدر استاندارد
+                        if (tableHeadRow) tableHeadRow.innerHTML = '<th>شماره</th><th>نام کاربر</th><th>آزمون</th><th>نمره</th><th>درصد</th><th>تاریخ</th>';
+                        let html = '';
+                        data.items.forEach((it, idx) => {
+                            const absoluteIndex = ((data.page - 1) * data.per_page) + idx + 1;
+                            html += '<tr class="result-row" data-status="">'
+                                 +   '<td>' + absoluteIndex + '</td>'
+                                 +   '<td><div class="user-name user-text">' + (it.user_name || '') + '</div></td>'
+                                 +   '<td><div class="quiz-name">' + (it.quiz_name || '') + '</div></td>'
+                                 +   '<td><strong><span style="color:#28a745;">' + it.score + '</span>/' + it.total_questions + '</strong></td>'
+                                 +   '<td><span class="percentage-badge">' + it.percentage + '%</span></td>'
+                                 +   '<td><div class="date-time">' + (it.created_at || '') + '</div></td>'
+                                 + '</tr>';
+                        });
+                        resultsTable.innerHTML = html || '<tr><td colspan="6" style="text-align:center;padding:30px;color:#666;">موردی یافت نشد</td></tr>';
+                        resultRows = document.querySelectorAll('.result-row');
+                    }
+                    animateResults();
+                    // بازسازی صفحه‌بندی و اتصال رویدادها
+                    renderPager('.pager-top', data.page, data.total_pages);
+                    renderPager('.pager-bottom', data.page, data.total_pages);
+                    attachPagerHandlers();
+                    // به‌روزرسانی URL
+                    const newUrl = new URL(window.location.href);
+                    newUrl.searchParams.set('page', String(pageNum));
+                    newUrl.searchParams.set('limit', params.get('limit') || '{{ per_page }}');
+                    window.history.pushState({}, '', newUrl.toString());
+                } catch(e){ console.error(e); }
+            }
+
+            // رندر اولیه دکمه‌های صفحه‌بندی بر اساس مقادیر اولیه سرور
+            try {
+                const initPage = Number('{{ page }}') || 1;
+                const initTotal = Number('{{ total_pages }}') || 1;
+                renderPager('.pager-top', initPage, initTotal);
+                renderPager('.pager-bottom', initPage, initTotal);
+                attachPagerHandlers();
+            } catch(_){ attachPagerHandlers(); }
+
+            // اکنون دکمه‌ها به fetchPageJson متصل هستند.
+        });
+    </script>
+{% endblock %} 

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}ثبت‌نام{% endblock %}
+
+{% block content %}
+<div class="content-area" style="display:flex;justify-content:center;align-items:center;min-height:60vh;">
+  <div style="width:100%;max-width:380px;background:#fff;border:1px solid #eee;border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.06);">
+    <h2 style="margin:0 0 12px 0;text-align:center;">ثبت‌نام</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input id="su-username" type="text" placeholder="نام کاربری" style="padding:10px;border:1px solid #ddd;border-radius:8px;">
+      <input id="su-display" type="text" placeholder="نام نمایشی (اختیاری)" style="padding:10px;border:1px solid #ddd;border-radius:8px;">
+      <input id="su-password" type="password" placeholder="رمز عبور" style="padding:10px;border:1px solid #ddd;border-radius:8px;">
+      <button id="su-submit" class="btn-blue" style="width:100%;">ثبت‌نام</button>
+      <div id="su-error" style="color:#d32f2f;text-align:center"></div>
+      <div style="text-align:center;font-size:.9rem;">حساب دارید؟ <a href="/login">ورود</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('su-submit').addEventListener('click', async function(){
+  const u = document.getElementById('su-username').value.trim();
+  const d = document.getElementById('su-display').value.trim();
+  const p = document.getElementById('su-password').value.trim();
+  const err = document.getElementById('su-error');
+  err.textContent='';
+  if(!u||!p){ err.textContent='نام کاربری و رمز را وارد کنید'; return; }
+  try{
+    const res = await fetch('/signup', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u, password:p, display_name:d})});
+    const data = await res.json();
+    if(data.success){ window.location.href = '/profile'; }
+    else { err.textContent = data.message || 'خطا در ثبت‌نام'; }
+  }catch(e){ err.textContent='خطا در ارتباط با سرور'; }
+});
+</script>
+{% endblock %}
+
+

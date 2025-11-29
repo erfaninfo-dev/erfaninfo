@@ -1,0 +1,595 @@
+/* استایل‌های مقاله */
+.article-content {
+    line-height: 1.8;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+/* تنظیمات RTL/LTR بر اساس زبان */
+.article-container[data-lang="fa"],
+.article-container[data-lang="ku"] {
+    direction: rtl;
+    text-align: right;
+}
+
+.article-container[data-lang="en"] {
+    direction: ltr;
+    text-align: left;
+}
+
+/* تنظیمات محتوا بر اساس زبان */
+.article-content[data-lang="fa"] h3,
+.article-content[data-lang="ku"] h3 {
+    text-align: right;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+}
+
+.article-content[data-lang="en"] h3 {
+    text-align: left;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+}
+
+.article-content[data-lang="fa"] p,
+.article-content[data-lang="ku"] p {
+    text-align: justify;
+    direction: rtl;
+}
+
+.article-content[data-lang="en"] p {
+    text-align: left;
+    direction: ltr;
+}
+
+/* لیست‌های عمومی (فقط برای انگلیسی) */
+.article-content[data-lang="en"] ul {
+    padding-left: 20px;
+    padding-right: 0;
+    direction: ltr;
+    text-align: left;
+}
+
+.article-content[data-lang="en"] li {
+    direction: ltr;
+    text-align: left;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+
+
+/* کاربردها، اشتباهات رایج و نکات کاربردی در فارسی و کوردی RTL */
+.article-content[data-lang="fa"] .note li,
+.article-content[data-lang="ku"] .note li {
+    direction: rtl;
+    text-align: right;
+}
+
+.article-content[data-lang="fa"] .note ul,
+.article-content[data-lang="ku"] .note ul {
+    padding-right: 20px;
+    padding-left: 0;
+    direction: rtl;
+    text-align: right;
+}
+
+/* لیست‌های کاربردها در فارسی و کوردی RTL */
+.article-content[data-lang="fa"] ul,
+.article-content[data-lang="ku"] ul {
+    padding-right: 20px;
+    padding-left: 0;
+    direction: rtl;
+    text-align: right;
+}
+
+.article-content[data-lang="fa"] li,
+.article-content[data-lang="ku"] li {
+    direction: rtl;
+    text-align: right;
+}
+
+/* تنظیمات بلاک‌ها بر اساس زبان */
+.article-content .examples::before {
+    left: 20px;
+    right: auto;
+}
+
+.article-content[data-lang="fa"] .examples::before,
+.article-content[data-lang="ku"] .examples::before {
+    right: 20px;
+    left: auto;
+}
+
+.article-content[data-lang="en"] .examples::before {
+    left: 20px;
+    right: auto;
+}
+
+.article-content[data-lang="fa"] .note::before,
+.article-content[data-lang="ku"] .note::before {
+    right: 20px;
+    left: auto;
+}
+
+.article-content[data-lang="en"] .note::before {
+    left: 20px;
+    right: auto;
+}
+
+.article-content[data-lang="fa"] .grammar-structure::before,
+.article-content[data-lang="ku"] .grammar-structure::before {
+    right: 20px;
+    left: auto;
+}
+
+.article-content[data-lang="en"] .grammar-structure::before {
+    left: 20px;
+    right: auto;
+}
+
+.article-content[data-lang="fa"] .vocabulary-list::before,
+.article-content[data-lang="ku"] .vocabulary-list::before {
+    right: 20px;
+    left: auto;
+}
+
+.article-content[data-lang="en"] .vocabulary-list::before {
+    left: 20px;
+    right: auto;
+}
+
+.article-content[data-lang="fa"] .exercise::before,
+.article-content[data-lang="ku"] .exercise::before {
+    right: 20px;
+    left: auto;
+}
+
+.article-content[data-lang="en"] .exercise::before {
+    left: 20px;
+    right: auto;
+}
+
+.article-content[data-lang="fa"] .callout::before,
+.article-content[data-lang="ku"] .callout::before {
+    right: 20px;
+    left: auto;
+}
+
+.article-content[data-lang="en"] .callout::before {
+    left: 20px;
+    right: auto;
+}
+
+/* تنظیمات نقل قول */
+.article-content[data-lang="fa"] blockquote,
+.article-content[data-lang="ku"] blockquote {
+    border-right: 4px solid #6c757d;
+    border-left: none;
+}
+
+.article-content[data-lang="en"] blockquote {
+    border-left: 4px solid #6c757d;
+    border-right: none;
+}
+
+/* دکمه‌های زبان */
+.article-language-switcher {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 25px;
+    text-decoration: none;
+    color: #6c757d;
+    background: #fff;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.lang-btn:hover {
+    border-color: #007bff;
+    color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    text-decoration: none;
+}
+
+.lang-btn.active {
+    border-color: #007bff;
+    background: #007bff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.lang-flag {
+    font-size: 1.2rem;
+}
+
+.lang-text {
+    font-family: 'Estedad', sans-serif;
+}
+
+/* بخش مثال‌ها */
+.article-content .examples {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    direction: ltr;
+    text-align: left;
+}
+
+.article-content .examples::before {
+    content: "💡 مثال‌ها";
+    position: absolute;
+    top: -12px;
+    background: #007bff;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.article-content .examples p {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 6px;
+    border-left: 4px solid #28a745;
+    direction: ltr;
+    text-align: left;
+    font-family: 'Roboto', 'Vazirmatn', sans-serif;
+}
+
+/* بخش نکات */
+.article-content .note {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #ffc107;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    position: relative;
+}
+
+.article-content .note::before {
+    content: "💡 نکته";
+    position: absolute;
+    top: -12px;
+    background: #ffc107;
+    color: #212529;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* بخش ساختار گرامری */
+.article-content .grammar-structure {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border: 2px solid #2196f3;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+    position: relative;
+}
+
+.article-content .grammar-structure::before {
+    content: "📝 ساختار";
+    position: absolute;
+    top: -12px;
+    background: #2196f3;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.article-content .grammar-structure strong {
+    font-size: 1.2rem;
+    color: #1565c0;
+}
+
+/* بخش واژگان */
+.article-content .vocabulary-list {
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    border: 2px solid #9c27b0;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    position: relative;
+}
+
+.article-content .vocabulary-list::before {
+    content: "📚 واژگان";
+    position: absolute;
+    top: -12px;
+    background: #9c27b0;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.article-content .vocabulary-list .vocab-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #d1c4e9;
+    font-weight: 500;
+}
+
+.article-content .vocabulary-list .vocab-item:last-child {
+    border-bottom: none;
+}
+
+/* کنترل جهت لیست‌ها بر اساس metadata */
+.article-content .list[data-direction="ltr"] {
+    direction: ltr;
+    text-align: left;
+}
+
+.article-content .list[data-direction="ltr"] ul {
+    padding-left: 20px;
+    padding-right: 0;
+    direction: ltr;
+    text-align: left;
+}
+
+.article-content .list[data-direction="ltr"] li {
+    direction: ltr;
+    text-align: left;
+}
+
+.article-content .list[data-direction="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+.article-content .list[data-direction="rtl"] ul {
+    padding-right: 20px;
+    padding-left: 0;
+    direction: rtl;
+    text-align: right;
+}
+
+.article-content .list[data-direction="rtl"] li {
+    direction: rtl;
+    text-align: right;
+}
+
+/* بخش تمرین */
+.article-content .exercise {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border: 2px solid #dc3545;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    position: relative;
+}
+
+.article-content .exercise::before {
+    content: "📝 تمرین";
+    position: absolute;
+    top: -12px;
+    background: #dc3545;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* بخش‌های مختلف بلاک‌ها */
+.article-content h3 {
+    color: #2c3e50;
+    font-size: 1.4rem;
+    margin: 30px 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #3498db;
+    font-weight: 600;
+}
+
+.article-content p {
+    line-height: 1.8;
+    margin: 15px 0;
+    text-align: justify;
+    color: #34495e;
+}
+
+.article-content ul {
+    margin: 15px 0;
+    padding-right: 20px;
+}
+
+.article-content ul li {
+    margin: 8px 0;
+    line-height: 1.6;
+    color: #34495e;
+}
+
+.article-content .callout {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border: 2px solid #17a2b8;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    position: relative;
+}
+
+.article-content .callout::before {
+    content: "💡 نکته";
+    position: absolute;
+    top: -12px;
+    background: #17a2b8;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.article-content blockquote {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-right: 4px solid #6c757d;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    font-style: italic;
+    color: #495057;
+}
+
+.article-content .article-image {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.article-content .article-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.article-content .image-caption {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.article-content .article-video {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.article-content .article-video iframe {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.article-content hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #dee2e6, transparent);
+    margin: 30px 0;
+}
+
+/* استایل‌های کد */
+.article-content .grammar-structure code {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2c3e50;
+    border: 1px solid #dee2e6;
+    direction: ltr;
+    text-align: left;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    display: block;
+    margin: 10px 0;
+}
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+    .article-content {
+        font-size: 1rem;
+    }
+    
+    .article-content h3 {
+        font-size: 1.2rem;
+    }
+    
+    .article-content .examples,
+    .article-content .note,
+    .article-content .grammar-structure,
+    .article-content .vocabulary-list,
+    .article-content .exercise,
+    .article-content .callout {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .article-content .grammar-structure code {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .article-content ul {
+        padding-left: 15px;
+    }
+    
+    .article-content[data-lang="fa"] li,
+    .article-content[data-lang="ku"] li {
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+    }
+    
+    .article-content[data-lang="en"] li {
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+    }
+    
+    /* کاربردها، اشتباهات رایج و نکات کاربردی در موبایل */
+    .article-content[data-lang="fa"] .note ul,
+    .article-content[data-lang="ku"] .note ul {
+        padding-right: 15px;
+        padding-left: 0;
+    }
+    
+    /* لیست‌های کاربردها در موبایل */
+    .article-content[data-lang="fa"] ul,
+    .article-content[data-lang="ku"] ul {
+        padding-right: 15px;
+        padding-left: 0;
+    }
+    
+    .article-content[data-lang="en"] ul {
+        padding-left: 15px;
+        padding-right: 0;
+    }
+    
+    .article-content .examples::before,
+    .article-content .note::before,
+    .article-content .grammar-structure::before,
+    .article-content .vocabulary-list::before,
+    .article-content .exercise::before,
+    .article-content .callout::before {
+        font-size: 0.8rem;
+        padding: 3px 10px;
+    }
+    
+    .article-language-switcher {
+        gap: 8px;
+    }
+    
+    .lang-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .lang-flag {
+        font-size: 1rem;
+    }
+}

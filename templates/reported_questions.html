@@ -1,0 +1,832 @@
+{% extends "base.html" %}
+
+{% block title %}سوالات گزارش شده{% endblock %}
+
+{% block content %}
+<!-- Header -->
+{% include 'header.html' %}
+
+<style>
+    .content-area {
+        padding-top: 20px;
+        min-height: calc(100vh - 100px);
+    }
+    
+    .results-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+    
+    .page-title {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+    
+    .results-table {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .table {
+        margin: 0;
+    }
+    
+    .table th {
+        background-color: #343a40;
+        border: none;
+        color: white;
+        font-weight: 600;
+        text-align: center;
+        padding: 20px 15px;
+        min-height: 60px;
+    }
+    
+    .table td {
+        border: none;
+        border-bottom: 1px solid #e9ecef;
+        padding: 20px 15px;
+        text-align: center;
+        vertical-align: middle;
+        min-height: 70px;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+        transition: background-color 0.3s ease;
+    }
+    
+    .question-text {
+        max-width: 300px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        text-align: right;
+        line-height: 1.4;
+    }
+    
+    .btn-group .btn {
+        margin: 0 3px;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.9rem !important;
+        min-width: 40px;
+        min-height: 40px;
+    }
+    
+    @media (max-width: 768px) {
+        .content-area {
+            padding-top: 15px;
+        }
+        
+        .results-container {
+            padding: 10px;
+            max-width: 100% !important;
+        }
+        
+        .container {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        .card {
+            margin-left: 1rem !important;
+            margin-right: 1rem !important;
+        }
+        
+        .table th, .table td {
+            padding: 8px 4px;
+            font-size: 0.75rem;
+            min-height: 40px;
+        }
+        
+        .question-text {
+            max-width: 120px;
+            font-size: 0.7rem;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .page-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .btn-group .btn {
+            padding: 0.4rem 0.6rem !important;
+            font-size: 0.8rem !important;
+            min-width: 35px;
+            min-height: 35px;
+        }
+        
+        .table-responsive {
+            font-size: 0.7rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .content-area {
+            padding-top: 10px;
+        }
+        
+        .results-container {
+            padding: 5px;
+        }
+        
+        .container {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        
+        .card {
+            margin-left: 0.5rem !important;
+            margin-right: 0.5rem !important;
+        }
+        
+        .table th, .table td {
+            padding: 4px 2px;
+            font-size: 0.65rem;
+        }
+        
+        .question-text {
+            max-width: 80px;
+            font-size: 0.6rem;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .page-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .btn-group .btn {
+            padding: 0.2rem 0.3rem !important;
+            font-size: 0.6rem !important;
+            min-width: 25px;
+            min-height: 25px;
+        }
+        
+        .table-responsive {
+            font-size: 0.65rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding-left: 0.75rem !important;
+            padding-right: 0.75rem !important;
+        }
+        .card {
+            margin-left: 0.5rem !important;
+            margin-right: 0.5rem !important;
+        }
+        .table-responsive {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            overflow-x: auto !important;
+        }
+        .input-group, #reasonFilter {
+            width: 100% !important;
+            margin-bottom: 0.5rem !important;
+        }
+        #reasonFilter {
+            min-width: 0;
+            max-width: 100%;
+        }
+        .row.mb-4 > div {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    }
+    @media (max-width: 768px) {
+        .desktop-actions { display: none !important; }
+        .col-actions { display: none !important; }
+        .mobile-actions { display: block !important; margin-top: 0.5rem; }
+        .mobile-actions-row { display: table-row !important; }
+    }
+    @media (min-width: 769px) {
+        .mobile-actions-row { display: none !important; }
+    }
+    @media (max-width: 768px) {
+        .search-filter-mobile {
+            width: 90% !important;
+            margin: 0.5rem auto !important;
+            float: none !important;
+            max-width: 400px;
+        }
+        #reasonFilter {
+            display: block !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            width: 90% !important;
+            max-width: 400px;
+            text-align: unset !important;
+        }
+        .row.mb-4 > div {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        h1.text-center.mb-4 {
+            margin-top: 0.5rem !important;
+            margin-bottom: 1rem !important;
+        }
+        .container-fluid.mt-4 {
+            margin-top: 0.5rem !important;
+        }
+    }
+</style>
+
+<!-- Main Content -->
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">سوالات گزارش شده</h1>
+            
+            <!-- Search Section -->
+            <div class="row mb-4">
+                <div class="col-12 mb-2">
+                    <div class="input-group search-filter-mobile">
+                        <input type="text" id="searchInput" class="form-control" placeholder="جستجو در سوالات..." dir="rtl">
+                        <button class="btn btn-outline-secondary" type="button" onclick="filterQuestions()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-12 mb-2">
+                    <select id="reasonFilter" class="form-select search-filter-mobile" onchange="filterQuestions()">
+                        <option value="">همه دلایل</option>
+                        {% set reasons = questions | map(attribute='reported_reason') | list %}
+                        {% for reason in reasons|unique if reason %}
+                            <option value="{{ reason }}">{{ reason }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Results Table -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive" style="overflow-x:auto;">
+                        <table class="table table-hover" id="questionsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col" style="width: 50px;">#</th>
+                                    <th scope="col">متن سوال</th>
+                                    <th scope="col">آزمون</th>
+                                    <th scope="col">کاربر گزارش‌دهنده</th>
+                                    <th scope="col">تاریخ</th>
+                                    <th scope="col">دلیل گزارش</th>
+                                    <th scope="col" class="col-actions" style="width: 150px;">عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for question in questions %}
+                                <tr data-question-id="{{ question.id }}">
+                                    <td>{{ loop.index }}</td>
+                                    <td>
+                                        <div class="question-text" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ question.question_text }}">
+                                            {{ question.question_text[:150] }}{% if question.question_text|length > 150 %}...{% endif %}
+                                        </div>
+                                    </td>
+                                    <td>{{ question.quiz_name }}</td>
+                                    <td>{{ question.user_name }}</td>
+                                    <td>{{ question.created_at }}</td>
+                                    <td>{{ question.reported_reason }}</td>
+                                    <td class="desktop-actions col-actions">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-primary edit-btn" 
+                                                    onclick="editQuestion('{{ question.id }}', '{{ question.question_text }}', '{{ question.quiz_name }}')"
+                                                    title="ویرایش">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger reject-btn" 
+                                                    data-question-id="{{ question.id }}"
+                                                    title="حذف">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="mobile-actions-row">
+                                    <td colspan="7" style="padding-top:0; padding-bottom:0;">
+                                        <div class="mobile-actions" style="display:none; text-align:center;">
+                                            <button type="button" class="btn btn-sm btn-primary edit-btn" 
+                                                    onclick="editQuestion('{{ question.id }}', '{{ question.question_text }}', '{{ question.quiz_name }}')"
+                                                    title="ویرایش">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger reject-btn" 
+                                                    data-question-id="{{ question.id }}"
+                                                    title="حذف">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Question Modal -->
+<div class="modal fade" id="editQuestionModal" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title w-100 text-center" id="editQuestionModalLabel">ویرایش سوال</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editQuestionForm">
+                    <div class="mb-3">
+                        <label for="editQuestionText" class="form-label">question_text *</label>
+                        <textarea class="form-control" id="editQuestionText" rows="3" required></textarea>
+                    </div>
+                    <!-- Matching pairs editor (only visible for book_questions matching) -->
+                    <div class="mb-3" id="matchingEditor" style="display:none;">
+                        <label class="form-label">Matching pairs</label>
+                        <div id="pairsContainer"></div>
+                        <button type="button" class="btn btn-outline-primary mt-2" onclick="addPairRow()">افزودن جفت</button>
+                    </div>
+                    <!-- Gap-fill editor (only visible for gap-fill questions) -->
+                    <div class="mb-3" id="gapEditor" style="display:none;">
+                        <label for="editGapAnswer" class="form-label">gap_answer</label>
+                        <input type="text" class="form-control" id="editGapAnswer" placeholder="پاسخ صحیح جای خالی">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editOption1" class="form-label">option1</label>
+                        <input type="text" class="form-control" id="editOption1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editOption2" class="form-label">option2</label>
+                        <input type="text" class="form-control" id="editOption2">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editOption3" class="form-label">option3</label>
+                        <input type="text" class="form-control" id="editOption3">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editOption4" class="form-label">option4</label>
+                        <input type="text" class="form-control" id="editOption4">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCorrectAnswer" class="form-label">correct_answer</label>
+                        <select class="form-control" id="editCorrectAnswer">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editContent" class="form-label">content</label>
+                        <input type="text" class="form-control" id="editContent">
+                    </div>
+                    <!-- تب‌های توضیحات چندزبانه -->
+                    <div id="expTabsWrapper" style="display:none;">
+                        <ul class="nav nav-tabs" id="expTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="tab-fa" data-bs-toggle="tab" data-bs-target="#pane-fa" type="button" role="tab">FA</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-kur" data-bs-toggle="tab" data-bs-target="#pane-kur" type="button" role="tab">KUR</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-eng" data-bs-toggle="tab" data-bs-target="#pane-eng" type="button" role="tab">ENG</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content border-start border-end border-bottom p-3" id="expTabsContent" style="border-radius: 0 0 .25rem .25rem;">
+                            <div class="tab-pane fade show active" id="pane-fa" role="tabpanel" aria-labelledby="tab-fa">
+                                <div class="mb-3">
+                                    <label for="editFaExp" class="form-label">fa_explanation</label>
+                                    <textarea class="form-control" id="editFaExp" rows="5" style="min-height: 120px;"></textarea>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="pane-kur" role="tabpanel" aria-labelledby="tab-kur">
+                                <div class="mb-3">
+                                    <label for="editKurExp" class="form-label">kur_explanation</label>
+                                    <textarea class="form-control" id="editKurExp" rows="5" style="min-height: 120px;"></textarea>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="pane-eng" role="tabpanel" aria-labelledby="tab-eng">
+                                <div class="mb-3">
+                                    <label for="editEngExp" class="form-label">eng_explanation</label>
+                                    <textarea class="form-control" id="editEngExp" rows="5" style="min-height: 120px;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3" id="editQuizNameBox">
+                        <label for="editQuizName" class="form-label">code</label>
+                        <input type="text" class="form-control" id="editQuizName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUnit" class="form-label">unit</label>
+                        <input type="text" class="form-control" id="editUnit">
+                    </div>
+                    <!-- فیلد order_num فقط برای questions -->
+                    <div class="mb-3">
+                        <label for="editOrderNum" class="form-label">order_num</label>
+                        <input type="number" class="form-control" id="editOrderNum">
+                    </div>
+                    <div class="alert alert-info text-center">
+                        <strong>اطلاعات:</strong> این سوال از جدول <span id="sourceTableInfo"></span> ویرایش می‌شود.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">انصراف</button>
+                <button type="button" class="btn btn-primary mx-2" onclick="saveQuestionEdit()">
+                    <i class="fas fa-save"></i> ذخیره تغییرات
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentQuestionId = null;
+function renderPairs(pairs) {
+    const container = document.getElementById('pairsContainer');
+    container.innerHTML = '';
+    (pairs && pairs.length ? pairs : [{left:'', right:''}]).forEach(p => addPairRow(p.left, p.right));
+}
+function addPairRow(leftVal='', rightVal='') {
+    const container = document.getElementById('pairsContainer');
+    const row = document.createElement('div');
+    row.className = 'row g-2 mb-2';
+    row.innerHTML = `
+        <div class="col-6"><input type="text" class="form-control pair-left" placeholder="left" value="${leftVal || ''}"></div>
+        <div class="col-6"><input type="text" class="form-control pair-right" placeholder="right" value="${rightVal || ''}"></div>
+    `;
+    container.appendChild(row);
+}
+function collectPairs() {
+    const leftInputs = document.querySelectorAll('#pairsContainer .pair-left');
+    const rightInputs = document.querySelectorAll('#pairsContainer .pair-right');
+    const pairs = [];
+    for (let i = 0; i < Math.max(leftInputs.length, rightInputs.length); i++) {
+        const left = (leftInputs[i] ? leftInputs[i].value : '').trim();
+        const right = (rightInputs[i] ? rightInputs[i].value : '').trim();
+        if (left || right) pairs.push({ left, right });
+    }
+    return pairs;
+}
+
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
+function searchQuestions() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#questionsTable tbody tr');
+    let rowNumber = 1;
+    
+    rows.forEach(row => {
+        const questionText = row.querySelector('.question-text').textContent.toLowerCase();
+        const quizName = row.cells[2].textContent.toLowerCase();
+        const userName = row.cells[3].textContent.toLowerCase();
+        
+        if (questionText.includes(searchTerm) || quizName.includes(searchTerm) || userName.includes(searchTerm)) {
+            row.style.display = '';
+            row.cells[0].textContent = rowNumber++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    filterByReason();
+}
+
+function editQuestion(questionId, questionText, quizName) {
+    currentQuestionId = questionId;
+    
+    // نمایش loading
+    document.getElementById('editQuestionText').value = 'در حال بارگذاری...';
+    document.getElementById('editOption1').value = '';
+    document.getElementById('editOption2').value = '';
+    document.getElementById('editOption3').value = '';
+    document.getElementById('editOption4').value = '';
+    document.getElementById('editCorrectAnswer').value = 'A';
+    document.getElementById('editContent').value = '';
+    document.getElementById('editQuizName').value = quizName;
+    document.getElementById('editUnit').value = '';
+    document.getElementById('editOrderNum').value = ''; // Clear order_num field
+    
+    const modal = new bootstrap.Modal(document.getElementById('editQuestionModal'));
+    modal.show();
+    
+    // دریافت اطلاعات کامل سوال
+    fetch(`/api/reported-questions/edit/${questionId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const question = data.question;
+                document.getElementById('editQuestionText').value = question.question_text || '';
+                document.getElementById('editOption1').value = question.option1 || '';
+                document.getElementById('editOption2').value = question.option2 || '';
+                document.getElementById('editOption3').value = question.option3 || '';
+                document.getElementById('editOption4').value = question.option4 || '';
+                // تعیین گزینه درست بر اساس مقدار ذخیره شده در دیتابیس
+                // حالت‌های پشتیبانی‌شده:
+                // - 'option1' | 'option2' | 'option3' | 'option4'
+                // - متن کامل یکی از گزینه‌ها (option1..option4)
+                // - مستقیماً 'A' | 'B' | 'C' | 'D'
+                const selectEl = document.getElementById('editCorrectAnswer');
+                const stored = (question.correct_answer || '').trim();
+                let correctLetter = 'A';
+
+                if (/^option[1-4]$/i.test(stored)) {
+                    const idx = parseInt(stored.replace(/[^1-4]/g, ''), 10);
+                    correctLetter = ['A','B','C','D'][idx - 1];
+                } else if (['A','B','C','D'].includes(stored.toUpperCase())) {
+                    correctLetter = stored.toUpperCase();
+                } else {
+                    const o1 = (question.option1 || '').trim();
+                    const o2 = (question.option2 || '').trim();
+                    const o3 = (question.option3 || '').trim();
+                    const o4 = (question.option4 || '').trim();
+                    const s = stored.trim();
+                    if (s && s === o1) correctLetter = 'A';
+                    else if (s && s === o2) correctLetter = 'B';
+                    else if (s && s === o3) correctLetter = 'C';
+                    else if (s && s === o4) correctLetter = 'D';
+                }
+
+                selectEl.value = correctLetter;
+                document.getElementById('editContent').value = question.content || '';
+                document.getElementById('editUnit').value = question.unit || '';
+                document.getElementById('editOrderNum').value = question.order_num !== undefined ? question.order_num : '';
+                document.getElementById('sourceTableInfo').textContent = data.source_table;
+                showEditFields(data.source_table, question);
+            } else {
+                alert('خطا در دریافت اطلاعات سوال: ' + data.message);
+                modal.hide();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('خطا در دریافت اطلاعات سوال');
+            modal.hide();
+        });
+}
+
+function showEditFields(sourceTable, question) {
+    // همه فیلدها را مخفی کن
+    document.getElementById('editContent').parentElement.style.display = 'none';
+    document.getElementById('editQuestionText').parentElement.style.display = 'none';
+    document.getElementById('editOption1').parentElement.style.display = 'none';
+    document.getElementById('editOption2').parentElement.style.display = 'none';
+    document.getElementById('editOption3').parentElement.style.display = 'none';
+    document.getElementById('editOption4').parentElement.style.display = 'none';
+    document.getElementById('editCorrectAnswer').parentElement.style.display = 'none';
+    document.getElementById('editOrderNum') && (document.getElementById('editOrderNum').parentElement.style.display = 'none');
+    document.getElementById('editUnit') && (document.getElementById('editUnit').parentElement.style.display = 'none');
+    document.getElementById('editQuizNameBox').style.display = 'none';
+
+    // فقط فیلدهای مربوط به جدول را نمایش بده
+    document.getElementById('editContent').parentElement.style.display = '';
+    document.getElementById('editQuestionText').parentElement.style.display = '';
+    document.getElementById('editOption1').parentElement.style.display = '';
+    document.getElementById('editOption2').parentElement.style.display = '';
+    document.getElementById('editOption3').parentElement.style.display = '';
+    document.getElementById('editOption4').parentElement.style.display = '';
+    document.getElementById('editCorrectAnswer').parentElement.style.display = '';
+    document.getElementById('matchingEditor').style.display = 'none';
+    document.getElementById('gapEditor').style.display = 'none';
+    if (sourceTable === 'questions') {
+        document.getElementById('editOrderNum').parentElement.style.display = '';
+    } else if (sourceTable === 'student_quiz') {
+        document.getElementById('editUnit').parentElement.style.display = '';
+        document.getElementById('editQuizNameBox').style.display = '';
+        document.getElementById('editQuizName').readOnly = false;
+    } else if (sourceTable === 'book_questions') {
+        // اگر سؤال کتابی از نوع matching باشد، ادیتور جفت‌ها را نشان بده
+        if (Array.isArray(question.pairs) && question.pairs.length) {
+            document.getElementById('matchingEditor').style.display = '';
+            renderPairs(question.pairs);
+            // برای مچینگ نیازی به option1..4 و correct_answer نیست
+            document.getElementById('editOption1').parentElement.style.display = 'none';
+            document.getElementById('editOption2').parentElement.style.display = 'none';
+            document.getElementById('editOption3').parentElement.style.display = 'none';
+            document.getElementById('editOption4').parentElement.style.display = 'none';
+            document.getElementById('editCorrectAnswer').parentElement.style.display = 'none';
+        } else if (question.question_type && /gap|fill/i.test(question.question_type)) {
+            // اگر نوع gap-fill باشد، ادیتور جای‌خالی را نشان بده
+            document.getElementById('gapEditor').style.display = '';
+            document.getElementById('editGapAnswer').value = question.correct_answer || '';
+            // برای gap-fill نیازی به option1..4 و correct_answer (ABCD) نیست
+            document.getElementById('editOption1').parentElement.style.display = 'none';
+            document.getElementById('editOption2').parentElement.style.display = 'none';
+            document.getElementById('editOption3').parentElement.style.display = 'none';
+            document.getElementById('editOption4').parentElement.style.display = 'none';
+            document.getElementById('editCorrectAnswer').parentElement.style.display = 'none';
+        }
+    }
+    // نمایش تب توضیحات و پر کردن مقادیر پیش‌فرض (ممکن است خالی باشند) برای همه انواع
+    const expWrapper = document.getElementById('expTabsWrapper');
+    if (expWrapper) {
+        expWrapper.style.display = '';
+        document.getElementById('editFaExp').value = (question.fa_explanation || '').toString();
+        document.getElementById('editKurExp').value = (question.kur_explanation || '').toString();
+        document.getElementById('editEngExp').value = (question.eng_explanation || '').toString();
+    }
+}
+
+function saveQuestionEdit() {
+    if (!currentQuestionId) return;
+    const questionText = document.getElementById('editQuestionText').value;
+    const option1 = document.getElementById('editOption1').value;
+    const option2 = document.getElementById('editOption2').value;
+    const option3 = document.getElementById('editOption3').value;
+    const option4 = document.getElementById('editOption4').value;
+    const correctKey = document.getElementById('editCorrectAnswer').value;
+    let correctAnswer = '';
+    if (correctKey === 'A') correctAnswer = 'option1';
+    else if (correctKey === 'B') correctAnswer = 'option2';
+    else if (correctKey === 'C') correctAnswer = 'option3';
+    else if (correctKey === 'D') correctAnswer = 'option4';
+    const content = document.getElementById('editContent').value;
+    const unit = document.getElementById('editUnit').value;
+    const orderNumField = document.getElementById('editOrderNum');
+    const order_num = orderNumField ? orderNumField.value : undefined;
+    const codeField = document.getElementById('editQuizName');
+    const code = codeField && codeField.parentElement.style.display !== 'none' ? codeField.value : undefined;
+    if (!questionText.trim()) {
+        alert('لطفاً متن سوال را وارد کنید');
+        return;
+    }
+    const saveBtn = document.querySelector('#editQuestionModal .btn-primary');
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
+    saveBtn.disabled = true;
+    const bodyData = {
+        question_text: questionText,
+        option1: option1,
+        option2: option2,
+        option3: option3,
+        option4: option4,
+        correct_answer: correctAnswer,
+        content: content,
+        unit: unit,
+        order_num: order_num
+    };
+    // اگر ادیتور مچینگ فعال است، جفت‌ها را جمع‌آوری کن
+    if (document.getElementById('matchingEditor').style.display !== 'none') {
+        bodyData.pairs = collectPairs();
+    }
+    if (document.getElementById('gapEditor').style.display !== 'none') {
+        bodyData.gap_answer = document.getElementById('editGapAnswer').value || '';
+    }
+    // ارسال توضیحات (در صورت وجود)
+    if (document.getElementById('expTabsWrapper') && document.getElementById('expTabsWrapper').style.display !== 'none') {
+        bodyData.fa_explanation = document.getElementById('editFaExp').value || '';
+        bodyData.kur_explanation = document.getElementById('editKurExp').value || '';
+        bodyData.eng_explanation = document.getElementById('editEngExp').value || '';
+    }
+    if (code !== undefined) bodyData.quiz_name = code;
+    fetch(`/api/reported-questions/edit/${currentQuestionId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bodyData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // alert('سوال با موفقیت ویرایش شد');
+            location.reload();
+        } else {
+            alert('خطا در ویرایش سوال: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('خطا در ویرایش سوال');
+    })
+    .finally(() => {
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    });
+}
+
+function updateRowNumbers() {
+    const rows = document.querySelectorAll('#questionsTable tbody tr');
+    let i = 1;
+    rows.forEach(row => {
+        row.cells[0].textContent = i++;
+    });
+}
+
+function rejectQuestion(questionId) {
+    if (!confirm('آیا مطمئن هستید که می‌خواهید این سوال را حذف کنید؟')) {
+        return;
+    }
+    fetch(`/api/reported-questions/delete/${questionId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // حذف سطر از جدول بدون رفرش
+            const row = document.querySelector(`tr[data-question-id='${questionId}']`);
+            if (row) row.remove();
+            updateRowNumbers();
+        } else {
+            alert('خطا: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('خطا در حذف سوال.');
+    });
+}
+
+function filterByReason() {
+    const selectedReason = document.getElementById('reasonFilter').value;
+    const rows = document.querySelectorAll('#questionsTable tbody tr');
+    let rowNumber = 1;
+    rows.forEach(row => {
+        const reason = row.cells[5].textContent.trim();
+        if (!selectedReason || reason === selectedReason) {
+            row.style.display = '';
+            row.cells[0].textContent = rowNumber++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function filterQuestions() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const selectedReason = document.getElementById('reasonFilter').value.trim().toLowerCase();
+    const rows = document.querySelectorAll('#questionsTable tbody tr:not(.mobile-actions-row)');
+    let rowNumber = 1;
+    rows.forEach(row => {
+        const questionText = row.querySelector('.question-text').textContent.toLowerCase();
+        const quizName = row.cells[2].textContent.toLowerCase();
+        const userName = row.cells[3].textContent.toLowerCase();
+        const reason = row.cells[5].textContent.trim().toLowerCase();
+        const matchesSearch = (
+            questionText.includes(searchTerm) ||
+            quizName.includes(searchTerm) ||
+            userName.includes(searchTerm)
+        );
+        const matchesReason = (!selectedReason || reason === selectedReason);
+        if (matchesSearch && matchesReason) {
+            row.style.display = '';
+            row.cells[0].textContent = rowNumber++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Search on Enter key
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchQuestions();
+    }
+});
+
+document.getElementById('searchInput').addEventListener('input', function() {
+    filterQuestions();
+});
+document.getElementById('reasonFilter').addEventListener('change', function() {
+    filterQuestions();
+});
+
+// Event listeners for reject buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Reject button listeners
+    document.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const questionId = this.getAttribute('data-question-id');
+            rejectQuestion(questionId);
+        });
+    });
+});
+</script>
+{% endblock %} 

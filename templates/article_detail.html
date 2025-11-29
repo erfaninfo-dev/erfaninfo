@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<!-- SEO Meta Tags -->
+<meta name="description" content="{{ article.excerpt if article.excerpt else article.title }}">
+<meta name="keywords" content="{{ article.tags|join(', ') if article.tags else 'گرامر, زبان انگلیسی, آموزش' }}">
+
+<!-- Open Graph Tags -->
+<meta property="og:title" content="{{ article.title }}">
+<meta property="og:description" content="{{ article.excerpt if article.excerpt else article.title }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{{ request.url }}">
+<meta property="og:site_name" content="عرفان اینفو">
+{% if article.featured_image %}
+<meta property="og:image" content="{{ article.featured_image }}">
+{% endif %}
+
+<!-- Twitter Card Tags -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ article.title }}">
+<meta name="twitter:description" content="{{ article.excerpt if article.excerpt else article.title }}">
+{% if article.featured_image %}
+<meta name="twitter:image" content="{{ article.featured_image }}">
+{% endif %}
+
+<!-- Canonical URL -->
+<link rel="canonical" href="{{ request.url_root }}article/{{ article.id }}/{{ article.slug }}/{{ article.lang }}">
+
+<!-- Language Alternates -->
+<link rel="alternate" hreflang="fa" href="/article/{{ article.id }}/{{ article.slug }}/fa">
+<link rel="alternate" hreflang="ku" href="/article/{{ article.id }}/{{ article.slug }}/ku">
+<link rel="alternate" hreflang="en" href="/article/{{ article.id }}/{{ article.slug }}/en">
+
+<!-- Schema Markup -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ article.title }}",
+  "description": "{{ article.excerpt if article.excerpt else article.title }}",
+  "image": "{{ article.featured_image if article.featured_image else '' }}",
+  "author": {
+    "@type": "Organization",
+    "name": "عرفان اینفو"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "عرفان اینفو",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ url_for('static', filename='images/logo.png') }}"
+    }
+  },
+  "datePublished": "{{ article.created_at.isoformat() if article.created_at else '' }}",
+  "dateModified": "{{ article.updated_at.isoformat() if article.updated_at else '' }}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ request.url_root }}article/{{ article.id }}/{{ article.slug }}/{{ article.lang }}"
+  },
+  "inLanguage": "{{ article.lang }}"
+}
+</script>
+{% endblock %}
+
+{% block title %}{{ article.title }} - عرفان اینفو{% endblock %}
+
+{% block content %}
+<div class="article-container" data-lang="{{ article.lang }}">
+    <div class="article-header">
+        <div class="article-meta">
+            <span class="article-date">
+                <i class="bi bi-clock"></i>
+                {{ article.date }}
+            </span>
+            <span class="article-views">
+                <i class="bi bi-eye"></i>
+                {{ article.views }} بازدید
+            </span>
+        </div>
+        <h1 class="article-title">{{ article.title }}</h1>
+        <div class="article-tags">
+            {% for tag in article.tags %}
+            <span class="tag">{{ tag }}</span>
+            {% endfor %}
+        </div>
+        
+        <!-- دکمه‌های زبان -->
+        <div class="article-language-switcher">
+            <a href="/article/{{ article.id }}/{{ article.slug }}/fa" class="lang-btn {% if article.lang == 'fa' %}active{% endif %}">
+                <span class="lang-flag">🇮🇷</span>
+                <span class="lang-text">فارسی</span>
+            </a>
+            <a href="/article/{{ article.id }}/{{ article.slug }}/ku" class="lang-btn {% if article.lang == 'ku' %}active{% endif %}">
+                <span class="lang-flag">🇮🇶</span>
+                <span class="lang-text">کوردی</span>
+            </a>
+            <a href="/article/{{ article.id }}/{{ article.slug }}/en" class="lang-btn {% if article.lang == 'en' %}active{% endif %}">
+                <span class="lang-flag">🇺🇸</span>
+                <span class="lang-text">English</span>
+            </a>
+        </div>
+    </div>
+    
+            <div class="article-content" data-lang="{{ article.lang }}">
+            {% for block in article.blocks %}
+                {% if block.block_type == 'paragraph' %}
+                    <p>{{ block['content_' + article.lang] }}</p>
+                {% elif block.block_type == 'subtitle' %}
+                    <h3>{{ block['content_' + article.lang] }}</h3>
+                {% elif block.block_type == 'example' %}
+                    <div class="examples">
+                        <p>{{ block['content_' + article.lang] }}</p>
+                    </div>
+                {% elif block.block_type == 'note' %}
+                    <div class="important-notes">
+                        <p>{{ block['content_' + article.lang] }}</p>
+                    </div>
+                {% elif block.block_type == 'code' %}
+                    <div class="grammar-structure">
+                        <code>{{ block['content_' + article.lang] }}</code>
+                    </div>
+                {% elif block.block_type == 'vocabulary' %}
+                    <div class="vocabulary-list">
+                        <div class="vocab-item">{{ block['content_' + article.lang] }}</div>
+                    </div>
+                {% elif block.block_type == 'exercise' %}
+                    <div class="exercise">
+                        <p>{{ block['content_' + article.lang] | nl2br }}</p>
+                    </div>
+                {% elif block.block_type == 'list' %}
+                    <div class="list" {% if block.block_metadata and block.block_metadata.direction %}data-direction="{{ block.block_metadata.direction }}"{% endif %}>
+                        <ul>
+                            {% for item in block['content_' + article.lang].split('\n') %}
+                                {% if item.strip() %}
+                                    <li>{{ item.strip() }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% elif block.block_type == 'image' %}
+                    <div class="article-image">
+                        <img src="{{ block['content_' + article.lang] }}" 
+                             alt="{{ block.block_metadata.caption if block.block_metadata and block.block_metadata.caption else article.title + ' - تصویر آموزشی' }}"
+                             loading="lazy">
+                        {% if block.block_metadata and block.block_metadata.caption %}
+                            <p class="image-caption">{{ block.block_metadata.caption }}</p>
+                        {% endif %}
+                    </div>
+                {% elif block.block_type == 'video' %}
+                    <div class="article-video">
+                        <iframe src="{{ block['content_' + article.lang] }}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                {% elif block.block_type == 'quote' %}
+                    <blockquote>
+                        <p>{{ block['content_' + article.lang] }}</p>
+                    </blockquote>
+                {% elif block.block_type == 'divider' %}
+                    <hr>
+                {% elif block.block_type == 'callout' %}
+                    <div class="callout">
+                        <p>{{ block['content_' + article.lang] }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/article_styles.css') }}">
+    
+    <div class="article-footer">
+        <a href="/" class="back-btn">
+            <i class="bi bi-arrow-right"></i>
+            بازگشت به صفحه اصلی
+        </a>
+    </div>
+</div>
+
+<style>
+.article-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.article-header {
+    border-bottom: 2px solid #f1f3f4;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.article-meta {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.article-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.article-title {
+    font-size: 2rem;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+    line-height: 1.3;
+    font-family: 'Estedad', sans-serif;
+}
+
+.article-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: #f8f9fa;
+    color: #495057;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.article-content {
+    line-height: 1.8;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.article-content h2 {
+    color: #1a1a1a;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    font-family: 'Estedad', sans-serif;
+}
+
+.article-content h3 {
+    color: #2c3e50;
+    margin-top: 25px;
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+    font-family: 'Estedad', sans-serif;
+}
+
+.article-content p {
+    margin-bottom: 15px;
+}
+
+.article-content ul, .article-content ol {
+    margin-bottom: 15px;
+    padding-right: 20px;
+}
+
+.article-content li {
+    margin-bottom: 8px;
+}
+
+.vocabulary-list {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.vocab-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.vocab-item:last-child {
+    border-bottom: none;
+}
+
+.grammar-structure {
+    background: #e3f2fd;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 1.1rem;
+}
+
+.examples {
+    background: #f3e5f5;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.examples p {
+    margin-bottom: 10px;
+}
+
+.article-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #f1f3f4;
+    text-align: center;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .article-container {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .article-title {
+        font-size: 1.5rem;
+    }
+    
+    .article-content {
+        font-size: 1rem;
+    }
+    
+    .article-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block title %}ورود / ثبت‌نام{% endblock %}
+
+{% block content %}
+<div class="content-area" style="display:flex;justify-content:center;align-items:flex-start;min-height:70vh;padding:16px;">
+  <div style="width:100%;max-width:420px;background:#fff;border:1px solid #e9ecef;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #eee;">
+      <div style="font-weight:800;font-size:1.1rem;">{{ 'ایجاد حساب کاربری' if active_tab=='signup' else 'ورود به حساب' }}</div>
+      <div style="color:#667;">→</div>
+    </div>
+    <div style="display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid #f3f3f3;">
+      <button id="tab-login" class="auth-tab {{ 'active' if active_tab!='signup' else '' }}">ورود</button>
+      <button id="tab-signup" class="auth-tab {{ 'active' if active_tab=='signup' else '' }}">ثبت‌نام</button>
+      <style>
+        .auth-tab{flex:1;padding:10px;border:1px solid #e0e0e0;background:#fafafa;border-radius:10px;font-weight:700}
+        .auth-tab.active{background:#2563eb;color:#fff;border-color:#2563eb}
+      </style>
+    </div>
+    <div style="padding:16px;">
+      <form id="form-login" class="auth-pane" style="display: {{ 'none' if active_tab=='signup' else 'block' }};">
+        <input id="login-username" type="text" placeholder="نام کاربری" class="auth-input">
+        <input id="login-password" type="password" placeholder="رمز عبور" class="auth-input">
+        <button type="button" id="login-submit" class="auth-btn">ورود</button>
+        <div id="login-error" class="auth-error"></div>
+      </form>
+
+      <form id="form-signup" class="auth-pane" style="display: {{ 'block' if active_tab=='signup' else 'none' }};">
+        <div class="input-group">
+          <input id="su-username" type="text" placeholder="نام کاربری (اختیاری)" class="auth-input">
+          <div class="field-error" id="username-error"></div>
+        </div>
+        
+        <div class="input-group">
+          <input id="su-display" type="text" placeholder="نام و نام خانوادگی" class="auth-input">
+          <div class="field-error" id="display-error"></div>
+        </div>
+        
+        <div class="input-group">
+          <input id="su-email" type="email" placeholder="ایمیل *" class="auth-input" dir="rtl" style="direction: rtl; text-align: right;" required>
+          <div class="field-error" id="email-error"></div>
+        </div>
+        
+        <div class="input-group">
+          <input id="su-password" type="password" placeholder="رمز عبور (حداقل 6 کاراکتر) *" class="auth-input" required>
+          <div class="field-error" id="password-error"></div>
+          <div id="password-strength" class="password-strength" style="display:none;">
+            <div class="strength-bar">
+              <div class="strength-fill"></div>
+            </div>
+            <div class="strength-text"></div>
+          </div>
+        </div>
+        
+        <div class="terms-checkbox" style="display:flex;align-items:center;margin:10px 0;gap:8px;">
+          <input type="checkbox" id="terms-checkbox" style="width:16px;height:16px;">
+          <label for="terms-checkbox" style="font-size:.85rem;color:#666;">
+            با ثبت‌نام، <a href="#" style="color:#2563eb;">قوانین و شرایط استفاده</a> را می‌پذیرم.
+          </label>
+        </div>
+        
+        <button type="button" id="su-submit" class="auth-btn">ثبت نام</button>
+        
+        <div id="su-error" class="auth-error"></div>
+      </form>
+
+      <style>
+        .input-group{margin:8px 0}
+        .auth-input{width:100%;padding:12px;border:1px solid #e0e0e0;border-radius:12px;font-family:inherit;transition:border-color 0.3s, box-shadow 0.3s}
+        .auth-input:focus{border-color:#2563eb;outline:none;box-shadow:0 0 0 3px rgba(37, 99, 235, 0.1)}
+        .auth-input.error{border-color:#dc2626;box-shadow:0 0 0 3px rgba(220, 38, 38, 0.1)}
+        .auth-input.success{border-color:#16a34a;box-shadow:0 0 0 3px rgba(22, 163, 74, 0.1)}
+        
+        .field-error{color:#dc2626;font-size:.8rem;margin-top:4px;padding:0 4px;min-height:16px;display:none}
+        .field-error.show{display:block}
+        
+        .auth-btn{width:100%;padding:12px;border:none;border-radius:12px;background:#2563eb;color:#fff;font-weight:800;margin-top:6px;cursor:pointer;transition:background-color 0.3s}
+        .auth-btn:hover{background:#1d4ed8}
+        .auth-btn:disabled{background:#9ca3af;cursor:not-allowed}
+        .auth-error{color:#d32f2f;text-align:center;margin-top:8px;font-size:.9rem}
+        
+        .password-strength{margin:5px 0 15px 0}
+        .strength-bar{width:100%;height:4px;background:#e5e7eb;border-radius:2px;overflow:hidden}
+        .strength-fill{height:100%;transition:width 0.3s, background-color 0.3s;width:0%}
+        .strength-text{font-size:.8rem;margin-top:5px;text-align:center}
+        .strength-weak{color:#dc2626}
+        .strength-medium{color:#d97706}
+        .strength-strong{color:#16a34a}
+        
+        .terms-checkbox input[type="checkbox"]{cursor:pointer}
+        .terms-checkbox label{cursor:pointer}
+        
+        .loading{opacity:0.6;pointer-events:none}
+      </style>
+    </div>
+  </div>
+</div>
+
+<script>
+// تب‌ها
+document.getElementById('tab-login').addEventListener('click', ()=>switchTab('login'));
+document.getElementById('tab-signup').addEventListener('click', ()=>switchTab('signup'));
+function switchTab(tab){
+  document.getElementById('form-login').style.display = (tab==='login') ? 'block' : 'none';
+  document.getElementById('form-signup').style.display = (tab==='signup') ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
+}
+
+// ورود
+document.getElementById('login-submit').addEventListener('click', async function(){
+  const u = document.getElementById('login-username').value.trim();
+  const p = document.getElementById('login-password').value.trim();
+  const err = document.getElementById('login-error');
+  err.textContent='';
+  if(!u||!p){ err.textContent='نام کاربری و رمز را وارد کنید'; return; }
+  try{
+    const res = await fetch('/login', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u, password:p})});
+    const data = await res.json();
+    if(data.success){ window.location.href = '/profile'; } else { err.textContent = data.message || 'خطا در ورود'; }
+  }catch(e){ err.textContent='خطا در ارتباط با سرور'; }
+});
+
+// توابع اعتبارسنجی
+function showFieldError(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  const errorDiv = document.getElementById(fieldId.replace('su-', '') + '-error');
+  
+  field.classList.remove('success');
+  field.classList.add('error');
+  errorDiv.textContent = message;
+  errorDiv.classList.add('show');
+}
+
+function showFieldSuccess(fieldId) {
+  const field = document.getElementById(fieldId);
+  const errorDiv = document.getElementById(fieldId.replace('su-', '') + '-error');
+  
+  field.classList.remove('error');
+  field.classList.add('success');
+  errorDiv.classList.remove('show');
+}
+
+function clearFieldError(fieldId) {
+  const field = document.getElementById(fieldId);
+  const errorDiv = document.getElementById(fieldId.replace('su-', '') + '-error');
+  
+  field.classList.remove('error', 'success');
+  errorDiv.classList.remove('show');
+}
+
+// تابع بررسی قدرت رمز عبور
+function checkPasswordStrength(password) {
+  let score = 0;
+  let feedback = [];
+  
+  if (password.length >= 6) score += 1;
+  else feedback.push('حداقل 6 کاراکتر');
+  
+  if (/[a-z]/.test(password)) score += 1;
+  else feedback.push('حروف کوچک');
+  
+  if (/[A-Z]/.test(password)) score += 1;
+  else feedback.push('حروف بزرگ');
+  
+  if (/\d/.test(password)) score += 1;
+  else feedback.push('عدد');
+  
+  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+  else feedback.push('کاراکتر خاص');
+  
+  return { score, feedback };
+}
+
+// تابع بررسی یکتا بودن نام کاربری
+async function checkUsernameAvailability(username) {
+  if (!username || username.length < 3) return false;
+  
+  try {
+    const response = await fetch('/check-username', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username })
+    });
+    const data = await response.json();
+    return data.available;
+  } catch (error) {
+    console.error('خطا در بررسی نام کاربری:', error);
+    return false;
+  }
+}
+
+// تابع بررسی یکتا بودن ایمیل
+async function checkEmailAvailability(email) {
+  if (!email) return false;
+  
+  try {
+    const response = await fetch('/check-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json();
+    return data.available;
+  } catch (error) {
+    console.error('خطا در بررسی ایمیل:', error);
+    return false;
+  }
+}
+
+// اعتبارسنجی real-time برای نام کاربری
+let usernameTimeout;
+document.getElementById('su-username').addEventListener('input', function() {
+  const username = this.value.trim();
+  clearTimeout(usernameTimeout);
+  
+  if (username.length === 0) {
+    clearFieldError('su-username');
+    return;
+  }
+  
+  if (username.length < 3) {
+    showFieldError('su-username', 'نام کاربری باید حداقل 3 کاراکتر باشد');
+    return;
+  }
+  
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    showFieldError('su-username', 'نام کاربری فقط می‌تواند شامل حروف، عدد و _ باشد');
+    return;
+  }
+  
+  // بررسی یکتا بودن با تاخیر
+  usernameTimeout = setTimeout(async () => {
+    const available = await checkUsernameAvailability(username);
+    if (available) {
+      showFieldSuccess('su-username');
+    } else {
+      showFieldError('su-username', 'این نام کاربری قبلاً استفاده شده است');
+    }
+  }, 500);
+});
+
+// اعتبارسنجی real-time برای نام نمایشی
+document.getElementById('su-display').addEventListener('input', function() {
+  const displayName = this.value.trim();
+  
+  if (displayName.length === 0) {
+    clearFieldError('su-display');
+    return;
+  }
+  
+  if (displayName.length < 2) {
+    showFieldError('su-display', 'نام نمایشی باید حداقل 2 کاراکتر باشد');
+    return;
+  }
+  
+  showFieldSuccess('su-display');
+});
+
+// اعتبارسنجی real-time برای ایمیل حذف شد - فقط بعد از کلیک دکمه ثبت نام بررسی می‌شود
+// اما خطاهای قبلی را پاک می‌کند
+document.getElementById('su-email').addEventListener('input', function() {
+  clearFieldError('su-email');
+});
+
+// نمایش قدرت رمز عبور
+document.getElementById('su-password').addEventListener('input', function() {
+  const password = this.value;
+  const strengthDiv = document.getElementById('password-strength');
+  const strengthFill = strengthDiv.querySelector('.strength-fill');
+  const strengthText = strengthDiv.querySelector('.strength-text');
+  
+  if (password.length === 0) {
+    strengthDiv.style.display = 'none';
+    clearFieldError('su-password');
+    return;
+  }
+  
+  strengthDiv.style.display = 'block';
+  const { score, feedback } = checkPasswordStrength(password);
+  
+  let percentage = (score / 5) * 100;
+  let strength = '';
+  let color = '';
+  
+  if (score < 1) {
+    strength = 'ضعیف';
+    color = '#dc2626';
+    showFieldError('su-password', 'رمز عبور باید حداقل 6 کاراکتر باشد');
+  } else if (score <= 2) {
+    strength = 'متوسط';
+    color = '#d97706';
+    showFieldSuccess('su-password');
+  } else {
+    strength = 'قوی';
+    color = '#16a34a';
+    showFieldSuccess('su-password');
+  }
+  
+  strengthFill.style.width = percentage + '%';
+  strengthFill.style.backgroundColor = color;
+  strengthText.textContent = `قدرت رمز: ${strength}`;
+  strengthText.className = `strength-text strength-${score < 1 ? 'weak' : score <= 2 ? 'medium' : 'strong'}`;
+});
+
+// ثبت‌نام
+document.getElementById('su-submit').addEventListener('click', async function(){
+  const u = document.getElementById('su-username').value.trim();
+  const d = document.getElementById('su-display').value.trim();
+  const e = document.getElementById('su-email').value.trim();
+  const p = document.getElementById('su-password').value.trim();
+  const termsAccepted = document.getElementById('terms-checkbox').checked;
+  const err = document.getElementById('su-error');
+  const submitBtn = document.getElementById('su-submit');
+  
+  // پاک کردن خطاهای قبلی
+  err.textContent='';
+  
+  // اعتبارسنجی فیلدهای ضروری
+  if(!e){
+    showFieldError('su-email', 'ایمیل الزامی است');
+    return;
+  }
+  
+  if(!p){
+    showFieldError('su-password', 'رمز عبور الزامی است');
+    return;
+  }
+  
+  if(!termsAccepted){
+    err.textContent='لطفاً قوانین و شرایط استفاده را بپذیرید';
+    return;
+  }
+  
+  // اعتبارسنجی فرمت ایمیل
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  if(!emailRegex.test(e)){
+    showFieldError('su-email', 'فرمت ایمیل نامعتبر است');
+    return;
+  }
+  
+  // بررسی اینکه همه فیلدها معتبر هستند
+  const hasErrors = document.querySelectorAll('.auth-input.error').length > 0;
+  if(hasErrors){
+    err.textContent='لطفاً خطاهای موجود را برطرف کنید';
+    return;
+  }
+  
+  // غیرفعال کردن دکمه و نمایش loading
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'در حال ثبت نام...';
+  document.getElementById('form-signup').classList.add('loading');
+  
+  try{
+    const res = await fetch('/signup', {
+      method:'POST', 
+      headers:{'Content-Type':'application/json'}, 
+      body: JSON.stringify({
+        username: u,
+        password: p,
+        display_name: d,
+        email: e,
+        terms_accepted: termsAccepted
+      })
+    });
+    const data = await res.json();
+    if(data.success){ 
+      // نمایش پیام موفقیت
+      err.style.color = '#16a34a';
+      err.textContent = 'ثبت نام با موفقیت انجام شد! در حال انتقال...';
+      setTimeout(() => {
+        window.location.href = '/profile';
+      }, 1500);
+    } else { 
+      err.style.color = '#dc2626';
+      err.textContent = data.message || 'خطا در ثبت‌نام';
+    }
+  }catch(e){ 
+    err.style.color = '#dc2626';
+    err.textContent='خطا در ارتباط با سرور'; 
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'ثبت نام';
+    document.getElementById('form-signup').classList.remove('loading');
+  }
+});
+
+// Google OAuth حذف شد - می‌توانید بعداً اضافه کنید
+
+// CSS برای انیمیشن loading
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}
+
+

@@ -1,58 +1,110 @@
-<!-- تست تغییر توسط هوش مصنوعی -->
 {% extends 'base.html' %}
 
 {% block title %}صفحه اصلی{% endblock %}
 
 {% block content %}
+    <div class="home-header">
+        <h1>به سایت آموزشی عرفان اینفو خوش آمدید!</h1>
+        <p class="home-desc">مسیر خود را برای یادگیری زبان انگلیسی انتخاب کنید.</p>
+    </div>
+
     <div class="main-card-container">
-        <div class="home-header">
-            <h1>به سایت آموزشی عرفان اینفو خوش آمدید!</h1>
-            <p class="home-desc">مسیر خود را برای یادگیری زبان انگلیسی انتخاب کنید.</p>
-        </div>
+        <div class="cards-row">
+            {# کارت ۱: ثبت نام در سایت #}
+            <a href="/signup" id="signup-card" class="e-card playing">
+                <div class="image"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="infotop">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg><br>
+                    <span class="infotop-text" data-key="card-signup-title">ثبت نام در سایت</span>
+                    <div class="name" data-key="card-signup-desc">عضویت رایگان و دسترسی به امکانات ویژه</div>
+                </div>
+            </a>
 
-        {# کارت ۱: تمرین گرامر #}
-        <a href="/tests" id="practice-card" class="e-card playing">
-            <div class="image"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="infotop">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
-                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 15l-3.5-3.5 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></path>
-                </svg><br>
-                <span class="infotop-text" data-key="card-grammar-title">تمرین گرامر</span>
-                <div class="name" data-key="card-grammar-desc">دانش گرامر خود را بیازمایید.</div>
-            </div>
-        </a>
+            {# کارت ۲: تمرین گرامر #}
+            <a href="/grammar_tests" id="practice-card" class="e-card playing">
+                <div class="image"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="infotop">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 15l-3.5-3.5 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></path>
+                    </svg><br>
+                    <span class="infotop-text" data-key="card-grammar-title">تمرین گرامر</span>
+                    <div class="name" data-key="card-grammar-desc">دانش گرامر خود را بیازمایید.</div>
+                </div>
+            </a>
 
-        {# کارت ۲: نتایج کاربران  #}
-        <a href="/results" id="lessons-card" class="e-card playing">
-            <div class="image"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="infotop">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
-                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"></path>
-                </svg><br>
-                <span class="infotop-text" data-key="card-lessons-title">نتایج کاربران</span>
-                <div class="name" data-key="card-lessons-desc">آخرین نتایج تمرین های کاربران</div>
-            </div>
-        </a>
+            {# کارت ۳: تست واژگان #}
+            <a href="/books_vocab" id="videos-card" class="e-card playing">
+                <div class="image"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="infotop">
+                    <!-- آیکن: خطوط متن + حرف A بزرگ -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon" aria-hidden="true">
+                      <!-- خطوط سمت چپ (سفید) -->
+                      <rect x="2" y="3" width="12" height="2" rx="1" fill="#ffffff"/>
+                      <rect x="2" y="9.5" width="9" height="2" rx="1" fill="#ffffff"/>
+                      <rect x="2" y="16" width="7" height="2" rx="1" fill="#ffffff"/>
+                      <!-- حرف A بزرگ سمت راست؛ هم‌ارتفاع با سه خط -->
+                      <text x="18" y="19" text-anchor="middle" font-size="18" font-weight="800" fill="currentColor" style="font-family: inherit;">A</text>
+                    </svg><br>
+                    <span class="infotop-text" data-key="card-videos-title">تمرین واژگان</span>
+                    <div class="name" data-key="card-videos-desc">لغات خود را با تست‌های کتاب‌ها تقویت کنید.</div>
+                </div>
+            </a>
 
-        {# کارت ۳: ویدیوهای آموزشی #}
-        <div id="videos-card" class="e-card playing">
-            <div class="image"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="infotop">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
-                    <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
-                </svg><br>
-                <span class="infotop-text" data-key="card-videos-title">ویدیوهای آموزشی</span>
-                <div class="name" data-key="card-videos-desc">مهارت‌های خود را ارتقا دهید.</div>
-            </div>
+            {# کارت ۴: نتایج کاربران  #}
+            <a href="/user_results" id="lessons-card" class="e-card playing">
+                <div class="image"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="infotop">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"></path>
+                    </svg><br>
+                    <span class="infotop-text" data-key="card-lessons-title">نتایج کاربران</span>
+                    <div class="name" data-key="card-lessons-desc">آخرین نتایج تمرین های کاربران</div>
+                </div>
+            </a>
+
+            {# کارت ۵: آخرین نوشته‌ها #}
+            <a href="#latest-posts" id="posts-card" class="e-card playing">
+                <div class="image"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="infotop">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
+                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM16 18H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg><br>
+                    <span class="infotop-text" data-key="card-posts-title">آخرین نوشته‌ها</span>
+                    <div class="name" data-key="card-posts-desc">مقالات و مطالب آموزشی جدید</div>
+                </div>
+            </a>
+
+            {# کارت ۶: ویدیوهای آموزشی #}
+            <a href="#video-slider" id="videos-educational-card" class="e-card playing">
+                <div class="image"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="infotop">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="icon">
+                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
+                    </svg><br>
+                    <span class="infotop-text" data-key="card-videos-educational-title">ویدیوهای آموزشی</span>
+                    <div class="name" data-key="card-videos-educational-desc">آموزش تصویری زبان انگلیسی</div>
+                </div>
+            </a>
         </div>
     </div>
 
@@ -84,6 +136,19 @@
         </div>
     </section>
 
+    <!-- بخش آخرین نوشته‌ها - کارت‌های مدرن -->
+    <section class="latest-posts-section">
+        <h2 class="section-title">📝 آخرین نوشته‌ها</h2>
+        <div class="modern-cards-container">
+            <!-- مقالات به صورت داینامیک از API لود می‌شوند -->
+            <div id="articles-container">
+                <!-- مقالات اینجا لود می‌شوند -->
+            </div>
+        </div>
+    </section>
+
+
+
     <footer class="site-footer">
       <div class="footer-container">
         <div class="footer-cols">
@@ -99,6 +164,56 @@
 
 {% block scripts %}
 <script>
+// لود کردن مقالات
+function loadLatestArticles(lang = 'fa') {
+    fetch(`/api/latest-articles/${lang}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const container = document.getElementById('articles-container');
+                container.innerHTML = '';
+                container.setAttribute('data-lang', lang);
+                
+                data.articles.forEach(article => {
+                    const articleCard = `
+                        <div class="modern-card" data-lang="${lang}">
+                            <div class="card-header">
+                                <h3 class="card-title">${article.title}</h3>
+                                <div class="card-meta">
+                                    <span class="post-time">⏰ ${article.time_ago}</span>
+                                    <span class="post-views">👁️ ${article.views} ${translations[lang]['views']}</span>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <p class="card-excerpt">
+                                    ${article.excerpt}
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/article/${article.id}/${article.slug}/${lang}" class="read-more-btn">${translations[lang]['read-more']}</a>
+                                <div class="card-tags">
+                                    ${article.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += articleCard;
+                });
+            } else {
+                console.error('خطا در لود کردن مقالات:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('خطا در دریافت مقالات:', error);
+        });
+}
+
+// لود کردن مقالات در هنگام بارگذاری صفحه
+document.addEventListener('DOMContentLoaded', function() {
+    const currentLang = localStorage.getItem('siteLang') || 'fa';
+    loadLatestArticles(currentLang);
+});
+
 // زبان‌ها و ترجمه‌ها
 const translations = {
   fa: {
@@ -111,6 +226,18 @@ const translations = {
     'fullname-message': 'نام و نام خانوادگی خود را وارد کنید',
     'fullname-placeholder': 'نام و نام خانوادگی',
     'start-btn': 'شروع',
+    'card-posts-title': 'آخرین نوشته‌ها',
+    'card-posts-desc': 'مقالات و مطالب آموزشی جدید',
+    'card-videos-educational-title': 'ویدیوهای آموزشی',
+    'card-videos-educational-desc': 'آموزش تصویری زبان انگلیسی',
+    'card-signup-title': 'ثبت نام در سایت',
+    'card-signup-desc': 'عضویت رایگان و دسترسی به امکانات ویژه',
+    'read-more': 'ادامه مطلب',
+    'views': 'بازدید',
+    'time-ago': 'پیش',
+    'days': 'روز',
+    'hours': 'ساعت',
+    'minutes': 'دقیقه',
     // ... سایر کلیدها
   },
   ku: {
@@ -123,6 +250,42 @@ const translations = {
     'fullname-message': 'ناوی تەواوت بنووسە',
     'fullname-placeholder': 'ناوی تەواو',
     'start-btn': 'دەستپێکردن',
+    'card-posts-title': 'دواترین نووسراوەکان',
+    'card-posts-desc': 'وتار و مادەی فێرکاریی نوێ',
+    'card-videos-educational-title': 'ڤیدیۆ فێرکارییەکان',
+    'card-videos-educational-desc': 'فێرکاریی وێنەیی زمانی ئینگلیزی',
+    'card-signup-title': 'تۆمارکردن لە ماڵپەڕ',
+    'card-signup-desc': 'ئەندامبوونی بەخۆڕایی و دەستگەیشتن بە تایبەتمەندییەکان',
+    'read-more': 'زیاتر بخوێنەوە',
+    'views': 'بینین',
+    'time-ago': 'لەمەوبەر',
+    'days': 'ڕۆژ',
+    'hours': 'کاتژمێر',
+    'minutes': 'خولەک',
+    // ... سایر کلیدها
+  },
+  en: {
+    'main-title': 'Welcome to Erfan Info Educational Website!',
+    'main-desc': 'Choose your path to learn English.',
+    'section-title': 'Educational Videos',
+    'tests-title': 'Grammar Tests',
+    'tests-desc': 'Please select one of the following tests to start.',
+    'code-error': 'Please enter your code',
+    'fullname-message': 'Enter your full name',
+    'fullname-placeholder': 'Full Name',
+    'start-btn': 'Start',
+    'card-posts-title': 'Latest Posts',
+    'card-posts-desc': 'New educational articles and content',
+    'card-videos-educational-title': 'Educational Videos',
+    'card-videos-educational-desc': 'Visual English language learning',
+    'card-signup-title': 'Sign Up',
+    'card-signup-desc': 'Free membership and access to special features',
+    'read-more': 'Read More',
+    'views': 'views',
+    'time-ago': 'ago',
+    'days': 'days',
+    'hours': 'hours',
+    'minutes': 'minutes',
     // ... سایر کلیدها
   }
 };
@@ -136,6 +299,9 @@ function setLanguage(lang) {
   if (homeDesc) homeDesc.textContent = translations[lang]['main-desc'];
   const sectionTitle = document.querySelector('.section-title');
   if (sectionTitle) sectionTitle.textContent = translations[lang]['section-title'];
+  
+  // لود کردن مقالات با زبان جدید
+  loadLatestArticles(lang);
   // صفحه تست‌ها
   const testsTitle = document.querySelector('.tests-header h1');
   if (testsTitle) testsTitle.textContent = translations[lang]['tests-title'];
@@ -153,6 +319,24 @@ function setLanguage(lang) {
   // دکمه شروع
   const startBtn = document.getElementById('start-quiz-btn');
   if (startBtn) startBtn.textContent = translations[lang]['start-btn'];
+  
+  // کارت آخرین نوشته‌ها
+  const postsTitle = document.querySelector('[data-key="card-posts-title"]');
+  if (postsTitle) postsTitle.textContent = translations[lang]['card-posts-title'];
+  const postsDesc = document.querySelector('[data-key="card-posts-desc"]');
+  if (postsDesc) postsDesc.textContent = translations[lang]['card-posts-desc'];
+  
+  // کارت ویدیوهای آموزشی
+  const videosEducationalTitle = document.querySelector('[data-key="card-videos-educational-title"]');
+  if (videosEducationalTitle) videosEducationalTitle.textContent = translations[lang]['card-videos-educational-title'];
+  const videosEducationalDesc = document.querySelector('[data-key="card-videos-educational-desc"]');
+  if (videosEducationalDesc) videosEducationalDesc.textContent = translations[lang]['card-videos-educational-desc'];
+  
+  // کارت ثبت نام
+  const signupTitle = document.querySelector('[data-key="card-signup-title"]');
+  if (signupTitle) signupTitle.textContent = translations[lang]['card-signup-title'];
+  const signupDesc = document.querySelector('[data-key="card-signup-desc"]');
+  if (signupDesc) signupDesc.textContent = translations[lang]['card-signup-desc'];
 }
 
 function showLanguageModal() {

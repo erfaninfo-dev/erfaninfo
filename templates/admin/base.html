@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <div class="admin-info">
+            <span>خوش آمدید، {{ admin_username }}</span>
+            <a href="{{ url_for('admin_logout') }}" class="logout-btn">خروج</a>
+        </div>
+    </div>
+    
+    <div class="admin-navigation">
+        <a href="{{ url_for('admin_dashboard') }}" class="nav-link">
+            <i class="fas fa-tachometer-alt"></i> داشبورد
+        </a>
+        <a href="{{ url_for('admin_articles') }}" class="nav-link">
+            <i class="fas fa-newspaper"></i> مقالات
+        </a>
+        <a href="{{ url_for('admin_reported_questions') }}" class="nav-link">
+            <i class="fas fa-flag"></i> سوالات گزارش شده
+        </a>
+    </div>
+    
+    <div class="admin-content">
+        {% block admin_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

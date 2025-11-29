@@ -34,7 +34,8 @@ window.addEventListener('load', () => {
 
     function showUnderConstructionMessage(event) {
         event.preventDefault(); 
-        alert("این بخش هنوز در حال ساخت است و به زودی در دسترس خواهد بود!");
+        // هدایت به صفحه تست کتاب‌ها
+    window.location.href = '/books_vocab';
     }
 
     if (videosCard) {
@@ -69,12 +70,12 @@ document.addEventListener('DOMContentLoaded', function() {
             'main-header-desc': 'مسیر خود را برای یادگیری زبان انگلیسی انتخاب کنید.',
             'name-modal-title': 'نام و نام خانوادگی خود را وارد کنید',
             'name-modal-placeholder': 'نام و نام خانوادگی',
-            'card-grammar-title': 'آزمون گرامر',
+            'card-grammar-title': 'تمرین گرامر',
             'card-grammar-desc': 'دانش گرامر خود را بیازمایید.',
             'card-lessons-title': 'نتایج کاربران',
             'card-lessons-desc': 'آخرین نتایج تمرین های کاربران',
-            'card-videos-title': 'ویدیوهای آموزشی',
-            'card-videos-desc': 'مهارت‌های خود را ارتقا دهید.',
+            'card-videos-title': 'تمرین واژگان',
+            'card-videos-desc': 'لغات خود را با تست‌های کتاب‌ها تقویت کنید.',
             'section-title': 'ویدیوهای آموزشی',
             'start-quiz': 'شروع آزمون',
             'view': 'مشاهده',
@@ -118,8 +119,8 @@ document.addEventListener('DOMContentLoaded', function() {
             'card-grammar-desc': 'زانستی گرامەری خۆت تاقی بکەوە.',
             'card-lessons-title': 'ئەنجامەکانی بەکارهێنەران',
             'card-lessons-desc': 'دواترین ئەنجامەکانی ڕاهێنانەکانی بەکارهێنەران',
-            'card-videos-title': 'ڤیدیۆی فێرکاری',
-            'card-videos-desc': 'تواناکانت بەرز بکەوە.',
+            'card-videos-title': 'تاقیکردنەوەی وشەکان',
+            'card-videos-desc': 'وشەکانت بە تاقیکردنەوەکانی پەرتووکەکان بەرز بکەوە.',
             'section-title': 'ڤیدیۆی فێرکاری',
             'start-quiz': 'دەستپێکردن',
             'view': 'بینین',

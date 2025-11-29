@@ -1,0 +1,806 @@
+{% extends 'admin/article_base.html' %}
+
+{% block title %}
+    {% if article %}ویرایش مقاله{% else %}مقاله جدید{% endif %} - پنل ادمین
+{% endblock %}
+
+<style>
+    /* استایل پیام‌های موفقیت و خطا */
+    .alert {
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin: 10px 0;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    .alert-success {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border: none;
+    }
+    
+    .alert-danger {
+        background: linear-gradient(135deg, #dc3545, #e74c3c);
+        color: white;
+        border: none;
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+{% block admin_content %}
+<div class="article-form-container">
+
+
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        <strong>خطا!</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" id="articleForm">
+        <!-- دکمه بازگشت -->
+        <div class="back-button-container">
+            <a href="{{ url_for('admin_articles') }}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> بازگشت به لیست مقالات
+            </a>
+        </div>
+        
+        <!-- کارت اطلاعات اصلی مقاله -->
+        <div class="article-main-card">
+            <div class="card-header">
+                <h3>📝 اطلاعات اصلی مقاله</h3>
+            </div>
+            <div class="card-content">
+                <!-- عنوان‌ها -->
+                <div class="form-section">
+                    <h4>🏷️ عنوان‌ها</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="title_fa">عنوان فارسی *</label>
+                            <input type="text" class="form-control" id="title_fa" name="title_fa" 
+                                   value="{{ article.title_fa if article else '' }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="title_ku">عنوان کوردی</label>
+                            <input type="text" class="form-control" id="title_ku" name="title_ku" 
+                                   value="{{ article.title_ku if article else '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="title_en">عنوان انگلیسی</label>
+                            <input type="text" class="form-control" id="title_en" name="title_en" 
+                                   value="{{ article.title_en if article else '' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- خلاصه -->
+                <div class="form-section">
+                    <h4>📄 خلاصه</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="excerpt_fa">خلاصه فارسی</label>
+                            <textarea class="form-control" id="excerpt_fa" name="excerpt_fa" rows="3">{{ article.excerpt_fa if article else '' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="excerpt_ku">خلاصه کوردی</label>
+                            <textarea class="form-control" id="excerpt_ku" name="excerpt_ku" rows="3">{{ article.excerpt_ku if article else '' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="excerpt_en">خلاصه انگلیسی</label>
+                            <textarea class="form-control" id="excerpt_en" name="excerpt_en" rows="3">{{ article.excerpt_en if article else '' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تگ‌ها -->
+                <div class="form-section">
+                    <h4>🏷️ تگ‌ها</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tags_fa">تگ‌های فارسی (جدا شده با کاما)</label>
+                            <input type="text" class="form-control" id="tags_fa" name="tags_fa" 
+                                   value="{{ article.tags_fa if article else '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tags_ku">تگ‌های کوردی (جدا شده با کاما)</label>
+                            <input type="text" class="form-control" id="tags_ku" name="tags_ku" 
+                                   value="{{ article.tags_ku if article else '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tags_en">تگ‌های انگلیسی (جدا شده با کاما)</label>
+                            <input type="text" class="form-control" id="tags_en" name="tags_en" 
+                                   value="{{ article.tags_en if article else '' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تنظیمات -->
+                <div class="form-section">
+                    <h4>⚙️ تنظیمات</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category">دسته‌بندی</label>
+                            <select class="form-control" id="category" name="category">
+                                <option value="گرامر" {% if article and article.category == 'گرامر' %}selected{% endif %}>گرامر</option>
+                                <option value="واژگان" {% if article and article.category == 'واژگان' %}selected{% endif %}>واژگان</option>
+                                <option value="مکالمه" {% if article and article.category == 'مکالمه' %}selected{% endif %}>مکالمه</option>
+                                <option value="نوشتن" {% if article and article.category == 'نوشتن' %}selected{% endif %}>نوشتن</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="reading_time">زمان مطالعه (دقیقه)</label>
+                            <input type="number" class="form-control" id="reading_time" name="reading_time" 
+                                   value="{{ article.reading_time if article else 10 }}" min="1" max="120">
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="is_published" name="is_published"
+                                       {% if article and article.is_published %}checked{% endif %}>
+                                <label class="custom-control-label" for="is_published">منتشر شود</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- کارت تنظیمات بلاک‌ها -->
+        <div class="article-settings-card">
+            <div class="card-header">
+                <h3>🔧 تنظیمات بلاک‌ها</h3>
+            </div>
+            <div class="card-content">
+                <div class="form-group">
+                    <label>جهت متن:</label>
+                    <select class="form-control text-direction">
+                        <option value="">پیش‌فرض</option>
+                        <option value="rtl">راست به چپ (RTL)</option>
+                        <option value="ltr">چپ به راست (LTR)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>موقعیت:</label>
+                    <select class="form-control text-position">
+                        <option value="">پیش‌فرض</option>
+                        <option value="left">چپ</option>
+                        <option value="right">راست</option>
+                        <option value="center">وسط</option>
+                    </select>
+                </div>
+                
+                <button type="button" class="btn btn-success btn-block" onclick="addBlock()">
+                    <i class="fas fa-plus"></i> افزودن بلاک
+                </button>
+            </div>
+        </div>
+
+        <!-- بلاک‌های محتوا -->
+        <div class="content-blocks-section">
+            <div class="card-header">
+                <h3>📚 بلاک‌های محتوا</h3>
+            </div>
+            <div class="card-content">
+                <div id="blocksContainer">
+                    <!-- بلاک‌ها اینجا اضافه می‌شوند -->
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> 
+                        {% if article %}به‌روزرسانی مقاله{% else %}ایجاد مقاله{% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Template برای بلاک -->
+<template id="blockTemplate">
+    <div class="block-item" data-block-index="" data-block-id="">
+        <div class="block-header">
+            <span class="block-type-badge"></span>
+            <div class="block-actions">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveBlock(this, 'up')">
+                    <i class="fas fa-arrow-up"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveBlock(this, 'down')">
+                    <i class="fas fa-arrow-down"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeBlock(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        <div class="block-content">
+                            <div class="form-row">
+                    <div class="form-group">
+                        <label>نوع بلاک:</label>
+                        <select class="form-control block-type" name="block_type[]" required onchange="changeBlockType(this)">
+                            <option value="paragraph">پاراگراف</option>
+                            <option value="subtitle">تیتر فرعی</option>
+                            <option value="example">مثال</option>
+                            <option value="note">نکته</option>
+                            <option value="code">کد</option>
+                        </select>
+                    </div>
+                
+                <div class="form-group">
+                    <label>ترتیب:</label>
+                    <input type="number" class="form-control" name="order_num[]" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>جهت متن:</label>
+                    <select class="form-control text-direction">
+                        <option value="">پیش‌فرض</option>
+                        <option value="rtl">راست به چپ (RTL)</option>
+                        <option value="ltr">چپ به راست (LTR)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>موقعیت:</label>
+                    <select class="form-control text-position">
+                        <option value="">پیش‌فرض</option>
+                        <option value="left">چپ</option>
+                        <option value="right">راست</option>
+                        <option value="center">وسط</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>محتوای فارسی *:</label>
+                    <textarea class="form-control" name="content_fa[]" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>محتوای کوردی:</label>
+                    <textarea class="form-control" name="content_ku[]" rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>محتوای انگلیسی:</label>
+                    <textarea class="form-control" name="content_en[]" rows="4"></textarea>
+                </div>
+            </div>
+            
+            <input type="hidden" class="block-metadata" name="block_metadata[]" value="{}">
+            
+            <!-- دکمه ذخیره بلاک -->
+            <div class="block-save-section">
+                <button type="button" class="btn btn-success btn-sm" onclick="saveBlock(this)">
+                    <i class="fas fa-save"></i> ذخیره بلاک
+                </button>
+                <span class="save-status"></span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+let blockCounter = 0;
+
+function addBlock() {
+    const template = document.getElementById('blockTemplate');
+    const container = document.getElementById('blocksContainer');
+    const clone = template.content.cloneNode(true);
+    
+    // تنظیم شماره بلاک
+    clone.querySelector('.block-item').setAttribute('data-block-index', blockCounter);
+    clone.querySelector('input[name="order_num[]"]').value = blockCounter + 1;
+    
+    // تنظیم block_id برای بلاک‌های جدید (null)
+    clone.querySelector('.block-item').setAttribute('data-block-id', '');
+    
+    // تنظیم نوع بلاک
+    const blockType = clone.querySelector('.block-type');
+    const badge = clone.querySelector('.block-type-badge');
+    const blockHeader = clone.querySelector('.block-header');
+    
+    // تنظیم رنگ اولیه بر اساس نوع انتخاب شده
+    const initialType = blockType.value;
+    badge.textContent = getBlockTypeName(initialType);
+    
+    // تنظیم رنگ اولیه بر اساس نوع
+    switch(initialType) {
+        case 'paragraph':
+            badge.className = 'block-type-badge badge badge-primary';
+            blockHeader.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            break;
+        case 'subtitle':
+            badge.className = 'block-type-badge badge badge-secondary';
+            blockHeader.style.background = 'linear-gradient(135deg, #6c757d 0%, #495057 100%)';
+            break;
+        case 'example':
+            badge.className = 'block-type-badge badge badge-success';
+            blockHeader.style.background = 'linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%)';
+            break;
+        case 'note':
+            badge.className = 'block-type-badge badge badge-warning';
+            blockHeader.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+            break;
+        case 'code':
+            badge.className = 'block-type-badge badge badge-info';
+            blockHeader.style.background = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+            break;
+    }
+    
+    container.appendChild(clone);
+    
+    // اضافه کردن event listener بعد از append
+    const addedBlock = container.lastElementChild;
+    const addedBlockType = addedBlock.querySelector('.block-type');
+    addedBlockType.addEventListener('change', function() {
+        changeBlockType(this);
+    });
+    
+    blockCounter++;
+    updateBlockMetadata();
+}
+
+function removeBlock(button) {
+    if (confirm('آیا از حذف این بلاک اطمینان دارید؟')) {
+        button.closest('.block-item').remove();
+        updateBlockMetadata();
+    }
+}
+
+function moveBlock(button, direction) {
+    const block = button.closest('.block-item');
+    const container = document.getElementById('blocksContainer');
+    
+    if (direction === 'up' && block.previousElementSibling) {
+        container.insertBefore(block, block.previousElementSibling);
+    } else if (direction === 'down' && block.nextElementSibling) {
+        container.insertBefore(block.nextElementSibling, block);
+    }
+    
+    updateBlockMetadata();
+}
+
+function getBlockTypeName(type) {
+    const names = {
+        'paragraph': 'پاراگراف',
+        'subtitle': 'تیتر فرعی',
+        'example': 'مثال',
+        'note': 'نکته',
+        'code': 'کد'
+    };
+    return names[type] || type;
+}
+
+function changeBlockType(selectElement) {
+    const blockItem = selectElement.closest('.block-item');
+    const badge = blockItem.querySelector('.block-type-badge');
+    const newType = selectElement.value;
+    
+    // تغییر متن badge
+    badge.textContent = getBlockTypeName(newType);
+    
+    // تغییر رنگ badge بر اساس نوع
+    badge.className = 'block-type-badge badge';
+    
+    switch(newType) {
+        case 'paragraph':
+            badge.classList.add('badge-primary');
+            break;
+        case 'subtitle':
+            badge.classList.add('badge-secondary');
+            break;
+        case 'example':
+            badge.classList.add('badge-success');
+            break;
+        case 'note':
+            badge.classList.add('badge-warning');
+            break;
+        case 'code':
+            badge.classList.add('badge-info');
+            break;
+    }
+    
+    // تغییر رنگ header بلاک بر اساس نوع
+    const blockHeader = blockItem.querySelector('.block-header');
+    blockHeader.className = 'block-header';
+    
+    switch(newType) {
+        case 'paragraph':
+            blockHeader.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            break;
+        case 'subtitle':
+            blockHeader.style.background = 'linear-gradient(135deg, #6c757d 0%, #495057 100%)';
+            break;
+        case 'example':
+            blockHeader.style.background = 'linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%)';
+            break;
+        case 'note':
+            blockHeader.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+            break;
+        case 'code':
+            blockHeader.style.background = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+            break;
+    }
+    
+    // به‌روزرسانی metadata
+    updateBlockMetadata();
+}
+
+function updateBlockMetadata() {
+    const blocks = document.querySelectorAll('.block-item');
+    blocks.forEach((block, index) => {
+        const direction = block.querySelector('.text-direction').value;
+        const position = block.querySelector('.text-position').value;
+        const metadata = {};
+        
+        if (direction) metadata.direction = direction;
+        if (position) metadata.position = position;
+        
+        const metadataInput = block.querySelector('.block-metadata');
+        if (metadataInput) {
+            metadataInput.value = JSON.stringify(metadata);
+        }
+        
+        const orderInput = block.querySelector('input[name="order_num[]"]');
+        if (orderInput) {
+            orderInput.value = index + 1;
+        }
+        
+        // تنظیم نوع بلاک از کپسل اگر انتخاب نشده باشد
+        const typeSelect = block.querySelector('.block-type');
+        const badge = block.querySelector('.block-type-badge');
+        
+        if (!typeSelect.value || typeSelect.value === '') {
+            const badgeText = badge.textContent.trim();
+            let blockType = 'paragraph'; // پیش‌فرض
+            
+            // تشخیص نوع از متن کپسل
+            if (badgeText.includes('پاراگراف')) blockType = 'paragraph';
+            else if (badgeText.includes('تیتر فرعی')) blockType = 'subtitle';
+            else if (badgeText.includes('مثال')) blockType = 'example';
+            else if (badgeText.includes('نکته')) blockType = 'note';
+            else if (badgeText.includes('کد')) blockType = 'code';
+            
+            typeSelect.value = blockType;
+            console.log(`Block ${index}: Auto-set type to '${blockType}' from badge '${badgeText}'`);
+        }
+    });
+}
+
+// بارگذاری بلاک‌های موجود در ویرایش
+{% if article %}
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/admin/article-blocks/{{ article.id }}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                data.blocks.forEach(block => {
+                    addExistingBlock(block);
+                });
+            }
+        });
+});
+
+function addExistingBlock(blockData) {
+    const template = document.getElementById('blockTemplate');
+    const container = document.getElementById('blocksContainer');
+    const clone = template.content.cloneNode(true);
+    
+    // تنظیم مقادیر
+    clone.querySelector('.block-type').value = blockData.block_type;
+    clone.querySelector('input[name="order_num[]"]').value = blockData.order_num;
+    clone.querySelector('textarea[name="content_fa[]"]').value = blockData.content_fa || '';
+    clone.querySelector('textarea[name="content_ku[]"]').value = blockData.content_ku || '';
+    clone.querySelector('textarea[name="content_en[]"]').value = blockData.content_en || '';
+    
+    // تنظیم block_id برای بلاک‌های موجود
+    if (blockData.id) {
+        clone.querySelector('.block-item').setAttribute('data-block-id', blockData.id);
+    }
+    
+    // تنظیم رنگ و استایل بر اساس نوع
+    const badge = clone.querySelector('.block-type-badge');
+    const blockHeader = clone.querySelector('.block-header');
+    
+    badge.textContent = getBlockTypeName(blockData.block_type);
+    badge.className = 'block-type-badge badge';
+    
+    switch(blockData.block_type) {
+        case 'paragraph':
+            badge.classList.add('badge-primary');
+            blockHeader.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            break;
+        case 'subtitle':
+            badge.classList.add('badge-secondary');
+            blockHeader.style.background = 'linear-gradient(135deg, #6c757d 0%, #495057 100%)';
+            break;
+        case 'example':
+            badge.classList.add('badge-success');
+            blockHeader.style.background = 'linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%)';
+            break;
+        case 'note':
+            badge.classList.add('badge-warning');
+            blockHeader.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+            break;
+        case 'code':
+            badge.classList.add('badge-info');
+            blockHeader.style.background = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+            break;
+    }
+    
+    // تنظیم metadata
+    if (blockData.block_metadata) {
+        const metadata = blockData.block_metadata;
+        if (metadata.direction) {
+            clone.querySelector('.text-direction').value = metadata.direction;
+        }
+        if (metadata.position) {
+            clone.querySelector('.text-position').value = metadata.position;
+        }
+    }
+    
+    container.appendChild(clone);
+    
+    // اضافه کردن event listener برای تغییر نوع بلاک
+    const addedBlock = container.lastElementChild;
+    const addedBlockType = addedBlock.querySelector('.block-type');
+    addedBlockType.addEventListener('change', function() {
+        changeBlockType(this);
+    });
+    
+    blockCounter++;
+    updateBlockMetadata();
+}
+{% endif %}
+
+    // به‌روزرسانی metadata هنگام تغییر
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('.text-direction, .text-position')) {
+            updateBlockMetadata();
+        }
+    });
+    
+    // اضافه کردن event listener برای form submission
+    document.getElementById('articleForm').addEventListener('submit', function(e) {
+        console.log('Form submitted!');
+        
+        // به‌روزرسانی metadata قبل از submit
+        updateBlockMetadata();
+        
+        // تنظیم نوع بلاک از کپسل اگر انتخاب نشده باشد
+        const blocks = document.querySelectorAll('.block-item');
+        blocks.forEach((block, index) => {
+            const typeSelect = block.querySelector('.block-type');
+            const badge = block.querySelector('.block-type-badge');
+            
+            // اگر نوع انتخاب نشده، از کپسل استفاده کن
+            if (!typeSelect.value || typeSelect.value === '') {
+                const badgeText = badge.textContent.trim();
+                let blockType = 'paragraph'; // پیش‌فرض
+                
+                // تشخیص نوع از متن کپسل
+                if (badgeText.includes('پاراگراف')) blockType = 'paragraph';
+                else if (badgeText.includes('تیتر فرعی')) blockType = 'subtitle';
+                else if (badgeText.includes('مثال')) blockType = 'example';
+                else if (badgeText.includes('نکته')) blockType = 'note';
+                else if (badgeText.includes('کد')) blockType = 'code';
+                
+                typeSelect.value = blockType;
+                console.log(`Block ${index}: Set type to '${blockType}' from badge '${badgeText}'`);
+            }
+        });
+        
+        // نمایش loading
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
+        submitBtn.disabled = true;
+        
+        // فرم submit می‌شود
+        return true;
+    });
+    
+    // تابع ذخیره بلاک
+    function saveBlock(button) {
+        const blockItem = button.closest('.block-item');
+        const saveStatus = blockItem.querySelector('.save-status');
+        const originalText = button.innerHTML;
+        
+        // تغییر دکمه به حالت loading
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
+        button.disabled = true;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-secondary');
+        
+        // جمع‌آوری اطلاعات بلاک
+        const blockData = {
+            article_id: {{ article.id if article else 'null' }}, // اضافه کردن article_id
+            block_id: blockItem.dataset.blockId || null, // اضافه کردن block_id
+            block_type: blockItem.querySelector('.block-type').value,
+            content_fa: blockItem.querySelector('textarea[name="content_fa[]"]').value,
+            content_ku: blockItem.querySelector('textarea[name="content_ku[]"]').value,
+            content_en: blockItem.querySelector('textarea[name="content_en[]"]').value,
+            order_num: blockItem.querySelector('input[name="order_num[]"]').value,
+            direction: blockItem.querySelector('.text-direction').value,
+            position: blockItem.querySelector('.text-position').value
+        };
+        
+        // API call واقعی
+        fetch('/api/admin/save-block', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(blockData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // موفقیت
+                button.innerHTML = '<i class="fas fa-check-circle"></i> ذخیره شد';
+                button.classList.remove('btn-secondary');
+                button.classList.add('btn-success');
+                button.disabled = false;
+                
+                saveStatus.innerHTML = '<span class="text-success"><i class="fas fa-check-circle"></i> بلاک با موفقیت ذخیره شد</span>';
+                saveStatus.className = 'save-status text-success';
+                
+                // به‌روزرسانی مقاله بعد از ذخیره بلاک
+                updateArticleAfterBlockSave();
+            } else {
+                // خطا
+                button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> خطا';
+                button.classList.remove('btn-secondary');
+                button.classList.add('btn-danger');
+                button.disabled = false;
+                
+                saveStatus.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle"></i> خطا در ذخیره: ' + data.message + '</span>';
+                saveStatus.className = 'save-status text-danger';
+            }
+            
+            // بازگشت به حالت عادی بعد از 3 ثانیه
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                saveStatus.innerHTML = '';
+                saveStatus.className = 'save-status';
+            }, 3000);
+        })
+        .catch(error => {
+            // خطای شبکه
+            button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> خطا';
+            button.classList.remove('btn-secondary');
+            button.classList.add('btn-danger');
+            button.disabled = false;
+            
+            saveStatus.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle"></i> خطا در اتصال</span>';
+            saveStatus.className = 'save-status text-danger';
+            
+            // بازگشت به حالت عادی بعد از 3 ثانیه
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                saveStatus.innerHTML = '';
+                saveStatus.className = 'save-status';
+            }, 3000);
+        });
+    }
+    
+    // تابع به‌روزرسانی مقاله بعد از ذخیره بلاک
+    function updateArticleAfterBlockSave() {
+        console.log('Updating article after block save...');
+        
+        // به‌روزرسانی metadata
+        updateBlockMetadata();
+        
+        // جمع‌آوری اطلاعات مقاله
+        const articleData = new FormData();
+        
+        // اطلاعات اصلی مقاله
+        articleData.append('title_fa', document.getElementById('title_fa').value);
+        articleData.append('title_ku', document.getElementById('title_ku').value);
+        articleData.append('title_en', document.getElementById('title_en').value);
+        articleData.append('excerpt_fa', document.getElementById('excerpt_fa').value);
+        articleData.append('excerpt_ku', document.getElementById('excerpt_ku').value);
+        articleData.append('excerpt_en', document.getElementById('excerpt_en').value);
+        articleData.append('tags_fa', document.getElementById('tags_fa').value);
+        articleData.append('tags_ku', document.getElementById('tags_ku').value);
+        articleData.append('tags_en', document.getElementById('tags_en').value);
+        articleData.append('category', document.getElementById('category').value);
+        articleData.append('reading_time', document.getElementById('reading_time').value);
+        articleData.append('is_published', document.getElementById('is_published').checked ? 'on' : '');
+        
+        // اطلاعات بلاک‌ها
+        const blocks = document.querySelectorAll('.block-item');
+        blocks.forEach((block, index) => {
+            const blockType = block.querySelector('.block-type').value;
+            const contentFa = block.querySelector('textarea[name="content_fa[]"]').value;
+            const contentKu = block.querySelector('textarea[name="content_ku[]"]').value;
+            const contentEn = block.querySelector('textarea[name="content_en[]"]').value;
+            const orderNum = block.querySelector('input[name="order_num[]"]').value;
+            const metadata = block.querySelector('.block-metadata').value;
+            
+            articleData.append('block_type[]', blockType);
+            articleData.append('content_fa[]', contentFa);
+            articleData.append('content_ku[]', contentKu);
+            articleData.append('content_en[]', contentEn);
+            articleData.append('order_num[]', orderNum);
+            articleData.append('block_metadata[]', metadata);
+        });
+        
+        // ارسال درخواست به‌روزرسانی مقاله
+        fetch(window.location.href, {
+            method: 'POST',
+            body: articleData
+        })
+        .then(response => {
+            if (response.redirected) {
+                // اگر redirect شد، مقاله با موفقیت به‌روزرسانی شد
+                console.log('Article updated successfully, redirecting...');
+                window.location.href = response.url;
+            } else {
+                // بررسی پاسخ
+                return response.text();
+            }
+        })
+        .then(html => {
+            if (html) {
+                console.log('Article update response received');
+                // نمایش پیام موفقیت
+                const successMessage = document.createElement('div');
+                successMessage.className = 'alert alert-success';
+                successMessage.innerHTML = '<i class="fas fa-check-circle"></i> مقاله با موفقیت به‌روزرسانی شد';
+                successMessage.style.position = 'fixed';
+                successMessage.style.top = '20px';
+                successMessage.style.right = '20px';
+                successMessage.style.zIndex = '9999';
+                document.body.appendChild(successMessage);
+                
+                // حذف پیام بعد از 3 ثانیه
+                setTimeout(() => {
+                    successMessage.remove();
+                }, 3000);
+            }
+        })
+        .catch(error => {
+            console.error('Error updating article:', error);
+            // نمایش پیام خطا
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'alert alert-danger';
+            errorMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> خطا در به‌روزرسانی مقاله';
+            errorMessage.style.position = 'fixed';
+            errorMessage.style.top = '20px';
+            errorMessage.style.right = '20px';
+            errorMessage.style.zIndex = '9999';
+            document.body.appendChild(errorMessage);
+            
+            // حذف پیام بعد از 3 ثانیه
+            setTimeout(() => {
+                errorMessage.remove();
+            }, 3000);
+        });
+    }
+</script>
+{% endblock %}

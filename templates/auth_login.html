@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}ورود{% endblock %}
+
+{% block content %}
+<div class="content-area" style="display:flex;justify-content:center;align-items:center;min-height:60vh;">
+  <div style="width:100%;max-width:380px;background:#fff;border:1px solid #eee;border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.06);">
+    <h2 style="margin:0 0 12px 0;text-align:center;">ورود</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input id="login-username" type="text" placeholder="نام کاربری" style="padding:10px;border:1px solid #ddd;border-radius:8px;">
+      <input id="login-password" type="password" placeholder="رمز عبور" style="padding:10px;border:1px solid #ddd;border-radius:8px;">
+      <button id="login-submit" class="btn-blue" style="width:100%;">ورود</button>
+      <div id="login-error" style="color:#d32f2f;text-align:center"></div>
+      <div style="text-align:center;font-size:.9rem;">حساب ندارید؟ <a href="/signup">ثبت‌نام</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('login-submit').addEventListener('click', async function(){
+  const u = document.getElementById('login-username').value.trim();
+  const p = document.getElementById('login-password').value.trim();
+  const err = document.getElementById('login-error');
+  err.textContent='';
+  if(!u||!p){ err.textContent='نام کاربری و رمز را وارد کنید'; return; }
+  try{
+    const res = await fetch('/login', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u, password:p})});
+    const data = await res.json();
+    if(data.success){ window.location.href = '/profile'; }
+    else { err.textContent = data.message || 'خطا در ورود'; }
+  }catch(e){ err.textContent='خطا در ارتباط با سرور'; }
+});
+</script>
+{% endblock %}
+
+

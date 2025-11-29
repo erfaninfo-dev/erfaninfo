@@ -1,0 +1,479 @@
+{% extends "base.html" %}
+
+{% block title %}جزئیات نتیجه{% endblock %}
+
+{% block content %}
+<div class="content-area" style="width:100%;max-width:1400px;margin:0 auto;padding:16px;">
+  <style>
+    .result-header{background:linear-gradient(180deg,#ffffff 0%, #fbfcff 100%);border:1px solid #e8eaf7;border-radius:16px;padding:14px 18px;box-shadow:0 8px 20px rgba(38,57,115,.06);position:relative;overflow:hidden}
+    .result-header-grid{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:flex-start;gap:14px;direction:ltr}
+    .controls-center{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+    .user-block{text-align:right}
+    .header-btn{background:#fff;border:1px solid #dfe3f0;border-radius:12px;padding:8px 12px;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:all .15s ease}
+    .header-btn:hover{box-shadow:0 4px 14px rgba(0,0,0,.08)}
+    .header-select,.header-input{border:1px solid #dfe3f0;border-radius:12px;padding:6px 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04);height:32px;font-size:.82rem;box-sizing:border-box}
+    .result-header .header-select, .result-header .header-input{width:100%;max-width:420px;margin:0 auto;}
+    .header-select{position:relative;top:2px}
+    .header-input{min-width:0}
+    .header-input::placeholder{ text-align:right; }
+    .header-input::-webkit-input-placeholder{ text-align:right; }
+    .header-input:-ms-input-placeholder{ text-align:right; }
+    .ctrl-label{font-weight:700;color:#374151}
+    .filter-row{display:flex;gap:8px;align-items:center}
+    .title-block{line-height:1.2;text-align:left}
+    .title-block .t{
+      display:inline-block;
+      font-weight:900;
+      font-size:.85rem;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      padding:4px 10px;
+      border-radius:9999px;
+      color:#fff;
+      background:linear-gradient(135deg,#4f46e5 0%, #8b5cf6 45%, #22d3ee 100%);
+      border:1px solid rgba(255,255,255,.3);
+      box-shadow:0 10px 26px rgba(79,70,229,.28), 0 4px 10px rgba(34,211,238,.18);
+      text-shadow:0 1px 2px rgba(0,0,0,.18);
+      margin-top:0;
+    }
+    .title-block .d{color:#6b7280;font-size:.78rem;margin-top:2px;margin-bottom:0}
+    .title-block .u{color:#111827;font-weight:700;margin-top:8px}
+    .title-block .s{color:#374151;margin-top:2px}
+    .ring{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;position:relative}
+    .ring::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--ring-color, #4f46e5) var(--deg), #e5e7eb 0);}
+    .ring::after{content:attr(data-text);position:absolute;inset:6px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:.72rem;font-weight:700;color:#111827}
+    @media (min-width: 601px){ .score-wrap{ right:28px !important } }
+    @media (min-width: 601px){
+      .result-header .d{ position:absolute; left:18px; bottom:12px; font-size:.75rem }
+      .result-header .controls-center{ grid-column:2; grid-row:2; justify-self:center; align-self:center; margin:0 auto; width:100%; max-width:1200px }
+      .result-header .header-select, .result-header .header-input{ width:100% !important; max-width:100% !important }
+    }
+    /* Desktop: keep filter size ~420px, make search ~1.5x */
+    @media (min-width: 993px){
+      .result-header .controls-center{max-width:960px}
+      .result-header .header-select{width:420px !important; max-width:420px !important; margin:8px auto}
+      .result-header .header-input{width:630px !important; max-width:100% !important; margin:8px auto}
+    }
+  </style>
+  
+
+  
+  <div class="result-header" style="width:80%;margin:0 auto;">
+      <div class="result-header-grid" style="grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto;align-items:center;">
+      <div class="title-block title-left" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;grid-column:1;grid-row:1;">
+        <div class="t">{{ result.quiz_name }}</div>
+      </div>
+      <div class="controls-center" style="gap:8px;align-items:stretch;grid-column:2;grid-row:2;justify-self:center;display:flex;flex-direction:column;justify-content:center;width:100%;max-width:100%;box-sizing:border-box;padding:0 8px;">
+        <div class="filter-row">
+          <select id="filter-mode" class="header-select" dir="rtl" style="direction: rtl; text-align: right;">
+            <option value="all">همه سوال‌ها</option>
+            <option value="ok">سوال‌های درست</option>
+            <option value="bad">سوال‌های غلط</option>
+          </select>
+        </div>
+        <input id="search-input" class="header-input" type="search" placeholder="...جستجو" dir="rtl" style="text-align:right">
+      </div>
+      <div class="d" style="grid-column:1;grid-row:2;color:#6b7280;">{{ result.created_at }}</div>
+      
+      <div class="score-wrap" style="position:absolute;top:10px;right:18px;display:flex;align-items:center;gap:8px;">
+        <span class="ring" style="--deg: calc({{ result.percentage }} * 1%);" data-text="{{ result.percentage }}%" data-percent="{{ result.percentage }}"></span>
+        <span style="font-size:.9rem;font-weight:700">نمره: <strong>{{ result.score }}/{{ result.total_questions }}</strong></span>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Mobile cards (hidden on desktop) -->
+  <div class="mobile-cards" style="margin:12px auto 0 auto;width:100%;max-width:800px;display:none;">
+    {% for it in items %}
+    {% set is_mcq = (it.question_type or '') == 'mcq' %}
+    {% set opts = it.options if is_mcq and it.options else [] %}
+    <div class="mcard {{ 'ok' if it.is_correct else 'bad' }}">
+      <div class="mcard-h">
+        <div class="mnum">{{ loop.index }}</div>
+      </div>
+      <div class="mcard-b">
+        <div class="mq">{{ it.question_text }}</div>
+        <div class="ma">پاسخ شما: <strong class="{% if it.is_correct %}ma-correct{% else %}ma-incorrect{% endif %}">{{ it.user_answer or '-' }}</strong></div>
+        <div class="mc">پاسخ صحیح: <strong class="mc-correct">{{ it.correct_answer or '-' }}</strong></div>
+      </div>
+      <div class="macc">
+        {% if opts|length > 0 %}
+        <div class="acc-item">
+          <button class="acc-head">گزینه‌های دیگر</button>
+          <div class="acc-body">
+            <ul class="mopts">
+              {% for op in opts %}<li>{{ op }}</li>{% endfor %}
+            </ul>
+          </div>
+        </div>
+        {% endif %}
+        {% if it.fa_explanation %}
+        <div class="acc-item">
+          <button class="acc-head">توضیحات فارسی</button>
+          <div class="acc-body"><div class="exp-txt" dir="rtl">{{ it.fa_explanation }}</div></div>
+        </div>
+        {% endif %}
+        {% if it.kur_explanation %}
+        <div class="acc-item">
+          <button class="acc-head">توضیحات کوردی</button>
+          <div class="acc-body"><div class="exp-txt" dir="rtl">{{ it.kur_explanation }}</div></div>
+        </div>
+        {% endif %}
+        {% if it.eng_explanation %}
+        <div class="acc-item">
+          <button class="acc-head">English Explanation</button>
+          <div class="acc-body"><div class="exp-txt" dir="ltr" style="text-align:left">{{ it.eng_explanation }}</div></div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="desktop-table" style="margin:12px auto 0 auto;width:80%;background:#fff;border:1px solid #eee;border-radius:12px;padding:16px;">
+    <style>
+      table.result-table{border-collapse:separate;border-spacing:0;table-layout:fixed;width:100%}
+      /* دیوایدر ظریف فقط بین ستون‌های هر سؤال */
+      tr.q-row > td:not(:last-child){box-shadow: inset -1px 0 0 #ececec}
+      table.result-table th, table.result-table td{word-wrap:break-word;white-space:normal}
+      /* تم بصری کارت سؤال مشابه هدر */
+      tr.q-row>td{
+        background:linear-gradient(180deg,#ffffff 0%, #fbfcff 100%);
+        border-top:1px solid #e8eaf7; border-bottom:none; border-left:none; border-right:none;
+        padding-top:10px;padding-bottom:10px;
+        box-shadow:0 6px 16px rgba(38,57,115,.05);
+      }
+      tr.q-row>td:first-child{border-left:1px solid #e8eaf7;border-top-left-radius:12px}
+      tr.q-row>td:last-child{border-right:1px solid #e8eaf7;border-top-right-radius:12px}
+      /* بخش توضیحات پایین کارت با همان تم */
+      tr.exp-row>td{
+        background:linear-gradient(180deg,#ffffff 0%, #fbfcff 100%);
+        border-bottom:1px solid #e8eaf7; border-top:none; border-left:none; border-right:none;
+        border-bottom-left-radius:12px;border-bottom-right-radius:12px;
+        box-shadow:0 6px 16px rgba(38,57,115,.05);
+      }
+      tr.exp-row>td:first-child{border-left:1px solid #e8eaf7}
+      tr.exp-row>td:last-child{border-right:1px solid #e8eaf7}
+      tr.q-spacer>td{height:10px;background:transparent;border:none}
+      /* رنگ مرز بر اساس درست/غلط */
+      tr.q-row.q-ok>td{border-top-color:#66bb6a}
+      tr.q-row.q-ok>td:first-child{border-left-color:#66bb6a}
+      tr.q-row.q-ok>td:last-child{border-right-color:#66bb6a}
+      tr.exp-row.q-ok>td{border-bottom-color:#66bb6a}
+      tr.exp-row.q-ok>td:first-child{border-left-color:#66bb6a}
+      tr.exp-row.q-ok>td:last-child{border-right-color:#66bb6a}
+      tr.q-row.q-bad>td{border-top-color:#e57373}
+      tr.q-row.q-bad>td:first-child{border-left-color:#e57373}
+      tr.q-row.q-bad>td:last-child{border-right-color:#e57373}
+      tr.exp-row.q-bad>td{border-bottom-color:#e57373}
+      tr.exp-row.q-bad>td:first-child{border-left-color:#e57373}
+      tr.exp-row.q-bad>td:last-child{border-right-color:#e57373}
+      /* افکت رنگی بر اساس درست/غلط */
+      tr.q-row.q-ok>td{background:linear-gradient(180deg,#ffffff 0%, #f7fffb 100%);box-shadow:0 6px 16px rgba(102,187,106,.05)}
+      tr.exp-row.q-ok>td{background:linear-gradient(180deg,#ffffff 0%, #f7fffb 100%);box-shadow:0 6px 16px rgba(102,187,106,.05)}
+      tr.q-row.q-bad>td{background:linear-gradient(180deg,#ffffff 0%, #fff8f8 100%);box-shadow:0 6px 16px rgba(229,115,115,.05)}
+      tr.exp-row.q-bad>td{background:linear-gradient(180deg,#ffffff 0%, #fff8f8 100%);box-shadow:0 6px 16px rgba(229,115,115,.05)}
+      /* کمرنگ‌تر کردن رنگ حاشیه‌ها برای وضعیت‌ها */
+      /* یکنواختی شفافیت دور کادر برای تمام اضلاع موجود */
+      tr.q-row.q-ok>td{border-top-color:rgba(102,187,106,.5);border-bottom-color:rgba(102,187,106,.5)}
+      tr.q-row.q-ok>td:first-child{border-left-color:rgba(102,187,106,.5)}
+      tr.q-row.q-ok>td:last-child{border-right-color:rgba(102,187,106,.5)}
+      tr.exp-row.q-ok>td{border-bottom-color:rgba(102,187,106,.5);border-top-color:rgba(102,187,106,.5)}
+      tr.exp-row.q-ok>td:first-child{border-left-color:rgba(102,187,106,.5)}
+      tr.exp-row.q-ok>td:last-child{border-right-color:rgba(102,187,106,.5)}
+      tr.q-row.q-bad>td{border-top-color:rgba(229,115,115,.5);border-bottom-color:rgba(229,115,115,.5)}
+      tr.q-row.q-bad>td:first-child{border-left-color:rgba(229,115,115,.5)}
+      tr.q-row.q-bad>td:last-child{border-right-color:rgba(229,115,115,.5)}
+      tr.exp-row.q-bad>td{border-bottom-color:rgba(229,115,115,.5);border-top-color:rgba(229,115,115,.5)}
+      tr.exp-row.q-bad>td:first-child{border-left-color:rgba(229,115,115,.5)}
+      tr.exp-row.q-bad>td:last-child{border-right-color:rgba(229,115,115,.5)}
+      /* نشانگر دایره‌ای شماره سؤال */
+      .num-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-weight:700;font-size:.95rem;line-height:1;border:2px solid transparent}
+      tr.q-row.q-ok .num-badge{background:#2e7d32;border-color:#2e7d32;color:#fff}
+      tr.q-row.q-bad .num-badge{background:#c62828;border-color:#c62828;color:#fff}
+      /* Mobile card styles */
+      .mcard{background:linear-gradient(180deg,#ffffff 0%, #fbfcff 100%);border:1px solid #e8eaf7;border-radius:14px;box-shadow:0 6px 16px rgba(38,57,115,.05);padding:12px 12px 8px 12px;margin-bottom:12px}
+      .mcard.ok{border-color:rgba(102,187,106,.5);}
+      .mcard.bad{border-color:rgba(229,115,115,.5);}
+      .mcard-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+      .mnum{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:#fff;border:2px solid #ddd}
+      .mcard.ok .mnum{background:#2e7d32;border-color:#2e7d32;color:#fff}
+      .mcard.bad .mnum{background:#c62828;border-color:#c62828;color:#fff}
+      .mstatus{font-weight:700;color:#374151}
+      .mcard.ok .mstatus{color:#2e7d32}
+      .mcard.bad .mstatus{color:#c62828}
+      .mq{font-weight:700;margin:6px 0}
+      .ma,.mc{font-size:.95rem;color:#374151;margin-top:4px}
+      .ma strong.ma-correct{color:#2e7d32;font-weight:600}
+      .ma strong.ma-incorrect{color:#c62828;font-weight:600}
+      .mc strong.mc-correct{color:#2e7d32;font-weight:600}
+      .mopts{margin:6px 0 0 0;padding-inline-start:18px;direction:ltr;text-align:left;list-style-position:outside;padding-left:18px;padding-right:0;font-size:.9rem}
+      .mopts li{direction:ltr;text-align:left}
+      .acc-item{border-top:1px dashed #e5e7eb;margin-top:8px;padding-top:8px}
+      .acc-head{width:100%;text-align:right;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:6px 10px;font-weight:400}
+      .acc-body{display:none;padding:8px 2px;font-size:.9rem;line-height:1.5}
+
+      /* Responsive switch */
+      @media (max-width: 600px){
+        .desktop-table{display:none !important}
+        .mobile-cards{display:block !important; width:100% !important; box-sizing:border-box; padding:0 10px}
+        /* هدر 90% عرض صفحه و وسط‌چین */
+        .result-header{width:90vw !important; max-width:90% !important; margin:0 auto !important}
+        /* اجزای هدر از کارت بیرون نزنند */
+        .controls-center{width:100%; box-sizing:border-box; padding:0 10px}
+        .result-header{width:95vw !important; max-width:95% !important}
+        /* کنترل‌ها تمام عرض ردیف دوم را بگیرند تا از باکس بیرون نزنند */
+        .result-header .controls-center{grid-row:2 !important; grid-column:1 / span 3 !important; align-self:center; justify-self:center; margin-top:24px; width:100%;}
+        .result-header .header-select{max-width:100% !important;width:100% !important;height:34px;padding:6px 10px;font-size:.85rem;margin:0 auto}
+        /* نمایش سرچ زیر فیلتر در موبایل */
+        .result-header .header-input{display:block !important; width:100% !important; max-width:100% !important; height:34px; padding:6px 10px; font-size:.85rem; margin-top:6px; margin-left:auto; margin-right:auto}
+        /* کوچکتر کردن عنوان گرامر و تاریخ در موبایل */
+        .title-block .t{font-size:.6rem;padding:4px 10px; white-space:nowrap; width:fit-content}
+        .d{font-size:.7rem; position:absolute; left:20px; top:56px}
+        .score-wrap{ top:20px !important; right:26px !important }
+        /* کارت‌ها 90% عرض صفحه و وسط‌چین */
+        .mcard{box-sizing:border-box; width:90vw; max-width:90%; margin:12px auto}
+        /* حلقه درصد کوچک‌تر در موبایل */
+        .ring{width:28px;height:28px}
+        .score-wrap{grid-column:2; grid-row:1 / span 2; place-self:center;}
+        .score-wrap span:last-child{display:none}
+        /* هدر کارت: شماره سمت چپ، وضعیت سمت راست */
+        .mcard-h{justify-content:flex-start !important; gap:10px; direction:ltr}
+        .mstatus{margin-left:auto}
+        .mnum{margin-right:8px}
+        /* جهت‌دهی پویا برای متن سؤال در موبایل */
+        .mq{word-break:break-word}
+        .mq[dir="rtl"]{direction:rtl;text-align:right}
+        .mq[dir="ltr"]{direction:ltr;text-align:left}
+        /* پاسخ‌ها: برچسب راست بماند، مقدار سمت چپ و LTR */
+        .ma, .mc{display:flex;justify-content:space-between;align-items:center;gap:8px}
+        .ma strong, .mc strong{direction:ltr;text-align:left;margin-left:auto;display:inline-block}
+        /* کوچکتر کردن دکمه‌های گزینه‌ها و توضیحات */
+        .acc-head{font-size:.85rem;padding:5px 10px}
+      }
+
+      /* Tablet: 601–992px => mobile layout but slightly larger */
+      @media (min-width: 601px) and (max-width: 992px){
+        .desktop-table{display:none !important}
+        .mobile-cards{display:block !important; width:100% !important; box-sizing:border-box; padding:0 14px}
+        .result-header{width:92% !important; max-width:920px !important; margin:0 auto !important}
+        .controls-center{width:100%; box-sizing:border-box; padding:0 12px}
+        .result-header .controls-center{grid-row:2 !important; grid-column:1 / span 3 !important; align-self:center; justify-self:center; margin-top:16px; width:100%; max-width:800px}
+        .result-header .header-select,.result-header .header-input{height:38px;font-size:.95rem;max-width:600px !important;width:70% !important;margin:8px auto}
+        .title-block .t{font-size:.9rem; white-space:nowrap; width:fit-content}
+        .d{font-size:.82rem; position:absolute; left:20px; top:64px}
+        .ring{width:32px;height:32px}
+        .score-wrap{ top:24px !important; right:30px !important }
+        .mcard{box-sizing:border-box; width:88%; max-width:760px; margin:14px auto}
+        .mq{font-weight:700;margin:8px 0}
+        .ma,.mc{font-size:1rem}
+        .mopts{font-size:.95rem}
+        .acc-head{font-size:.95rem;padding:6px 12px}
+      }
+      
+      /* Medium desktop: 993–1203px => fix grammar title and equal search/filter */
+      @media (min-width: 993px) and (max-width: 1203px){
+        .title-block .t{white-space:nowrap; width:fit-content}
+        .result-header .header-select{width:420px !important; max-width:420px !important; margin:8px auto}
+        .result-header .header-input{width:420px !important; max-width:420px !important; margin:8px auto}
+      }
+      
+      /* Hide profile button on mobile/tablet */
+      @media (max-width: 992px){
+        .profile-dashboard-btn{display:none !important}
+      }
+    </style>
+    <table class="table result-table" style="width:100%;direction:ltr;">
+      <colgroup>
+        <col style="width:8%">
+        <col style="width:16%">
+        <col style="width:12%">
+        <col style="width:12%">
+        <col style="width:12%">
+        <col style="width:12%">
+        <col style="width:14%">
+        <col style="width:14%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>سؤال</th>
+          <th>گزینه ۱</th>
+          <th>گزینه ۲</th>
+          <th>گزینه ۳</th>
+          <th>گزینه ۴</th>
+          <th>پاسخ شما</th>
+          <th>پاسخ صحیح</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in items %}
+        <tr class="q-row {{ 'q-ok' if it.is_correct else 'q-bad' }}">
+          <td style="text-align:center"><span class="num-badge">{{ loop.index }}</span></td>
+          <td>
+            <div>{{ it.question_text }}</div>
+          </td>
+          {% set is_mcq = (it.question_type or '') == 'mcq' %}
+          {% set opts = it.options if is_mcq and it.options else [] %}
+          <td>{{ opts[0] if opts|length > 0 else '' }}</td>
+          <td>{{ opts[1] if opts|length > 1 else '' }}</td>
+          <td>{{ opts[2] if opts|length > 2 else '' }}</td>
+          <td>{{ opts[3] if opts|length > 3 else '' }}</td>
+          <td>{{ it.user_answer or '-' }}</td>
+          <td>{{ it.correct_answer or '-' }}</td>
+        </tr>
+        <tr class="exp-row {{ 'q-ok' if it.is_correct else 'q-bad' }}" style="background:#fafafa">
+          <td colspan="8" style="padding:12px 12px 8px 12px;">
+            <div class="exp-card" style="border:1px solid #e6e6e6;border-radius:10px;padding:8px 10px;margin:6px 0;">
+              <div class="exp-head" data-target="exp-fa-{{ loop.index }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;justify-content:flex-end;flex-direction:row-reverse;width:100%;direction:rtl;text-align:right;">
+                <span style="font-weight:600;">توضیحات فارسی</span>
+                <button class="btn btn-sm btn-light exp-toggle" data-target="exp-fa-{{ loop.index }}" style="border:1px solid #ddd;min-width:32px;padding:2px 8px">+</button>
+              </div>
+              <div id="exp-fa-{{ loop.index }}" class="exp-body" style="display:none;padding-top:8px;white-space:pre-wrap;color:#444;direction:rtl;text-align:right;">{{ it.fa_explanation or '—' }}</div>
+            </div>
+            <div class="exp-card" style="border:1px solid #e6e6e6;border-radius:10px;padding:8px 10px;margin:6px 0;">
+              <div class="exp-head" data-target="exp-ku-{{ loop.index }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;justify-content:flex-end;flex-direction:row-reverse;width:100%;direction:rtl;text-align:right;">
+                <span style="font-weight:600;">توضیحات کوردی</span>
+                <button class="btn btn-sm btn-light exp-toggle" data-target="exp-ku-{{ loop.index }}" style="border:1px solid #ddd;min-width:32px;padding:2px 8px">+</button>
+              </div>
+              <div id="exp-ku-{{ loop.index }}" class="exp-body" style="display:none;padding-top:8px;white-space:pre-wrap;color:#444;direction:rtl;text-align:right;">{{ it.kur_explanation or '—' }}</div>
+            </div>
+            <div class="exp-card" style="border:1px solid #e6e6e6;border-radius:10px;padding:8px 10px;margin:6px 0;">
+              <div class="exp-head" data-target="exp-en-{{ loop.index }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <button class="btn btn-sm btn-light exp-toggle" data-target="exp-en-{{ loop.index }}" style="border:1px solid #ddd;min-width:32px;padding:2px 8px">+</button>
+                <span style="font-weight:600;">English Explanation</span>
+              </div>
+              <div id="exp-en-{{ loop.index }}" class="exp-body" style="display:none;padding-top:8px;white-space:pre-wrap;color:#444;direction:ltr;text-align:left;">{{ it.eng_explanation or '—' }}</div>
+            </div>
+          </td>
+        </tr>
+        <tr class="q-spacer"><td colspan="8"></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+  // Dynamic color for progress ring based on percentage (red→yellow→green)
+  (function(){
+    const ring = document.querySelector('.score-wrap .ring');
+    if(!ring) return;
+    const p = Math.max(0, Math.min(100, parseFloat(ring.getAttribute('data-percent')||'0')));
+    // simple gradient: 0=red, 50=yellow, 100=green
+    let r,g,b;
+    if (p < 50) { // red -> yellow
+      const t = p/50; r = 255; g = Math.round(165 + (255-165)*t); b = 0; }
+    else { // yellow -> green
+      const t = (p-50)/50; r = Math.round(255*(1-t)); g = 255; b = 0; }
+    const color = `rgb(${r},${g},${b})`;
+    ring.style.setProperty('--ring-color', color);
+  })();
+  // Mobile: set dynamic dir for question text based on presence of RTL chars
+  (function(){
+    const rtlPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/;
+    document.querySelectorAll('.mobile-cards .mq').forEach(el=>{
+      const t = (el.textContent||'').trim();
+      if(rtlPattern.test(t)) { el.setAttribute('dir','rtl'); el.style.textAlign='right'; }
+      else { el.setAttribute('dir','ltr'); el.style.textAlign='left'; }
+    });
+  })();
+  // copy-link button removed
+  // Toggle explanations
+  function toggleBody(targetId, btn){
+    const el = document.getElementById(targetId);
+    if(!el) return;
+    const isHidden = window.getComputedStyle(el).display === 'none';
+    el.style.display = isHidden ? '' : 'none';
+    if (btn) btn.textContent = isHidden ? '−' : '+';
+  }
+  // Delegate to table for dynamic and reliable handling of +/− clicks
+  const table = document.querySelector('table.table');
+  if (table) {
+    table.addEventListener('click', function(e){
+      const btn = e.target && e.target.closest('.exp-toggle');
+      if (btn) { toggleBody(btn.getAttribute('data-target'), btn); return; }
+      const head = e.target && e.target.closest('.exp-head');
+      if (head) {
+        const target = head.getAttribute('data-target');
+        const headBtn = head.querySelector('.exp-toggle');
+        toggleBody(target, headBtn);
+      }
+    }, false);
+  }
+  // Filter rows by correctness + search (desktop table or mobile cards)
+  (function(){
+    const select = document.getElementById('filter-mode');
+    const search = document.getElementById('search-input');
+    function normalize(s){ return (s||'').toString().toLowerCase(); }
+    function isMobileView(){
+      const mob = document.querySelector('.mobile-cards');
+      if(!mob) return false;
+      return window.getComputedStyle(mob).display !== 'none';
+    }
+    function updateSearchDir(){
+      if(!search) return;
+      const v = (search.value||'');
+      const hasRTL = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(v);
+      if (hasRTL) { search.dir = 'rtl'; search.style.textAlign = 'right'; }
+      else { search.dir = 'ltr'; search.style.textAlign = 'left'; }
+    }
+    function applyFilter(){
+      const mode = select ? select.value : 'all';
+      const q = normalize(search ? search.value : '');
+      if (isMobileView()) {
+        const cards = Array.from(document.querySelectorAll('.mobile-cards .mcard'));
+        cards.forEach(card => {
+          const isOk = card.classList.contains('ok');
+          const isBad = card.classList.contains('bad');
+          const text = normalize(card.innerText);
+          const modeOk = (mode === 'all') || (mode === 'ok' && isOk) || (mode === 'bad' && isBad);
+          const searchOk = !q || text.includes(q);
+          const show = modeOk && searchOk;
+          card.style.display = show ? '' : 'none';
+        });
+      } else {
+        const rows = Array.from(document.querySelectorAll('tr.q-row'));
+        rows.forEach(row => {
+          const isOk = row.classList.contains('q-ok');
+          const isBad = row.classList.contains('q-bad');
+          const text = normalize(row.innerText);
+          const modeOk = (mode === 'all') || (mode === 'ok' && isOk) || (mode === 'bad' && isBad);
+          const searchOk = !q || text.includes(q);
+          const show = modeOk && searchOk;
+          row.style.display = show ? '' : 'none';
+          const exp = row.nextElementSibling && row.nextElementSibling.classList.contains('exp-row') ? row.nextElementSibling : null;
+          const sp = exp && exp.nextElementSibling && exp.nextElementSibling.classList.contains('q-spacer') ? exp.nextElementSibling : null;
+          if(exp) exp.style.display = show ? '' : 'none';
+          if(sp) sp.style.display = show ? '' : 'none';
+        });
+      }
+    }
+    if(select) select.addEventListener('change', applyFilter);
+    if(search) {
+      search.addEventListener('input', function(){ updateSearchDir(); applyFilter(); });
+      updateSearchDir();
+    }
+    applyFilter();
+    window.addEventListener('resize', applyFilter);
+  })();
+  </script>
+  <script>
+  // Mobile accordion toggle
+  (function(){
+    document.addEventListener('click', function(e){
+      const btn = e.target.closest('.acc-head');
+      if(!btn) return;
+      const body = btn.parentElement.querySelector('.acc-body');
+      if(!body) return;
+      const isOpen = body.style.display === 'block';
+      body.style.display = isOpen ? 'none' : 'block';
+    });
+  })();
+  </script>
+  
+
+</div>
+{% endblock %}
+
+

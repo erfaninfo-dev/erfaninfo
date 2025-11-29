@@ -18,8 +18,15 @@
         </div>
         <ul class="navbar-links">
           <li><a href="/" data-key="navbar-home">صفحه اصلی</a></li>
-          <li><a href="/tests" data-key="navbar-grammar">تمرین گرامر</a></li>
+  <li><a href="/grammar_tests" data-key="navbar-grammar">تمرین گرامر</a></li>
           <li><a href="/results" data-key="navbar-results">نتایج آزمون‌ها</a></li>
+          <li>
+            {% if session.get('uid') %}
+              <a href="/profile">پروفایل ({{ session.get('uname') }})</a>
+            {% else %}
+              <a href="/login">ورود/ثبت‌نام</a>
+            {% endif %}
+          </li>
         </ul>
       </div>
       <!-- دکمه جستجو حذف شد -->

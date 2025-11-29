@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}انتخاب تست گرامر{% endblock %}
+
+{% block content %}
+        <div class="tests-header">
+            <h1 data-key="tests-title">تست‌های گرامر</h1>
+            <p class="tests-desc" data-key="tests-desc">لطفاً یکی از آزمون‌های زیر را برای شروع انتخاب کنید.</p>
+        </div>
+
+        <!-- Test Mode Selector -->
+        <div class="test-mode-selector">
+            <div class="mode-options">
+                <label class="mode-option">
+                    <input type="radio" name="test-mode" value="single" checked>
+                    <span class="mode-label">آزمون تکی</span>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="test-mode" value="combined">
+                    <span class="mode-label">آزمون ترکیبی</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Combined Test Controls (Hidden by default) -->
+        <div class="combined-test-controls" style="display: none;">
+            <div class="combined-header">
+                <h3>انتخاب گرامرهای مورد نظر:</h3>
+                <div class="combined-actions">
+                    <button type="button" class="select-all-btn">انتخاب همه</button>
+                    <button type="button" class="deselect-all-btn">حذف انتخاب همه</button>
+                </div>
+            </div>
+            <div class="combined-order-box" style="margin: 12px 0;">
+                <span style="margin-left:8px;">ترتیب سوالات بر اساس:</span>
+                <label style="margin-inline-start:12px;">
+                    <input type="radio" name="combined-order" value="grammar" checked>
+                    گرامر
+                </label>
+                <label style="margin-inline-start:12px;">
+                    <input type="radio" name="combined-order" value="random">
+                    شانسی
+                </label>
+            </div>
+            <div class="grammar-checkboxes">
+                <!-- Checkboxes will be populated by JavaScript -->
+            </div>
+            <div class="combined-test-actions">
+                <button type="button" class="start-combined-test-btn" disabled>شروع آزمون ترکیبی</button>
+            </div>
+        </div>
+
+    <div class="quiz-card-container">
+        {# کارت زبان آموز بدون تغییر #}
+        <div class="quiz-card student-quiz-card">
+            <div class="quiz-card-header">
+                <h3 class="quiz-card-title" data-key="student-title">زبان آموز</h3>
+            </div>
+            <div class="quiz-card-options code-input-wrapper">
+                <input type="text" id="quiz-code-input" placeholder="کد تمرین خود را وارد کنید..." class="quiz-code-input-style" data-key="student-placeholder">
+                <p id="code-error-message"></p>
+                <button id="submit-code-btn" class="button card-button green-button" data-key="student-btn">شروع آزمون</button>
+            </div>
+        </div>
+
+        {% for main_category, sub_topics in grouped_tenses.items() %}
+            <div class="quiz-card" data-category="{{ main_category }}" data-has-sub-options="{{ 'true' if sub_topics|length > 1 else 'false' }}">
+                <div class="quiz-card-header">
+                    <h3 class="quiz-card-title">{{ main_category }}</h3>
+                </div>
+
+                {% if sub_topics|length > 1 %}
+                    <button class="expand-card-btn button card-button" data-key="view">مشاهده</button>
+                {% else %}
+                    <a href="/test/{{ main_category|urlencode }}" class="button start-quiz-btn card-button green-button" data-key="start-quiz">شروع آزمون</a>
+                {% endif %}
+
+                {% if sub_topics|length > 1 %}
+                    <div class="hidden-details">
+                        {# === تغییر: همه دکمه‌ها داخل این گرید هستند === #}
+                        <div class="sub-options-grid">
+                            {# === تغییر: دکمه آزمون کامل به اینجا منتقل و کلاس‌هایش حذف شد === #}
+                            <a href="/test/{{ main_category|urlencode }}" class="button sub-button" data-key="full-quiz">آزمون کامل (ترکیبی)</a>
+                            
+                            {% for topic in sub_topics %}
+                                {% if topic != main_category %}
+                                     {% set button_text = topic.replace(main_category, '').replace('(', '').replace(')', '').strip() %}
+                                     <a href="/test/{{ topic|urlencode }}" class="button sub-button">{{ button_text }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-cols">
+          <!-- فقط لوگو و توضیحات سمت راست -->
+          <div class="footer-col footer-logo-col">
+            <img src="/static/images/logo.png" alt="لوگو" class="footer-logo" />
+            <p class="footer-desc" data-key="footer-desc">سایت آموزشی عرفان اینفو<br>یادگیری آسان و حرفه‌ای زبان انگلیسی</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/student_quiz.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tests_animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/combined_tests.js') }}"></script>
+{% endblock %}
+

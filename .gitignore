@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Flask
+instance/
+.webassets-cache
+
+# Logs
+*.log
+app.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archives (don't commit zip/rar files)
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+# Uploads (user uploaded files)
+static/uploads/
+static/images/uploads/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Python virtual environment
+python/
+Scripts/
+Lib/
+Include/
+pyvenv.cfg
+
+# Offline packages
+offline_packages/
+

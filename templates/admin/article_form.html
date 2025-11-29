@@ -1,0 +1,452 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}
+    {% if article %}ویرایش مقاله{% else %}مقاله جدید{% endif %} - پنل ادمین
+{% endblock %}
+
+{% block admin_content %}
+<div class="article-form-container">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            {% if article %}ویرایش مقاله{% else %}مقاله جدید{% endif %}
+        </h1>
+        <a href="{{ url_for('admin_articles') }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-right fa-sm"></i> بازگشت
+        </a>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>خطا!</strong> {{ error }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+
+    <form method="POST" id="articleForm">
+        <div class="row">
+            <!-- اطلاعات اصلی مقاله -->
+            <div class="col-lg-9">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">اطلاعات اصلی مقاله</h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- عنوان‌ها -->
+                        <div class="form-group">
+                            <label for="title_fa">عنوان فارسی *</label>
+                            <input type="text" class="form-control" id="title_fa" name="title_fa" 
+                                   value="{{ article.title_fa if article else '' }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="title_ku">عنوان کوردی</label>
+                            <input type="text" class="form-control" id="title_ku" name="title_ku" 
+                                   value="{{ article.title_ku if article else '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="title_en">عنوان انگلیسی</label>
+                            <input type="text" class="form-control" id="title_en" name="title_en" 
+                                   value="{{ article.title_en if article else '' }}">
+                        </div>
+
+                        <!-- خلاصه -->
+                        <div class="form-group">
+                            <label for="excerpt_fa">خلاصه فارسی</label>
+                            <textarea class="form-control" id="excerpt_fa" name="excerpt_fa" rows="3">{{ article.excerpt_fa if article else '' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="excerpt_ku">خلاصه کوردی</label>
+                            <textarea class="form-control" id="excerpt_ku" name="excerpt_ku" rows="3">{{ article.excerpt_ku if article else '' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="excerpt_en">خلاصه انگلیسی</label>
+                            <textarea class="form-control" id="excerpt_en" name="excerpt_en" rows="3">{{ article.excerpt_en if article else '' }}</textarea>
+                        </div>
+
+                        <!-- تگ‌ها -->
+                        <div class="form-group">
+                            <label for="tags_fa">تگ‌های فارسی (جدا شده با کاما)</label>
+                            <input type="text" class="form-control" id="tags_fa" name="tags_fa" 
+                                   value="{{ article.tags_fa if article else '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tags_ku">تگ‌های کوردی (جدا شده با کاما)</label>
+                            <input type="text" class="form-control" id="tags_ku" name="tags_ku" 
+                                   value="{{ article.tags_ku if article else '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tags_en">تگ‌های انگلیسی (جدا شده با کاما)</label>
+                            <input type="text" class="form-control" id="tags_en" name="tags_en" 
+                                   value="{{ article.tags_en if article else '' }}">
+                        </div>
+
+                        <!-- تنظیمات -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="category">دسته‌بندی</label>
+                                    <select class="form-control" id="category" name="category">
+                                        <option value="گرامر" {% if article and article.category == 'گرامر' %}selected{% endif %}>گرامر</option>
+                                        <option value="واژگان" {% if article and article.category == 'واژگان' %}selected{% endif %}>واژگان</option>
+                                        <option value="مکالمه" {% if article and article.category == 'مکالمه' %}selected{% endif %}>مکالمه</option>
+                                        <option value="نوشتن" {% if article and article.category == 'نوشتن' %}selected{% endif %}>نوشتن</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="reading_time">زمان مطالعه (دقیقه)</label>
+                                    <input type="number" class="form-control" id="reading_time" name="reading_time" 
+                                           value="{{ article.reading_time if article else 10 }}" min="1" max="120">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="is_published" name="is_published"
+                                       {% if article and article.is_published %}checked{% endif %}>
+                                <label class="custom-control-label" for="is_published">منتشر شود</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تنظیمات بلاک‌ها -->
+            <div class="col-lg-3">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">تنظیمات بلاک‌ها</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>نوع بلاک:</label>
+                            <select class="form-control" id="blockTypeSelector">
+                                <option value="">انتخاب کنید...</option>
+                                <option value="paragraph">پاراگراف</option>
+                                <option value="subtitle">تیتر فرعی</option>
+                                <option value="example">مثال</option>
+                                <option value="note">نکته</option>
+                                <option value="list">لیست</option>
+                                <option value="vocabulary">واژگان</option>
+                                <option value="exercise">تمرین</option>
+                                <option value="callout">نکته مهم</option>
+                                <option value="image">عکس</option>
+                                <option value="video">ویدیو</option>
+                                <option value="code">کد</option>
+                                <option value="quote">نقل قول</option>
+                                <option value="divider">جداکننده</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>جهت متن:</label>
+                            <select class="form-control" id="textDirection">
+                                <option value="">پیش‌فرض</option>
+                                <option value="rtl">راست به چپ (RTL)</option>
+                                <option value="ltr">چپ به راست (LTR)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>موقعیت:</label>
+                            <select class="form-control" id="textPosition">
+                                <option value="">پیش‌فرض</option>
+                                <option value="left">چپ</option>
+                                <option value="right">راست</option>
+                                <option value="center">وسط</option>
+                            </select>
+                        </div>
+                        
+                        <button type="button" class="btn btn-success btn-block" onclick="addBlock()">
+                            <i class="fas fa-plus"></i> افزودن بلاک
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- بلاک‌های محتوا -->
+        <div class="content-blocks-section">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">بلاک‌های محتوا</h6>
+                </div>
+                <div class="card-body">
+                <div id="blocksContainer">
+                    <!-- بلاک‌ها اینجا اضافه می‌شوند -->
+                </div>
+                
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> 
+                        {% if article %}به‌روزرسانی مقاله{% else %}ایجاد مقاله{% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Template برای بلاک -->
+<template id="blockTemplate">
+    <div class="block-item card mb-3" data-block-index="">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="block-type-badge"></span>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveBlock(this, 'up')">
+                    <i class="fas fa-arrow-up"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveBlock(this, 'down')">
+                    <i class="fas fa-arrow-down"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeBlock(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>نوع بلاک:</label>
+                        <select class="form-control block-type" name="block_type[]" required>
+                            <option value="paragraph">پاراگراف</option>
+                            <option value="subtitle">تیتر فرعی</option>
+                            <option value="example">مثال</option>
+                            <option value="note">نکته</option>
+                            <option value="list">لیست</option>
+                            <option value="vocabulary">واژگان</option>
+                            <option value="exercise">تمرین</option>
+                            <option value="callout">نکته مهم</option>
+                            <option value="image">عکس</option>
+                            <option value="video">ویدیو</option>
+                            <option value="code">کد</option>
+                            <option value="quote">نقل قول</option>
+                            <option value="divider">جداکننده</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>ترتیب:</label>
+                        <input type="number" class="form-control" name="order_num[]" min="1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>جهت متن:</label>
+                        <select class="form-control text-direction">
+                            <option value="">پیش‌فرض</option>
+                            <option value="rtl">راست به چپ (RTL)</option>
+                            <option value="ltr">چپ به راست (LTR)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>موقعیت:</label>
+                        <select class="form-control text-position">
+                            <option value="">پیش‌فرض</option>
+                            <option value="left">چپ</option>
+                            <option value="right">راست</option>
+                            <option value="center">وسط</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label>محتوای فارسی *:</label>
+                        <textarea class="form-control" name="content_fa[]" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>محتوای کوردی:</label>
+                        <textarea class="form-control" name="content_ku[]" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>محتوای انگلیسی:</label>
+                        <textarea class="form-control" name="content_en[]" rows="4"></textarea>
+                    </div>
+                    
+                    <input type="hidden" name="block_metadata[]" class="block-metadata">
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+let blockCounter = 0;
+
+function addBlock() {
+    const template = document.getElementById('blockTemplate');
+    const container = document.getElementById('blocksContainer');
+    const clone = template.content.cloneNode(true);
+    
+    // تنظیم شماره بلاک
+    const blockItem = clone.querySelector('.block-item');
+    blockItem.dataset.blockIndex = blockCounter;
+    
+    // تنظیم نوع بلاک
+    const blockType = document.getElementById('blockTypeSelector').value;
+    if (blockType) {
+        clone.querySelector('.block-type').value = blockType;
+        clone.querySelector('.block-type-badge').textContent = getBlockTypeName(blockType);
+        clone.querySelector('.block-type-badge').className = 'block-type-badge badge badge-primary';
+    }
+    
+    // تنظیم ترتیب
+    clone.querySelector('input[name="order_num[]"]').value = blockCounter + 1;
+    
+    // تنظیم جهت و موقعیت
+    const direction = document.getElementById('textDirection').value;
+    const position = document.getElementById('textPosition').value;
+    
+    if (direction) {
+        clone.querySelector('.text-direction').value = direction;
+    }
+    if (position) {
+        clone.querySelector('.text-position').value = position;
+    }
+    
+    container.appendChild(clone);
+    blockCounter++;
+    
+    // پاک کردن انتخاب‌ها
+    document.getElementById('blockTypeSelector').value = '';
+    document.getElementById('textDirection').value = '';
+    document.getElementById('textPosition').value = '';
+    
+    updateBlockMetadata();
+}
+
+function removeBlock(button) {
+    if (confirm('آیا از حذف این بلاک اطمینان دارید؟')) {
+        button.closest('.block-item').remove();
+        updateBlockMetadata();
+    }
+}
+
+function moveBlock(button, direction) {
+    const blockItem = button.closest('.block-item');
+    const container = document.getElementById('blocksContainer');
+    
+    if (direction === 'up' && blockItem.previousElementSibling) {
+        container.insertBefore(blockItem, blockItem.previousElementSibling);
+    } else if (direction === 'down' && blockItem.nextElementSibling) {
+        container.insertBefore(blockItem.nextElementSibling, blockItem);
+    }
+    
+    updateBlockMetadata();
+}
+
+function getBlockTypeName(type) {
+    const names = {
+        'paragraph': 'پاراگراف',
+        'subtitle': 'تیتر فرعی',
+        'example': 'مثال',
+        'note': 'نکته',
+        'list': 'لیست',
+        'vocabulary': 'واژگان',
+        'exercise': 'تمرین',
+        'callout': 'نکته مهم',
+        'image': 'عکس',
+        'video': 'ویدیو',
+        'code': 'کد',
+        'quote': 'نقل قول',
+        'divider': 'جداکننده'
+    };
+    return names[type] || type;
+}
+
+function updateBlockMetadata() {
+    const blocks = document.querySelectorAll('.block-item');
+    blocks.forEach((block, index) => {
+        const direction = block.querySelector('.text-direction').value;
+        const position = block.querySelector('.text-position').value;
+        const metadata = {};
+        
+        if (direction) metadata.direction = direction;
+        if (position) metadata.position = position;
+        
+        block.querySelector('.block-metadata').value = JSON.stringify(metadata);
+        block.querySelector('input[name="order_num[]"]').value = index + 1;
+    });
+}
+
+// بارگذاری بلاک‌های موجود در ویرایش
+{% if article %}
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/admin/article-blocks/{{ article.id }}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                data.blocks.forEach(block => {
+                    addExistingBlock(block);
+                });
+            }
+        });
+});
+
+function addExistingBlock(blockData) {
+    const template = document.getElementById('blockTemplate');
+    const container = document.getElementById('blocksContainer');
+    const clone = template.content.cloneNode(true);
+    
+    // تنظیم مقادیر
+    clone.querySelector('.block-type').value = blockData.block_type;
+    clone.querySelector('.block-type-badge').textContent = getBlockTypeName(blockData.block_type);
+    clone.querySelector('.block-type-badge').className = 'block-type-badge badge badge-primary';
+    clone.querySelector('input[name="order_num[]"]').value = blockData.order_num;
+    clone.querySelector('textarea[name="content_fa[]"]').value = blockData.content_fa || '';
+    clone.querySelector('textarea[name="content_ku[]"]').value = blockData.content_ku || '';
+    clone.querySelector('textarea[name="content_en[]"]').value = blockData.content_en || '';
+    
+    // تنظیم metadata
+    if (blockData.block_metadata) {
+        const metadata = blockData.block_metadata;
+        if (metadata.direction) {
+            clone.querySelector('.text-direction').value = metadata.direction;
+        }
+        if (metadata.position) {
+            clone.querySelector('.text-position').value = metadata.position;
+        }
+    }
+    
+    container.appendChild(clone);
+    blockCounter++;
+    updateBlockMetadata();
+}
+{% endif %}
+
+// به‌روزرسانی metadata هنگام تغییر
+document.addEventListener('change', function(e) {
+    if (e.target.matches('.text-direction, .text-position')) {
+        updateBlockMetadata();
+    }
+});
+</script>
+
+<style>
+.block-type-badge {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.block-item {
+    border-left: 4px solid #007bff;
+}
+
+.block-item .card-header {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}

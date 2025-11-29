@@ -4,16 +4,16 @@
 
     {% block head %}
         <style>
-            body, html {
+            html, body {
                 height: 100%;
                 margin: 0;
                 padding: 0;
             }
             #main-content-wrapper {
                 min-height: 100vh;
-                height: 100vh;
+                height: auto; /* allow page to grow and scroll */
                 display: flex;
-                align-items: center;
+                align-items: flex-start; /* avoid cropping tall quiz */
                 justify-content: center;
                 background: #f8f8f8;
                 filter: none !important;
@@ -35,18 +35,32 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                padding: 20px;
             }
             
             .footer-buttons {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 15px;
+                gap: 10px;
+                position: relative;
+                min-width: 200px;
+            }
+            
+            .check-btn {
+                position: relative;
+                z-index: 1;
+            }
+            
+            .explanation-btn {
+                position: absolute;
+                left: -95px;
+                z-index: 2;
             }
             
             .report-container {
                 position: absolute;
-                right: 40px;
+                right: 20px;
                 top: 50%;
                 transform: translateY(-50%);
                 display: flex;
@@ -89,6 +103,62 @@
                 background: rgba(255, 107, 107, 0.15);
                 transform: scale(1.05);
                 box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+            }
+            
+            /* استایل آیکن لامپ توضیحات آموزشی */
+            .explanation-btn {
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 50%;
+                transition: all 0.3s ease;
+                opacity: 0.8;
+                color: #2196F3;
+                animation: attention-pulse 0.8s ease-in-out infinite;
+            }
+            
+            @keyframes attention-pulse {
+                0%, 100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.2);
+                }
+            }
+            
+            .explanation-btn:hover {
+                opacity: 1;
+                background: rgba(33, 150, 243, 0.15);
+                transform: scale(1.05);
+                box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+                animation: none;
+            }
+            
+            .explanation-btn:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+                transform: none;
+            }
+            
+            /* استایل اسکرول‌بار برای محتوای توضیحات */
+            #explanation-content::-webkit-scrollbar {
+                width: 8px;
+            }
+            
+            #explanation-content::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 4px;
+            }
+            
+            #explanation-content::-webkit-scrollbar-thumb {
+                background: #c1c1c1;
+                border-radius: 4px;
+            }
+            
+            #explanation-content::-webkit-scrollbar-thumb:hover {
+                background: #a8a8a8;
             }
             
             /* Modal گزارش سوال */
@@ -181,20 +251,17 @@
             .btn-cancel:hover {
                 background: #b52a37;
             }
-            /* Hide header in quiz page */
-            #main-content-wrapper > div:first-child {
-                display: none;
-            }
             
             .question-text-style {
                 font-size: 1.5rem;
-                margin: 1.2rem 0 1.5rem 0;
+                margin: 0.2rem 0 0.6rem 0;
                 padding: 0 20px;
             }
             .quiz-header h1 {
                 font-size: 1.4rem;
                 padding: 0 20px;
                 margin: 0;
+                text-align: center;
             }
             .progress-bar {
                 direction: ltr;
@@ -220,95 +287,597 @@
                     padding: 10px;
                 }
                 .quiz-container {
-                    min-width: 320px;
+                    min-width: 380px;
                     width: calc(100% - 40px);
                     margin: 0 20px;
+                }
+                
+                .quiz-footer {
+                    padding: 15px;
+                }
+                
+                .report-container {
+                    right: 15px;
+                }
+                #report-reason-error {
+                    font-size: 0.82rem !important;
+                }
+                
+                /* تنظیمات موبایل برای مودال توضیحات */
+                #explanation-content {
+                    max-height: 200px !important;
+                    font-size: 0.9rem !important;
+                    padding: 0.8rem !important;
+                }
+                
+                .explanation-btn {
+                    font-size: 20px !important;
+                    padding: 6px !important;
+                    left: -65px !important;
+                    animation: attention-pulse-mobile 0.8s ease-in-out infinite !important;
+                }
+                
+                @keyframes attention-pulse-mobile {
+                    0%, 100% {
+                        transform: scale(1);
+                    }
+                    50% {
+                        transform: scale(1.15);
+                    }
+                }
+                
+                .footer-buttons {
+                    gap: 8px !important;
+                    min-width: 180px !important;
+                }
+                
+                .explanation-btn:hover {
+                    animation: none !important;
+                }
+                
+                /* تنظیمات موبایل برای تب‌های زبان */
+                .language-tabs {
+                    gap: 8px !important;
+                    margin: 0.8rem 0 !important;
+                }
+                
+                .tab-btn {
+                    padding: 6px 12px !important;
+                    font-size: 0.8rem !important;
+                }
+                
+                /* تنظیمات موبایل برای تایمر */
+                .timer {
+                    font-size: 1rem !important;
+                    padding: 6px 16px !important;
+                    min-width: 70px !important;
+                }
+                
+                /* تنظیمات موبایل برای پیام زمان تمام شده */
+                .time-up-message {
+                    font-size: 0.8rem !important;
+                    margin-top: 6px !important;
+                }
+                
+                /* بزرگتر کردن عنوان مودال در موبایل */
+                .confirm-modal h2 {
+                    font-size: 1.4rem !important;
+                    border-bottom: 1px solid #e0e0e0 !important;
+                    padding-bottom: 8px !important;
+                    margin-bottom: 12px !important;
+                }
+                
+                /* بزرگتر کردن ایموجی در موبایل */
+                .confirm-modal h2 {
+                    font-size: 1.4rem !important;
+                }
+                
+                .confirm-modal h2 span.emoji {
+                    font-size: 1.6rem !important;
+                }
+            }
+            @media (max-width: 768px) {
+              .quiz-reason-select {
+                width: 90% !important;
+                margin: 0.5rem auto !important;
+                max-width: 400px;
+                display: block !important;
+                float: none !important;
+              }
+            }
+            .quiz-page-flex {
+              display: flex;
+              flex-direction: row-reverse;
+              justify-content: center;
+              align-items: flex-start;
+            }
+            .quiz-ads-left {
+              margin-left: 1.5rem;
+              min-width: 200px;
+              max-width: 300px;
+            }
+            @media (max-width: 991px) {
+              .quiz-page-flex {
+                flex-direction: column;
+              }
+              .quiz-ads-left {
+                display: none !important;
+              }
+            }
+            .quiz-page-flex {
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              align-items: center;
+              width: 100vw;
+              min-height: 100vh;
+            }
+            .quiz-ads-left {
+              margin-left: 2.5rem;
+              min-width: 220px;
+              max-width: 320px;
+              align-self: flex-start;
+            }
+            .quiz-ads-right {
+              margin-right: 2.5rem;
+              min-width: 220px;
+              max-width: 320px;
+              align-self: flex-start;
+            }
+            .quiz-container {
+              margin: 2rem auto;
+              background: #fff;
+              border-radius: 16px;
+              box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+              padding: 1.5rem 1.2rem;
+              min-width: 350px;
+              max-width: 560px; /* a bit wider to fit 2 columns nicely */
+              width: 100%;
+              position: relative;
+            }
+            /* حالت فشرده مخصوص مچینگ تا همه‌چیز داخل باکس جا شود */
+            .quiz-container.matching-compact{max-width:520px;padding:1.2rem 1rem}
+            @media (max-width: 600px){.quiz-container.matching-compact{max-width:420px}}
+            .quiz-header h1 { font-size: 1.2rem; margin: 0; text-align: center; padding: 0 8px; }
+            @media (max-width: 600px) { .quiz-header h1 { font-size: 1.0rem; } }
+            .close-btn{position:absolute;top:16px;right:20px;font-size:1.6rem;color:#f08080;text-decoration:none;line-height:1;margin:0;z-index:10;transition:color .2s ease}
+            .close-btn:hover{color:#cd5c5c;text-decoration:none}
+
+            /* Compact spacing for matching so entire box fits viewport */
+            .quiz-container.matching-compact .timer-container{margin:6px 0 4px 0}
+            .quiz-container.matching-compact .question-prompt{padding:4px 12px 6px 12px}
+            .quiz-container.matching-compact #question-text.question-text-style{margin:8px 0 8px 0;font-size:1.25rem}
+            .quiz-container.matching-compact .quiz-container{margin:1rem auto}
+            .match-host .match-grid{gap:10px}
+            .match-host .match-grid>div{gap:10px}
+            .match-host .match-btn{min-height:40px;padding:10px 12px}
+            @media (min-width: 992px) {
+              .quiz-page-flex {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                width: 100vw;
+                min-height: 100vh;
+                gap: 2.5rem;
+              }
+              .quiz-ads-left, .quiz-ads-right {
+                display: block;
+                min-width: 220px;
+                max-width: 320px;
+                align-self: stretch;
+              }
+              .quiz-container {
+                margin: 0;
+                min-width: 350px;
+                max-width: 500px;
+                width: 100%;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+                border-radius: 16px;
+                padding: 2rem 1.5rem;
+                background: #fff;
+                display: block;
+                position: relative;
+              }
+              .quiz-mobile-ads-top, .quiz-mobile-ads-bottom {
+                display: none !important;
+              }
+            }
+            .quiz-mobile-ads-top {
+              display: none;
+            }
+            @media (max-width: 991px) {
+              .quiz-page-flex {
+                 display: flex !important;
+                 flex-direction: column !important;
+                 align-items: center !important;
+                 justify-content: flex-start !important;
+                 min-height: 100vh !important;
+                 height: auto !important;
+                width: 100vw !important;
+                gap: 0.7rem !important;
+                padding: 0 !important;
+                flex: 1 0 auto !important;
+                padding-top: 5rem !important;
+              }
+              .quiz-container {
+                min-height: 60vh;
+                width: 95vw;
+                max-width: 400px;
+                margin: 0 auto !important;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+                border-radius: 12px;
+                padding: 1.5rem 0.5rem;
+                background: #fff;
+                display: block;
+                position: relative;
+              }
+              .quiz-ads-left, .quiz-ads-right {
+                display: none !important;
+              }
+              .quiz-mobile-ads-top, .quiz-mobile-ads-bottom {
+                display: block !important;
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+                text-align: center;
+                position: static;
+              }
+            }
+            .btn-blue {
+              background: #1976d2 !important;
+              color: #fff !important;
+              border: none;
+              border-radius: 8px;
+              font-weight: 600;
+              font-size: 1.1rem;
+              margin: 0.5rem 0;
+              padding: 12px 0;
+              transition: background 0.2s;
+            }
+            .btn-blue:hover {
+              background: #1251a3 !important;
+            }
+            .confirm-modal h2 {
+                font-size: 1.7rem;
+                border-bottom: 1px solid #e0e0e0;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+            
+            /* استایل تب‌های زبان */
+            .language-tabs {
+                display: flex;
+                gap: 10px;
+                margin: 1rem 0;
+                justify-content: center;
+            }
+            
+            .tab-btn {
+                padding: 8px 16px;
+                border: 2px solid #007bff;
+                background: white;
+                color: #007bff;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+            
+            .tab-btn:hover {
+                background: #e3f2fd;
+            }
+            
+            .tab-btn.active {
+                background: #007bff;
+                color: white;
+            }
+            
+            /* استایل محتوای توضیحات */
+            .explanation-content {
+                display: none;
+            }
+            
+            .explanation-content.active {
+                display: block;
+            }
+            .question-counter {
+                text-align: center;
+                margin: 10px 0;
+                font-weight: bold;
+                color: #333;
+            }
+            
+            /* استایل تایمر */
+            .timer-container {
+                display: flex;
+                justify-content: center;
+                margin: 8px 0;
+            }
+            
+            .timer {
+                background: #f8f9fa;
+                border: 2px solid #007bff;
+                border-radius: 25px;
+                padding: 8px 20px;
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #007bff;
+                min-width: 80px;
+                text-align: center;
+                transition: all 0.3s ease;
+            }
+            
+            .timer.warning {
+                border-color: #ffc107;
+                color: #ffc107;
+                animation: pulse-warning 1s ease-in-out infinite;
+            }
+            
+            .timer.danger {
+                border-color: #dc3545;
+                color: #dc3545;
+                animation: pulse-danger 0.5s ease-in-out infinite;
+            }
+            
+            @keyframes pulse-warning {
+                0%, 100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+            }
+            
+            @keyframes pulse-danger {
+                0%, 100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
+            }
+            
+            /* استایل پیام زمان تمام شده */
+            .time-up-message {
+                color: #dc3545;
+                font-weight: bold;
+                font-size: 0.9rem;
+                text-align: center;
+                margin-top: 4px;
+                margin-bottom: 8px;
+                animation: fadeIn 0.5s ease-in;
+            }
+            
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
                 }
             }
         </style>
     {% endblock %}
 
     {% block content %}
-        <div class="quiz-container">
-            <a href="#" id="close-quiz-btn" class="close-btn">×</a>
-            <div id="quiz-main-view">
-                <div class="quiz-header">
-                    <h1>{{ title }}</h1> 
-                    <div class="progress-bar">
-                        <div id="progress-bar-inner" class="progress-bar-inner"></div>
-                    </div>
-                    <div id="question-counter" class="question-counter"></div>
-                </div>
-                <div class="question-prompt">
-                    <h2 id="question-text" class="question-text-style" dir="ltr"></h2>
-                </div>
-                <div id="options-grid" class="options-grid"></div>
-                <div class="quiz-footer">
-                    <div class="footer-buttons">
-                        <button id="check-btn" class="check-btn" disabled>Next</button>
-                    </div>
-                    <div class="report-container" style="display: none;">
-                        <button id="report-question-btn" class="report-btn" title="گزارش مشکل">
-                            ⚠️
-                        </button>
+        <div class="quiz-page-flex">
+            <div class="quiz-ads-left">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1169968764099680" crossorigin="anonymous"></script>
+                <!-- quizpage_ad -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-1169968764099680"
+                     data-ad-slot="5883588276"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            <div class="quiz-container">
+                <a href="#" id="close-quiz-btn" class="close-btn">×</a>
+                <div id="quiz-main-view">
+                    <div class="quiz-header">
+                        <h1>{{ title }}</h1> 
+                        <div class="progress-bar">
+                            <div id="progress-bar-inner" class="progress-bar-inner"></div>
+                        </div>
+                        <div id="question-counter" class="question-counter"></div>
                     </div>
                     
-                    <!-- Modal گزارش سوال -->
-                    <div id="report-modal" class="modal-overlay hidden">
-                        <div class="report-modal">
-                            <h3>گزارش مشکل در سوال</h3>
-                            <div class="report-form">
-                                <div class="form-group">
-                                    <label for="report-reason">دلیل گزارش:</label>
-                                    <select id="report-reason" class="report-reason-select" required>
-                                        <option value="">انتخاب دلیل</option>
-                                        <option value="wrong_question">سوال اشتباهه!</option>
-                                        <option value="wrong_answer">پاسخ درست اشتباهه!</option>
-                                        <option value="multiple_correct">بیش از یک جواب درست!</option>
-                                        <option value="other">سایر</option>
-                                    </select>
-                                </div>
-                                <div class="modal-buttons">
-                                    <button id="submit-report-btn" class="btn-submit">ثبت گزارش</button>
-                                    <button onclick="closeReportModal()" class="btn-cancel">انصراف</button>
+                    <div class="timer-container">
+                        <div class="timer">
+                            <span id="timer-minutes">01</span>:<span id="timer-seconds">00</span>
+                        </div>
+                    </div>
+                    <div id="time-up-message" class="time-up-message" style="display: none;">
+                        زمان سوال به پایان رسید!
+                    </div>
+                    
+                    <div class="question-prompt">
+                        <h2 id="question-text" class="question-text-style" dir="ltr"></h2>
+                    </div>
+                    <div id="options-grid" class="options-grid"></div>
+                    <div class="quiz-footer">
+                        <div class="footer-buttons">
+                            <button id="check-btn" class="check-btn" disabled>Next</button>
+                            <!-- آیکن استاد برای نمایش توضیحات آموزشی -->
+                            <button id="explanation-btn" class="explanation-btn" style="display: none;" title="نکته آموزشی">
+                                🧠
+                            </button>
+                        </div>
+                        <div class="report-container" style="display: none;">
+                            <button id="report-question-btn" class="report-btn" title="گزارش مشکل">
+                                ⚠️
+                            </button>
+                        </div>
+                        
+                        <!-- Modal گزارش سوال -->
+                        <div id="report-modal" class="modal-overlay hidden">
+                            <div class="report-modal">
+                                <h3>گزارش مشکل در سوال</h3>
+                                <div class="report-form">
+                                    <div class="form-group">
+                                        <label for="report-reason">دلیل گزارش:</label>
+                                        <select id="report-reason" class="report-reason-select" required>
+                                            <option value="">انتخاب دلیل</option>
+                                            <option value="wrong_question">سوال اشتباهه!</option>
+                                            <option value="wrong_answer">پاسخ درست اشتباهه!</option>
+                                            <option value="multiple_correct">بیش از یک جواب درست!</option>
+                                            <option value="other">سایر</option>
+                                        </select>
+                                        <span id="report-reason-error" style="display:none;color:#d32f2f;font-size:0.95rem;margin-top:4px;">لطفا دلیل گزارش انتخاب کنید</span>
+                                    </div>
+                                    <div class="modal-buttons">
+                                        <button id="submit-report-btn" class="btn-submit">ثبت گزارش</button>
+                                        <button onclick="closeReportModal()" class="btn-cancel">انصراف</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div id="quiz-results" class="quiz-results" style="display: none;">
-                <h2 id="results-greeting">آزمون تمام شد!</h2>
-                <p id="results-text"></p>
-                <div class="results-buttons">
-                    <button id="restart-btn" class="check-btn">تلاش مجدد</button>
-                    {# این لینک به صفحه اصلی جدید (home_new.html) هدایت می کند #}
-                    <button id="return-to-list-btn" class="check-btn secondary-btn">بازگشت به لیست آزمون‌ها</button>
+                <div id="quiz-results" class="quiz-results" style="display: none;">
+                    <h2 id="results-greeting">آزمون تمام شد!</h2>
+                    <p id="results-text"></p>
+                    <div class="results-buttons">
+                        <button id="restart-btn" class="check-btn">تلاش مجدد</button>
+                        <button id="view-user-results-btn" class="check-btn btn-blue" onclick="window.location.href='/user_results'">دیدن نتایج کاربران</button>
+                        {# این لینک به صفحه اصلی جدید (home_new.html) هدایت می کند #}
+                        <button id="return-to-list-btn" class="check-btn secondary-btn">بازگشت به لیست آزمون‌ها</button>
+                    </div>
+                </div>
+            <div id="confirm-modal-overlay" class="modal-overlay hidden">
+                <div class="confirm-modal">
+                    <h2>خروج از آزمون</h2>
+                    <p>آیا مطمئن هستید که می‌خواهید از آزمون خارج شوید؟ پیشرفت شما ذخیره نخواهد شد.</p>
+                    <div class="confirm-buttons">
+                        <button id="confirm-yes-btn" class="modal-button danger-btn">بله، خارج شو</button>
+                        <button id="confirm-no-btn" class="modal-button secondary-btn">خیر، ادامه می‌دهم</button>
+                    </div>
                 </div>
             </div>
-        <div id="confirm-modal-overlay" class="modal-overlay hidden">
-            <div class="confirm-modal">
-                <h2>خروج از آزمون</h2>
-                <p>آیا مطمئن هستید که می‌خواهید از آزمون خارج شوید؟ پیشرفت شما ذخیره نخواهد شد.</p>
-                <div class="confirm-buttons">
-                    <button id="confirm-yes-btn" class="modal-button danger-btn">بله، خارج شو</button>
-                    <button id="confirm-no-btn" class="modal-button secondary-btn">خیر، ادامه می‌دهم</button>
+            <!-- Modal for entering full name -->
+            <div id="name-modal-overlay" class="modal-overlay hidden">
+                <div class="confirm-modal">
+                    <h2 data-key="name-modal-title">نام و نام خانوادگی خود را وارد کنید</h2>
+                    <input type="text" id="fullname-input" class="name-input" placeholder="نام و نام خانوادگی" data-key="name-modal-placeholder" />
+                    <p id="fullname-error" style="color: red; margin: 0; font-size: 0.9rem;"></p>
+                    <button id="start-quiz-btn" class="modal-button green-btn" data-key="start-btn">شروع</button>
                 </div>
             </div>
-        </div>
-        <!-- Modal for entering full name -->
-        <div id="name-modal-overlay" class="modal-overlay hidden">
-            <div class="confirm-modal">
-                <h2 data-key="name-modal-title">نام و نام خانوادگی خود را وارد کنید</h2>
-                <input type="text" id="fullname-input" class="name-input" placeholder="نام و نام خانوادگی" data-key="name-modal-placeholder" />
-                <p id="fullname-error" style="color: red; margin: 0; font-size: 0.9rem;"></p>
-                <button id="start-quiz-btn" class="modal-button green-btn" data-key="start-btn">شروع</button>
+            
+            <!-- Modal for already reported warning -->
+            <div id="already-reported-modal-overlay" class="modal-overlay hidden">
+                <div class="confirm-modal">
+                    <h2>⚠️ سوال قبلاً گزارش شده</h2>
+                    <p id="already-reported-message">به زودی سوال را ویرایش میکنیم:)</p>
+                    <div class="confirm-buttons">
+                        <button id="already-reported-ok-btn" class="modal-button secondary-btn">باشه</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal for asking about public result -->
+            <div id="public-result-modal-overlay" class="modal-overlay hidden">
+                <div class="confirm-modal">
+                    <h2>🎯 نتیجه آزمون</h2>
+                    <p>آیا دوست دارید نتیجه آزمون‌تان را بقیه هم ببینند؟</p>
+                    <div class="confirm-buttons">
+                        <button id="public-result-yes-btn" class="modal-button primary-btn">نمایش بده</button>
+                        <button id="public-result-no-btn" class="modal-button danger-btn">خصوصی بماند</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Success Modal for Report -->
+            <div id="report-success-modal" class="modal-overlay hidden">
+              <div class="confirm-modal" style="text-align:center;max-width:340px;margin:10vh auto;background:#fff;padding:2rem 1.2rem;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.13);">
+                <h2 style="font-size:1.2rem;margin-bottom:1rem;">ممنون از شما</h2>
+                <p style="font-size:1rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:center;gap:0.5rem;">
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;"><circle cx="11" cy="11" r="11" fill="#4CAF50"/><path d="M7 11.5L10 14.5L15 9.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  گزارشتون ثبت شد
+                </p>
+                <button id="report-success-ok-btn" class="btn-blue" style="min-width:90px;">باشه</button>
+              </div>
+            </div>
+            
+            <!-- Modal توضیحات آموزشی -->
+            <div id="explanation-modal-overlay" class="modal-overlay hidden">
+                <div class="confirm-modal">
+                    <h2><span class="emoji">👨‍🏫</span> نکته آموزشی</h2>
+                    
+                    <!-- تب‌های زبان -->
+                    <div class="language-tabs">
+                        <button class="tab-btn active" data-lang="fa">فارسی</button>
+                        <button class="tab-btn" data-lang="ku">کوردی</button>
+                        <button class="tab-btn" data-lang="en">English</button>
+                    </div>
+                    
+                    <!-- محتوای توضیحات -->
+                    <div id="explanation-content-fa" class="explanation-content active" style="text-align: right; line-height: 1.6; margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-right: 4px solid #007bff; max-height: 300px; overflow-y: auto; word-wrap: break-word;">
+                        <!-- محتوای توضیحات فارسی اینجا قرار می‌گیرد -->
+                    </div>
+                    
+                    <div id="explanation-content-ku" class="explanation-content" style="text-align: right; line-height: 1.6; margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-right: 4px solid #007bff; max-height: 300px; overflow-y: auto; word-wrap: break-word;">
+                        <!-- محتوای توضیحات کوردی اینجا قرار می‌گیرد -->
+                    </div>
+                    <div id="explanation-content-en" class="explanation-content" style="text-align: left; line-height: 1.6; margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff; max-height: 300px; overflow-y: auto; word-wrap: break-word; direction: ltr;">
+                        <!-- English explanation goes here -->
+                    </div>
+                    
+                    <div class="confirm-buttons">
+                        <button id="explanation-ok-btn" class="modal-button primary-btn">متوجه شدم</button>
+                    </div>
+                </div>
+            </div>
+            {# این اسکریپت، داده‌های سوالات را از Flask دریافت کرده و روی window.initialQuizQuestions قرار می‌دهد #}
+            <script>
+                window.initialQuizQuestions = {{ initial_quiz_questions_json | default('[]') | safe }};
+            </script>
+            </div>
+            <div class="quiz-ads-right">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1169968764099680" crossorigin="anonymous"></script>
+                <!-- quizpage_ad_right -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-1169968764099680"
+                     data-ad-slot="8038978328"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
             </div>
         </div>
-        {# این اسکریپت، داده‌های سوالات را از Flask دریافت کرده و روی window.initialQuizQuestions قرار می‌دهد #}
-        <script>
-            window.initialQuizQuestions = {{ initial_quiz_questions_json | default('[]') | safe }};
-        </script>
+        <div class="quiz-mobile-ads-top">
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1169968764099680" crossorigin="anonymous"></script>
+            <!-- quizpage_ad_right -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-1169968764099680"
+                 data-ad-slot="8038978328"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="quiz-mobile-ads-bottom">
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1169968764099680" crossorigin="anonymous"></script>
+            <!-- quizpage_ad_left -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-1169968764099680"
+                 data-ad-slot="5883588276"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
         </div>
     {% endblock %}
 

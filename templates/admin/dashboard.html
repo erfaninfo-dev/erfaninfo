@@ -1,12 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'admin/base.html' %}
 
 {% block title %}پنل مدیریت{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-{% endblock %}
-
-{% block content %}
+{% block admin_content %}
 <div class="admin-dashboard">
     <div class="dashboard-header">
         <h1>پنل مدیریت</h1>
@@ -52,30 +48,17 @@
     
     <div class="dashboard-actions">
         <h2>عملیات مدیریتی</h2>
-        
         <div class="action-grid">
-            <a href="{{ url_for('admin_wrong_questions_page') }}" class="action-card">
+            <a href="{{ url_for('admin_reported_questions') }}" class="action-card">
                 <div class="action-icon">📝</div>
-                <h3>مدیریت گزارشات سوالات</h3>
-                <p>مشاهده و مدیریت گزارشات سوالات مشکل‌دار</p>
+                <h3>Reported Questions</h3>
+                <p>مشاهده و مدیریت سوالات گزارش شده</p>
             </a>
             
-            <a href="{{ url_for('admin_reports_by_status', status='pending') }}" class="action-card">
-                <div class="action-icon">⏳</div>
-                <h3>گزارشات در انتظار</h3>
-                <p>سوالات در انتظار بررسی</p>
-            </a>
-            
-            <a href="{{ url_for('admin_reports_by_status', status='fixed') }}" class="action-card">
-                <div class="action-icon">✅</div>
-                <h3>گزارشات اصلاح شده</h3>
-                <p>سوالات اصلاح شده</p>
-            </a>
-            
-            <a href="{{ url_for('admin_reports_by_status', status='rejected') }}" class="action-card">
-                <div class="action-icon">❌</div>
-                <h3>گزارشات رد شده</h3>
-                <p>سوالات رد شده</p>
+            <a href="{{ url_for('admin_articles') }}" class="action-card">
+                <div class="action-icon">📚</div>
+                <h3>مدیریت مقالات</h3>
+                <p>ایجاد، ویرایش و مدیریت مقالات آموزشی</p>
             </a>
         </div>
     </div>

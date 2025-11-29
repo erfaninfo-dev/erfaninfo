@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         resultRows.forEach(row => {
             const userName = row.querySelector('.user-text').textContent.toLowerCase();
-            const quizName = row.querySelector('.quiz-name').textContent.toLowerCase();
+            const quizNameElement = row.querySelector('.quiz-name');
+            const quizName = quizNameElement.textContent.toLowerCase();
             const status = row.getAttribute('data-status');
 
             const matchesSearch = userName.includes(searchTerm) || quizName.includes(searchTerm);
@@ -30,38 +31,171 @@ document.addEventListener('DOMContentLoaded', function() {
         updateEmptyMessage();
     }
 
-    // تابع نمایش پیام خالی
-    function updateEmptyMessage() {
-        const visibleRows = Array.from(resultRows).filter(row => row.style.display !== 'none');
+    // تابع کمکی برای تشخیص آزمون ترکیبی
+    function isCombinedTest(quizName) {
+        // الگوهای مختلف برای تشخیص آزمون ترکیبی
+        const combinedPatterns = [
+            /آزمون ترکیبی/,
+            /\+/,
+            /,/,  // ویرگول برای جدا کردن گرامرها
+            /Present.*Past/,
+            /Past.*Present/,
+            /Simple.*Perfect/,
+            /Perfect.*Simple/,
+            /Continuous.*Simple/,
+            /Simple.*Continuous/
+        ];
         
-        // اگر پیام خالی قبلی وجود دارد، حذف کن
-        const existingMessage = document.querySelector('.no-filtered-results');
-        if (existingMessage) {
-            existingMessage.remove();
-        }
-
-        // اگر هیچ نتیجه‌ای نمایش داده نمی‌شود، پیام نمایش بده
-        if (visibleRows.length === 0 && (searchInput.value || statusFilter.value !== 'all')) {
-            const message = document.createElement('tr');
-            message.className = 'no-filtered-results';
-            message.innerHTML = `
-                <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
-                    <div style="font-size: 1.2rem; margin-bottom: 10px;">🔍</div>
-                    <div style="font-weight: 600; margin-bottom: 5px;">نتیجه‌ای یافت نشد</div>
-                    <div style="font-size: 0.9rem;">لطفاً عبارت جستجو یا فیلتر را تغییر دهید</div>
-                </td>
-            `;
-            resultsTable.appendChild(message);
-        }
+        return combinedPatterns.some(pattern => pattern.test(quizName));
     }
+
+    // تابع استخراج گرامرها از نام آزمون
+    function extractGrammars(quizName) {
+        const grammarPatterns = [
+            'Present Simple', 'Present Continuous', 'Present Perfect',
+            'Past Simple', 'Past Continuous', 'Past Perfect',
+            'Future Simple', 'Future Continuous', 'Future Perfect'
+        ];
+        
+        // اگر شامل پرانتز است
+        if (quizName.includes('(') && quizName.includes(')')) {
+            const match = quizName.match(/\(([^)]+)\)/);
+            if (match) {
+                // ابتدا با ویرگول جدا کن، سپس با +
+                const grammarsText = match[1];
+                if (grammarsText.includes(',')) {
+                    return grammarsText.split(',').map(g => g.trim());
+                } else if (grammarsText.includes(' + ')) {
+                    return grammarsText.split(' + ');
+                } else {
+                    return [grammarsText.trim()];
+                }
+            }
+        }
+        
+        // اگر شامل + است
+        if (quizName.includes(' + ')) {
+            return quizName.split(' + ');
+        }
+        
+        // اگر شامل ویرگول است
+        if (quizName.includes(',')) {
+            return quizName.split(',').map(g => g.trim());
+        }
+        
+        // تشخیص از متن
+        return grammarPatterns.filter(pattern => quizName.includes(pattern));
+    }
+
+    // تابع تبدیل آزمون‌های ترکیبی به دکمه
+    function convertCombinedTestsToButtons() {
+        resultRows.forEach(row => {
+            const quizNameElement = row.querySelector('.quiz-name');
+            const quizName = quizNameElement.textContent;
+            
+            // بررسی اینکه آیا آزمون ترکیبی است
+            if (isCombinedTest(quizName)) {
+                const grammars = extractGrammars(quizName);
+                
+                // اگر بیش از یک گرامر پیدا شد
+                if (grammars.length > 1) {
+                    let fullTitle = quizName;
+                    
+                    // اگر شامل 'آزمون ترکیبی' نیست، اضافه کن
+                    if (!quizName.includes('آزمون ترکیبی')) {
+                        fullTitle = `آزمون ترکیبی (${grammars.join(' + ')})`;
+                    }
+                    
+                    // ایجاد دکمه
+                    const button = document.createElement('button');
+                    button.className = 'combined-test-btn';
+                    button.textContent = 'آزمون ترکیبی';
+                    button.setAttribute('data-grammars', JSON.stringify(grammars));
+                    button.setAttribute('data-full-title', fullTitle);
+                    
+                    // اضافه کردن event listener
+                    button.addEventListener('click', function() {
+                        showCombinedTestDetails(grammars, fullTitle);
+                    });
+                    
+                    // جایگزینی متن با دکمه
+                    quizNameElement.innerHTML = '';
+                    quizNameElement.appendChild(button);
+                }
+            }
+        });
+    }
+
+    // تابع نمایش جزئیات آزمون ترکیبی
+    function showCombinedTestDetails(grammars, fullTitle) {
+        // ایجاد modal
+        const modal = document.createElement('div');
+        modal.className = 'combined-test-modal-overlay';
+        modal.innerHTML = `
+            <div class="combined-test-modal">
+                <div class="modal-header">
+                    <h3>📚 جزئیات آزمون ترکیبی</h3>
+                    <button class="close-modal-btn" onclick="this.closest('.combined-test-modal-overlay').remove()">×</button>
+                </div>
+                <div class="modal-content">
+                    <div class="test-info">
+                        <h4>${fullTitle}</h4>
+                        <p>این آزمون شامل ${grammars.length} گرامر مختلف است:</p>
+                    </div>
+                    <div class="grammars-list">
+                        ${grammars.map((grammar, index) => `
+                            <div class="grammar-item">
+                                <span class="grammar-number">${index + 1}</span>
+                                <span class="grammar-name">${grammar}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="test-stats">
+                        <p>📊 تعداد گرامرها: ${grammars.length}</p>
+                        <p>📝 تخمین سوالات: ${grammars.length * 20} سوال</p>
+                        <p>⏱️ زمان تخمینی: ${grammars.length * 10} دقیقه</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-close-btn" onclick="this.closest('.combined-test-modal-overlay').remove()">بستن</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // بستن modal با کلیک روی overlay
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+
+    // فراخوانی تابع تبدیل دکمه‌ها
+    convertCombinedTestsToButtons();
 
     // Event listeners
     if (searchInput) {
         searchInput.addEventListener('input', filterResults);
     }
-
+    
     if (statusFilter) {
         statusFilter.addEventListener('change', filterResults);
+    }
+
+    // تابع به‌روزرسانی پیام خالی
+    function updateEmptyMessage() {
+        const visibleRows = Array.from(resultRows).filter(row => row.style.display !== 'none');
+        const emptyMessage = document.querySelector('.no-results');
+        
+        if (emptyMessage) {
+            if (visibleRows.length === 0) {
+                emptyMessage.style.display = 'block';
+            } else {
+                emptyMessage.style.display = 'none';
+            }
+        }
     }
 
     // انیمیشن بارگذاری نتایج
@@ -179,7 +313,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const visibleRows = Array.from(resultRows).filter(row => row.style.display !== 'none');
         const resultsText = visibleRows.map(row => {
             const user = row.querySelector('.user-text').textContent;
-            const quiz = row.querySelector('.quiz-name').textContent;
+            const quizElement = row.querySelector('.quiz-name');
+            const quiz = quizElement.querySelector('.combined-test-btn') ? 
+                quizElement.querySelector('.combined-test-btn').getAttribute('data-full-title') : 
+                quizElement.textContent;
             const score = row.querySelector('.score-number').textContent;
             const total = row.querySelector('.total-number').textContent;
             const percentage = row.querySelector('.percentage-text').textContent;
